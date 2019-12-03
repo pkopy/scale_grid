@@ -1,7 +1,12 @@
 .App {
   text-align: center;
+  
 }
-
+ body {
+    overflow-y: hidden;
+    overflow-x: hidden;
+    user-select: none;
+ }
 .App-logo {
   height: 40vmin;
 }
@@ -19,4 +24,12 @@
 
 .App-link {
   color: #09d3ac;
+}
+
+hr {
+    width: 100%;
+}
+
+.vertical {
+    transform: rotate(90deg);
 }
