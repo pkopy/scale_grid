@@ -21,7 +21,7 @@ app.get('/close', (req,res) => {
     })
 })
 
-app.get('/getlayout', (req, res) => {
+app.get('/layout', (req, res) => {
     readFile()
         .then(data => {
             res.writeHead(200, {
@@ -39,13 +39,68 @@ app.get('/getlayout', (req, res) => {
         })
 })
 
+// app.post('/layout', (req, res) => {
+//     req.on('data', (data) => {
+//         // let payloadObj;
+//         try {
+//             let payload = Buffer.from(data).toString();
+//             let payloadObj = JSON.parse(payload)
+//             saveFile(payloadObj) 
+//                 .then(() => {
+//                     res.writeHead(200, {
+//                         'Content-Type': 'application/json'
+//                     });
+                
+//                     res.end('ok')
+//                 })
+//                 .catch(err => {
+//                     console.log(err)
+//                     res.writeHead(200, {
+//                         'Content-Type': 'application/json'
+//                     });
+                
+//                     res.end(err)
+                
+//                 })
+//         } catch {
+//             console.log('Not saved')
+//         }
+//         // console.log(payloadObj)
+
+        
+        
+//     })
+// })
+
+app.post('/layout', (req, res) => {
+    let chunks = [];
+    	req.on('data', (data) => {
+		chunks.push(data)
+    })
+    .on('end', () => {
+		let data = Buffer.concat(chunks)
+		let payloadObj = JSON.parse(data)
+		saveFile(payloadObj) 
+                .then(() => {
+                    res.writeHead(200, {
+                        'Content-Type': 'application/json'
+                    });
+                
+                    res.end('ok')
+                })
+                .catch(err => console.log(err))
+	})
+
+})
+	
+
 console.log(__dirname + '/.data')
 const readFile = () => {
     return new Promise((res, rej) => {
         fs.readFile(__dirname + '/.data/layout.json', 'utf-8', (err, data) => {
             if (!err && data) {
                 const objJSON = JSON.parse(data)
-                console.log(objJSON)
+                // console.log(objJSON)
                 res(objJSON)
             }else {
                 rej(err)
@@ -54,5 +109,19 @@ const readFile = () => {
     })
 }
 
+const saveFile = (data) => {
+    return new Promise((res, rej) => {
+        const dataToJson = JSON.stringify(data)
+        fs.writeFile(__dirname + '/.data/layout.json', dataToJson, (err) => {
+            if(err) {
+                console.log(err)
+                rej(err)
+            } else {
+                res('OK')
+            }
+        })
+    })
+}
 
-app.listen(9000);
+
+app.listen(9000)

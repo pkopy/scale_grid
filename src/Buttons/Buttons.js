@@ -1,11 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
 import load from '../img/search.gif'
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import Fab from '@material-ui/core/Fab';
 import { IconButton } from '@material-ui/core';
 import Tooltip from '@material-ui/core/Tooltip';
 
@@ -39,149 +36,128 @@ const useStyles = makeStyles(theme => ({
 
         }
     }
-}))
+}));
 
 
 export default function Buttons(props) {
-    const [buttons, setButtons] = React.useState([[]])
-    const [socket, setSocket] = React.useState()
-    const [start, setStart] = React.useState()
-    const [imgs, setImgs] = React.useState(true)
-    const [open, setOpen] = React.useState(false)
-    const [index, setIndex] = React.useState(0)
+    const [buttons, setButtons] = React.useState([[]]);
+    const [socket, setSocket] = React.useState();
+    const [start, setStart] = React.useState();
+    const [imgs, setImgs] = React.useState(true);
+    const [index, setIndex] = React.useState(0);
     const classes = useStyles();
 
 
     const runSocket = () => {
-        console.log('start')
-        const socket = new WebSocket('ws://10.10.3.45:4101')
-        socket.onopen = () => {
-            // console.log('connect')
-            setStart(true)
 
-            console.log('Socket is opened')
-        }
+        const socket = new WebSocket(`ws://${window.location.hostname}:4101`);
+
+        socket.onopen = () => {
+            setStart(true);
+
+            console.log('Socket is opened');
+        };
+
         socket.onclose = () => {
-            console.log('Socket is closed')
-        }
+            console.log('Socket is closed');
+        };
+
         socket.onerror = (err) => {
-            console.log(err)
-        }
-        setSocket(socket)
-    }
+            console.log(err);
+        };
+
+        setSocket(socket);
+    };
 
     React.useEffect(() => {
-        runSocket()
-    }, [])
+        runSocket();
+    }, []);
+
     React.useEffect(() => {
         sendCom()
-            .then(data => setImgs(false))
-    }, [start])
+            .then(data => setImgs(false));
+    }, [start]);
 
     React.useEffect(() => {
-        xxx()
+        getAllImgs();
 
-    }, [imgs])
+    }, [imgs]);
 
 
     const sendCom = () => {
-        console.log('send')
         return new Promise((res, rej) => {
 
-
             if (start && socket.readyState === 1) {
-                socket.send(JSON.stringify({ COMMAND: 'GET_ACTIONS' }))
+                socket.send(JSON.stringify({ COMMAND: 'GET_ACTIONS' }));
                 socket.onmessage = (e) => {
                     let data = e.data;
                     const response = JSON.parse(data);
-                    console.log(response)
-                    let arr = []
-                    let arr1 = []
-                    for (let i = 0; i < response.RECORD.length; i++) {
-
-                        if (arr1.length > 18) {
-                            arr1.push(response.RECORD[i])
-
-                            arr.push(arr1)
-                            arr1 = []
-                        } else {
-
-                            arr1.push(response.RECORD[i])
+                    let arr = [];
+                    let arr1 = [];
+                    if (response.RECORD) {
+                        for (let i = 0; i < response.RECORD.length; i++) {
+    
+                            if (arr1.length > 18) {
+                                arr1.push(response.RECORD[i]);
+                                arr.push(arr1);
+                                arr1 = [];
+                            } else {
+                                arr1.push(response.RECORD[i]);
+                            }
                         }
+
                     }
                     if (arr1.length > 0) {
-                        arr.push(arr1)
-                        arr1 = []
+                        arr.push(arr1);
+                        arr1 = [];
                     }
-                    console.log(response.RECORD)
-                    console.log(arr)
-                    // setButtons([])
-                    setButtons(arr)
 
-                    res('ok')
+                    setButtons(arr);
 
-
-                    // setMax(response.Max * 1)
-                    // setValue(response.NetAct.Value)
-                    // setUnit(response.NetAct.Unit)
-                    // setValueCal(response.NetCal.Value)
-                    // setIsStab(response.isStab)
-                    // setIsTare(response.isTare)
-                    // setIsZero(response.isZero)
-                    // setPrecision(response.NetAct.Precision)
+                    res('ok');
                 }
 
             }
         })
-    }
+    };
 
-    const plus = () => {
-        let inx = index
-        inx++
-        setIndex(inx)
-        xxx(inx)
-    }
-
-    const img = (value) => {
-        // let response = ''
+    const getImg = (value) => {
         return new Promise((res, rej) => {
             if (start && socket.readyState === 1) {
                 socket.send(JSON.stringify({ COMMAND: "GET_IMAGE_ACTION", PARAM: value }))
                 socket.onmessage = (e) => {
                     let data = e.data;
                     const response = JSON.parse(data);
-                    // console.log(response)
-                    res(response.DATA)
+                    res(response.DATA);
                 }
                 socket.onerror = (err) => {
-                    res('')
+                    res('');
                 }
             }
 
         })
-    }
+    };
 
-    async function xxx(index) {
+    async function getAllImgs(index) {
         if (!index) {
-            index = 0
+            index = 0;
         }
-        const helpArr = buttons[index].slice()
-        const x = []
+        const helpArr = buttons[index] ? buttons[index].slice() : [];
+        const arr = [];
         for (let elem of helpArr) {
-            await img(elem.Value).then(data => {
-                elem.img = data
-                x.push(elem)
+            await getImg(elem.Value).then(data => {
+                elem.img = data;
+                arr.push(elem);
             })
         }
-        setButtons([x])
-        console.log(x)
-
-
-    }
+        setButtons([arr]);
+    };
 
     return (
         <Dialog aria-labelledby="simple-dialog-title" open={true} fullWidth={true} maxWidth='xl' >
+
             <div style={{ textAlign: "right", paddingRight: 20 }}>
+
                 <IconButton style={{ width: 50 }} onClick={() => props.setOpenButtons(false)}>
                     <HighlightOffIcon />
                 </IconButton>
@@ -189,7 +165,8 @@ export default function Buttons(props) {
             </div>
 
             <div className={classes.container}>
-                {buttons[index].map((elem) =>
+
+                {buttons[index]&&buttons[index].map((elem) =>
                     <Tooltip title={elem.Name} key={elem.Name}>
                         <IconButton style={{ padding: 5 }}  onClick={() => {props.add(elem); props.setOpenButtons(false)}}>
                             <div className={classes.button} >
@@ -200,14 +177,10 @@ export default function Buttons(props) {
                         </IconButton>
                     </Tooltip>
                 )}
+                
             </div>
-            {/* <div className={classes.container}>
-                <button onClick={plus}>LEfty</button>
-                <button>Exit</button>
-                <button>Reeee</button>
 
-            </div> */}
         </Dialog>
-        // {/* <button onClick={()=>xxx()}>ADDD</button> */}
+        
     )
 }

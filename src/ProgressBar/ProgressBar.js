@@ -1,7 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import Button from '@material-ui/core/Button';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import stableIcon from '../img/stable_black.svg';
 import zeroIcon from '../img/zero.svg'
@@ -19,6 +18,7 @@ import nine from '../img/nine.svg'
 import minus from '../img/minus.svg'
 import dot from '../img/dot.svg'
 
+
 const theme = createMuiTheme({
     palette: {
         primary: { main: "#000" },
@@ -27,12 +27,10 @@ const theme = createMuiTheme({
 
 const useStyles = makeStyles({
     root: {
-        // flexGrow: 1,
         width: '98%',
         display: 'flex',
         marginLeft: 'auto',
         marginRight: 'auto',
-        // height:'100%',
         alignItems: 'center',
         flexDirection: 'column'
     },
@@ -40,11 +38,9 @@ const useStyles = makeStyles({
         flexGrow: 8,
         position: 'relative',
         fontSize: '65%',
-        // width: '95%',
-        // bottom: '80%',
+
         color: '#000',
         textAlign: 'right',
-        // fontFamily:'Audiowide'
     },
     imgContainer: {
         display: 'flex',
@@ -61,71 +57,47 @@ export default function LinearDeterminate(props) {
     const classes = useStyles();
 
     const [completed, setCompleted] = React.useState(0);
+    const [Max, setMax] = React.useState(0);
+    const [Value, setValue] = React.useState();
+    const [ValueCal, setValueCal] = React.useState(0);
+    const [Unit, setUnit] = React.useState('');
+    const [isStab, setIsStab] = React.useState();
+    const [isTare, setIsTare] = React.useState();
+    const [isZero, setIsZero] = React.useState();
+    const [precision, setPrecision] = React.useState();
 
-    const [Max, setMax] = React.useState(0)
-    const [Value, setValue] = React.useState(0)
-    const [ValueCal, setValueCal] = React.useState(0)
-    const [Unit, setUnit] = React.useState('')
-    const [isStab, setIsStab] = React.useState()
-    const [isTare, setIsTare] = React.useState()
-    const [isZero, setIsZero] = React.useState()
-    const [precision, setPrecision] = React.useState()
-
-    // const runSocket = () => {
-    //     const socket = new WebSocket('ws://10.10.3.45:4101')
-    //     socket.onopen = () => {
-    //         // console.log('connect')
-    //         setStart(true)
-    //     }
-    //     socket.onclose = () => {
-    //         console.log('Socket is closed')
-    //     }
-    //     socket.onerror = (err) => {
-    //         console.log(err)
-    //     }
-    //     setSocket(socket)
-    // }
-
-    const tare = () => {
-        if (props.start && props.socket.readyState === 1) {
-            props.socket.send(JSON.stringify({ COMMAND: 'TARE' }))
-            // socket.onmessage((e) => console.log(e.data))
-        }
-    }
-
-    const zero = () => {
-        if (props.start && props.socket.readyState === 1) {
-            props.socket.send(JSON.stringify({ COMMAND: 'ZERO' }))
-        }
-    }
-
-    // React.useEffect(() => {
-    //     runSocket()
-    // }, [])
 
     React.useEffect(() => {
 
         function sendToSocket() {
-            // console.log(props.socket)
             if (props.socket.readyState === 1) {
-                props.socket.send(JSON.stringify({ COMMAND: 'GET_MASS' }))
+                props.socket.send(JSON.stringify({ COMMAND: 'GET_MASS' }));
                 props.socket.onmessage = (e) => {
                     let data = e.data;
                     const response = JSON.parse(data);
                     // console.log(response)
                     if (response.NetAct && response.NetCal) {
-
-                        setMax(response.Max * 1)
-                        setValue(response.NetAct.Value)
-                        setUnit(response.NetAct.Unit)
-                        setValueCal(response.NetCal.Value)
-                        setIsStab(response.isStab)
-                        setIsTare(response.isTare)
-                        setIsZero(response.isZero)
-                        setPrecision(response.NetAct.Precision)
+                        props.setLicense(true);
+                        setMax(response.Max * 1);
+                        setValue(response.NetAct.Value);
+                        setUnit(response.NetAct.Unit);
+                        setValueCal(response.NetCal.Value);
+                        setIsStab(response.isStab);
+                        setIsTare(response.isTare);
+                        setIsZero(response.isZero);
+                        setPrecision(response.NetAct.Precision);
+                    } else if(response.STS_DETAILS === 'The license for this module has not been activated'){
+                        setValue('-----');
+                        setUnit('');
+                        setIsStab(false);
+                        setIsTare(false);
+                        setIsZero(false);
+                        props.setLicense(false);
                     }
                 }
 
+            } else {
+                setValue('-----');
             }
         }
 
@@ -133,6 +105,7 @@ export default function LinearDeterminate(props) {
         return () => {
             clearInterval(timer);
         };
+
     }, [])
 
     React.useEffect(() => {
@@ -147,19 +120,16 @@ export default function LinearDeterminate(props) {
                 return Math.min(oldCompleted + diff, 100);
             });
         }
-        progress()
-        // const timer = setInterval(progress, 250);
-        // return () => {
-        //     clearInterval(timer);
-        // };
+
+        progress();
+
     }, [Value]);
 
     const _digits = (value) => {
-
-        const x = (value.toString()).split('')
-        console.log(x)
+        value = isNaN(value) ? '-----' : value;
+        const digits = (value.toString()).split('');
         let result = []
-        for (let digit of x) {
+        for (let digit of digits) {
             switch (digit) {
                 case '0':
                     result.push(zero2)
@@ -202,43 +172,64 @@ export default function LinearDeterminate(props) {
                     break
             }
         }
-        console.log(props.width)
-        // let xc = (props.width === 4) ? '50px' : '80px' 
-        let xc;
+
+        let digitWidth;
+        let unitFontWidth;
+        let unitBottom;
+        let imgWidth;
+        
         if (props.width === 6) {
-            xc = '80px'
+            digitWidth = 70;
+            unitFontWidth = 90;
+            unitBottom = 160;
+            imgWidth = 80;
         } else if (props.width === 4) {
-            xc = '50px'
+            digitWidth = 50;
+            unitFontWidth = 50;
+            unitBottom = 120;
+            imgWidth = 50;
         } else {
-            xc = '20px'
+            digitWidth = 20;
+            unitFontWidth = 20;
+            unitBottom = 50;
+            imgWidth = 35;
         }
+
         return (
-            <span>
-                {result.map(elem =>
+            <div style={{width:'100%'}}>
+                
+                {props.visible && <div style={{ display: 'flex', width: '100%' }}>
+
+                    <div style={{ width: 100, display: 'flex', flexDirection: 'column', textAlign: 'left', marginTop: '10px' }}>
+                        <div className={classes.icons}>{isStab && <img src={stableIcon} width={`${imgWidth}%`} alt='stab'></img>}</div>
+                        <div className={classes.icons}>{isZero && <img src={zeroIcon} width={`${imgWidth}%`} alt='zero'></img>}</div>
+                        <div className={classes.icons}>{isTare && <img src={taraIcon} width={`${imgWidth}%`} alt='tare'></img>}</div>
+                    </div>
                     
-                    <img src={elem} style={{ width:xc }}></img>
-                )}
-            </span>
+                    <div className={classes.value} >
+
+                        <div>
+                            {props.visible && result.map((elem, i) =>
+                                <img src={elem} style={{ width: digitWidth }} key={i} alt='digit'></img>
+                            )}
+
+                            {props.visible && Unit !== "NoUnit" && <span style={{ fontSize: unitFontWidth, position: 'relative', bottom: unitBottom, display: 'inline-block', paddingLeft: '15px', transform: 'scaleY(3)' }}>{Unit}</span>}
+                        </div>
+                    </div>
+
+                </div>}
+                <ThemeProvider theme={theme}>
+                    {props.visible && <LinearProgress color="primary" variant="determinate" value={ValueCal > 0 ? (100 / (Max / ValueCal)) : 0} style={{ height: `25px`, width: '100%', marginBottom: '5px' }} />}
+                </ThemeProvider>
+
+            </div>
+
         )
     }
 
     return (
         <div className={classes.root}>
-            {/* <div className={classes.value}>{Number.parseFloat(Value).toFixed(precision)} {Unit !=="NoUnit"&&<span>{Unit}</span>}</div> */}
-            <div style={{ display: 'flex', width: '95%' }}>
-                <div style={{ width: 40, display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
-                    <div className={classes.icons}>{isStab && <img src={stableIcon} width={35}></img>}</div>
-                    <div className={classes.icons}>{isZero && <img src={zeroIcon} width={35}></img>}</div>
-                    <div className={classes.icons}>{isTare && <img src={taraIcon} width={35}></img>}</div>
-                </div>
-                <div className={classes.value} > {_digits(Number.parseFloat(Value).toFixed(precision))}{Unit !== "NoUnit" && <span style={{ fontSize: '25px' }}>{Unit}</span>}</div>
-
-            </div>
-            <ThemeProvider theme={theme}>
-                <LinearProgress color="primary" variant="determinate" value={ValueCal > 0 ? (100 / (Max / ValueCal)) : 0} style={{ height: `25px`, width: '100%' }} />
-            </ThemeProvider>
-            {/* {Number.parseFloat(Value).toFixed(precision)} */}
-            {/* <img src={zero2} style={{ width: '10%' }}></img><img src={zero2} style={{ width: '10%' }}></img><img src={zero2} style={{ width: '10%' }}></img>  */}
+            {_digits(Number.parseFloat(Value).toFixed(precision))}
         </div>
     );
 }

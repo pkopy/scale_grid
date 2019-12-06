@@ -7,168 +7,185 @@ import ProgressBar from './ProgressBar/ProgressBar'
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import { IconButton } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Buttons from './Buttons/Buttons'
-import EditIcon from '@material-ui/icons/Edit';
-import { send } from 'q';
+import Alert from './Alert/Alert'
+
+
 
 function App() {
     // console.log('xxxxxxxxxxxxxxx', data.data)
-    const [layout, setLayout] = React.useState([])
-    const [loader, setLoader] = React.useState(false)
-    const [blocked, setBlocked] = React.useState(true)
-    const [busyFields, setBusyFields] = React.useState(new Array(18).fill(0))
-    const [socket, setSocket] = React.useState()
-    const [start, setStart] = React.useState(false)
+    const [layout, setLayout] = React.useState([]);
+    const [loader, setLoader] = React.useState(false);
+    const [blocked, setBlocked] = React.useState(false);
+    const [busyFields, setBusyFields] = React.useState(new Array(18).fill(0));
+    const [socket, setSocket] = React.useState();
+    const [start, setStart] = React.useState(false);
+    const [visible, setVisible] = React.useState(true);
+    const [license, setLicense] = React.useState(true);
+    const [openInfoLicence, setOpenLicenseInfo] = React.useState(false);
+
 
     const block = () => {
-        const helpArr = []
-        setLayout([])
+        const helpArr = [];
+
         for (let elem of layout) {
-            elem.static = !elem.static
-            // elem.isDraggable=false
-            console.log(elem)
-            helpArr.push(elem)
+            if (!blocked) {
+                elem.static = true;
+            } else {
+                elem.static = false;
+            }
+            helpArr.push(elem);
         }
+        if (!blocked) {
+            saveLayout(helpArr);
+        }
+
         setTimeout(() => {
-            setBlocked(!blocked)
-            setLayout(helpArr)
-        }, 100)
+            setBlocked(!blocked);
+            setLayout(helpArr);
+        }, 300)
     }
 
+
+
     const runSocket = () => {
-        const socket = new WebSocket('ws://10.10.3.45:4101')
+        const socket = new WebSocket(`ws://${window.location.hostname}:4101`);
+
         socket.onopen = () => {
-            console.log('connect')
-            setStart(true)
+
+            setStart(true);
         }
         socket.onclose = () => {
-            console.log('Socket is closed')
+
         }
         socket.onerror = (err) => {
-            console.log(err)
+            console.log(err);
         }
-        setSocket(socket)
+        setSocket(socket);
     }
 
     const addItem = (elem) => {
-        findBusyFields()
-        setLoader(true)
-        let arr = layout.slice()
-        let allBusyFields = 0
-        busyFields.map(el => allBusyFields += el)
+        findBusyFields();
+        setLoader(true);
+
+        let arr = layout.slice();
+        let allBusyFields = 0;
+
+        busyFields.map(el => allBusyFields += el);
         if (allBusyFields < 18) {
             for (let i = 0; i < busyFields.length; i++) {
                 if (busyFields[i] === 0 && allBusyFields < 18) {
                     if (i > 11) {
-                        arr.push({ i: Date() + layout.length, w: 1, h: 2, x: (i - 12), y: 4, maxH: 6, minH: 2, maxW: 6, minW: 1, elem })
-
+                        arr.push({ i: Date() + layout.length, w: 1, h: 2, x: (i - 12), y: 4, maxH: 6, minH: 2, maxW: 6, minW: 1, elem });
                     } else if (i > 5) {
-                        arr.push({ i: Date() + layout.length, w: 1, h: 2, x: (i - 6), y: 2, maxH: 6, minH: 2, maxW: 6, minW: 1, elem })
+                        arr.push({ i: Date() + layout.length, w: 1, h: 2, x: (i - 6), y: 2, maxH: 6, minH: 2, maxW: 6, minW: 1, elem });
                     } else {
-                        arr.push({ i: Date() + layout.length, w: 1, h: 2, x: i, y: 0, maxH: 6, minH: 2, maxW: 6, minW: 1,elem })
+                        arr.push({ i: Date() + layout.length, w: 1, h: 2, x: i, y: 0, maxH: 6, minH: 2, maxW: 6, minW: 1, elem });
                     }
 
-                    break
+                    break;
                 }
             }
 
         } else {
-            alert('nie da rady')
+            alert('Not enough space');
         }
-        setLayout(arr)
-        console.log(arr)
-        setLoader(false)
+        setLayout(arr);
+        setLoader(false);
     }
 
     const add = (elem) => {
 
-        findBusyFields()
-        setLoader(true)
+        findBusyFields();
+        setLoader(true);
         setTimeout(() => {
-            addItem(elem)
+            addItem(elem);
         }, 300)
     }
 
     const send = (elem) => {
-        if (start && socket.readyState === 1 && elem.elem) {
-            console.log(elem.elem.Value)
-            socket.send(JSON.stringify({ COMMAND: 'EXECUTE_ACTION', PARAM: elem.elem.Value }))
+        if (start && socket.readyState === 1 && elem.elem && blocked) {
+            socket.send(JSON.stringify({ COMMAND: 'EXECUTE_ACTION', PARAM: elem.elem.Value }));
         }
     }
 
-    const deleteItem = (e,item) => {
-        setLoader(true)
-        const newLayout = layout.slice()
-        e.stopPropagation()
-        console.log(newLayout)
+    const deleteItem = (e, item) => {
+        setLoader(true);
+        const newLayout = layout.slice();
+        e.stopPropagation();
         for (let i = 0; i < newLayout.length; i++) {
             if (newLayout[i].i === item.i) {
-                newLayout.splice(i, 1)
-                break
+                newLayout.splice(i, 1);
+                break;
             }
         }
-        setLayout([])
+        setLayout([]);
         setTimeout(() => {
-            setLayout(newLayout)
-            setLoader(false)
-        },300)
+            setLayout(newLayout);
+            setLoader(false);
+        }, 300)
     }
 
     const editAfterDragg = (e) => {
-        // console.log('e: ', e)
-        
-        // console.log('busy: ', busyFields)
-        // console.log('layout ', layout.slice())
+
         const oldArray = layout.slice()
         if (e && e.length > 0) {
-            const helpArr = []
+            const helpArr = [];
 
             for (let i = 0; i < e.length; i++) {
                 if ((e[i].y + e[i].h) > 6) {
-                    e[i].y = 6 - e[i].h
+                    e[i].y = 6 - e[i].h;
+                }
+                if (e[i].h >= 6 && e[i].obj === 'mass' && e.length <= 1) {
+                    e[i].h = 6;
+                    e[i].w = 6;
+                } else if (e[i].h >= 6 && e[i].obj === 'mass' && e.length > 1) {
+                    e[i].h = 2;
+                    e[i].w = 3;
+                }
+
+                if (e[i].h === 4 && e[i].w < 4 && e[i].obj === 'mass') {
+                    e[i].h = 4;
+                    e[i].w = 4;
+                }
+                if (e[i].h === 2 && e[i].w < 2 && e[i].obj === 'mass') {
+
+                    e[i].w = 3;
                 }
                 if (e[i].h > 6) {
-                    e[i].h = 6
-                    e[i].y = 0
+                    e[i].h = 6;
+                    e[i].y = 0;
                 }
                 if (e[i].y % 2 !== 0) {
-                    e[i].y--
+                    e[i].y--;
                 }
                 if (e[i].h % 2 !== 0) {
-                    e[i].h--
+                    e[i].h--;
                 }
                 if (e[i].h < e[i].minH) {
-                    e[i].h = e[i].minH
+                    e[i].h = e[i].minH;
                 }
 
-
-                // console.log(i)
-                e[i].elem = oldArray[i].elem
-                e[i].obj = oldArray[i].obj
-                helpArr.push(e[i])
+                e[i].elem = oldArray[i].elem;
+                e[i].obj = oldArray[i].obj;
+                helpArr.push(e[i]);
 
             }
 
-            findBusyFields()
+            findBusyFields();
 
             setTimeout(() => {
-
-                setLayout(helpArr)
-                console.log(helpArr)
+                setLayout(helpArr);
             }, 50)
-        } 
+        }
 
 
     }
 
-    React.useEffect(() => {
-        getLayout()
-        runSocket()
-    }, [])
+
 
     const getLayout = () => {
         setLoader(true)
-        fetch(`http://${window.location.hostname}:9000/getlayout`, {
+        fetch(`http://${window.location.hostname}:9000/layout`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -176,46 +193,79 @@ function App() {
         })
             .then(data => data.json())
             .then(data => {
-                setLayout(data)
-                setBlocked(true)
-                setLoader(false)
+
+                for (let elem of data) {
+                    if (!blocked) {
+                        elem.static = true;
+                    } else {
+                        elem.static = false;
+                    }
+
+                }
+
+                setLayout(data);
+                setBlocked(true);
+                setLoader(false);
             })
-    }
+    };
+
+    const saveLayout = (layout) => {
+
+        fetch(`http://${window.location.hostname}:9000/layout`, {
+            method: 'POST',
+            body: JSON.stringify(layout)
+
+        });
+
+    };
 
     const findBusyFields = () => {
         let x = new Array(18).fill(0)
         for (let elem of layout) {
             for (let k = elem.y / 2; k < (elem.y + elem.h) / 2; k++) {
                 for (let j = elem.x; j < elem.x + elem.w; j++) {
-                    // console.log('k ', k)
                     let fieldPos = j + (k * 6)
-
                     x[fieldPos] = 1
-
-                    // console.log("x ", x)
                 }
                 setBusyFields(x)
             }
         }
     }
 
-    const _button = () => {
-        return (
-            <div>
-                <button>XXXXXXXX</button>
-            </div>
-        )
-    }
+
 
     const _mass = (elem) => {
-        console.log('elem: ',elem)
         return (
-            <ProgressBar 
+
+            <ProgressBar
                 socket={socket}
                 start={start}
                 width={elem.h}
+                visible={visible}
+                setLicense={setLicense}
             />
         )
+    }
+
+    React.useEffect(() => {
+        getLayout();
+        runSocket();
+    }, []);
+
+    React.useEffect(() => {
+        info();
+    }, [license]);
+
+    const info = () => {
+        if (window.location.hostname !== '127.0.0.1') {
+            if (!license) {
+                setOpenLicenseInfo(false);
+            } else {
+                setOpenLicenseInfo(true);
+            }
+        } else {
+            setOpenLicenseInfo(true);
+        }
     }
 
     return (
@@ -229,24 +279,26 @@ function App() {
 
                 </div>
 
-
-
             }
+            {!openInfoLicence && <Alert />}
+
             <AppBar
                 block={block}
                 blocked={blocked}
                 add={add}
                 getLayout={getLayout}
-            />
-            <GridLayout
-                style={{
-                    // border: '1px solid #000',
+                saveLayout={saveLayout}
 
-                }}
+                license={license}
+            />
+
+            <GridLayout
                 className="layout"
                 isResizable={true}
                 compactType={null}
                 onLayoutChange={e => editAfterDragg(e)}
+                onResizeStart={() => setVisible(false)}
+                onResizeStop={() => setVisible(true)}
                 layout={layout}
                 cols={6} width={1000} rowHeight={75}
                 preventCollision={true}
@@ -256,39 +308,33 @@ function App() {
                         border: "1px solid rgb(0, 0, 0, 0.4)",
                         display: 'flex',
                         alignItems: 'center',
-                        
-                    }} id={elem.i} key={elem.i}>
-                            {elem.elem&&<div  style={{height:100, position:"relative", marginRight:"auto", marginLeft:"auto", width:"100%", marginTop: '-50px'}}>
+
+                    }} 
+                    id={elem.i} key={elem.i}>
+
+                        {visible && elem.elem && <div style={{ height: 100, position: "relative", marginRight: "auto", marginLeft: "auto", width: "100%", marginTop: '-50px' }}>
                             <p>{elem.elem.Name}</p>
-                           
-                                <img   src={`data:image/png;base64, ${elem.elem.img}`}></img>
-                            
-                            </div>}
-                            {/* {elem.i} X={elem.x} Y={elem.y} W={elem.w} H={elem.h} */}
-                        <div style={{ position: 'absolute', top: '1%', right: '1%' }}>
-                                
-                            {!blocked &&
+
+                            <img src={`data:image/png;base64, ${elem.elem.img} `} alt='img'></img>
+
+                        </div>}
+
+                        <div style={{ position: 'absolute', bottom: '1%', left: '1%' }}>
+
+                            {!blocked && elem.obj !== 'mass' &&
                                 <div>
-                                    {/* <IconButton>
-                                        <EditIcon/>
-                                    </IconButton> */}
-                                    <IconButton onClick={(e)=>deleteItem(e,elem)}>
+                                    <IconButton onClick={(e) => deleteItem(e, elem)}>
                                         <DeleteOutlineIcon />
                                     </IconButton>
                                 </div>
                             }
                         </div>
-                        {elem.obj === 'but' && _button()}
+
                         {elem.obj === 'mass' && _mass(elem)}
                     </div>
-                    //{elem.i} X={elem.x} Y={elem.y} W={elem.w} H={elem.h}
                 )}
-                {/* <div style={{ border: "1px solid #000" }} key="a">a</div>
 
-                <div style={{ border: "1px solid #000" }} key="b">b</div>
-                <div style={{ border: "1px solid #f00" }} key="c">c</div> */}
             </GridLayout>
-                {/* <Buttons/> */}
 
         </div>
     );
