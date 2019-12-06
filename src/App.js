@@ -26,7 +26,9 @@ function App() {
 
     const block = () => {
         const helpArr = [];
-
+        // if (!blocked) {
+        //     getLayout()
+        // }
         for (let elem of layout) {
             if (!blocked) {
                 elem.static = true;
@@ -194,14 +196,14 @@ function App() {
             .then(data => data.json())
             .then(data => {
 
-                for (let elem of data) {
-                    if (!blocked) {
-                        elem.static = true;
-                    } else {
-                        elem.static = false;
-                    }
+                // for (let elem of data) {
+                //     if (!blocked) {
+                //         elem.static = true;
+                //     } else {
+                //         elem.static = false;
+                //     }
 
-                }
+                // }
 
                 setLayout(data);
                 setBlocked(true);

@@ -5,9 +5,7 @@ const path = require('path');
 const app = express();
 const {exec} = require('child_process')
 const fs = require('fs')
-const cors = require('cors')
 
-app.use(cors())
 
 app.use(express.static(path.join(__dirname, 'build')));
 app.get('/', function(req, res) {
@@ -39,38 +37,6 @@ app.get('/layout', (req, res) => {
         })
 })
 
-// app.post('/layout', (req, res) => {
-//     req.on('data', (data) => {
-//         // let payloadObj;
-//         try {
-//             let payload = Buffer.from(data).toString();
-//             let payloadObj = JSON.parse(payload)
-//             saveFile(payloadObj) 
-//                 .then(() => {
-//                     res.writeHead(200, {
-//                         'Content-Type': 'application/json'
-//                     });
-                
-//                     res.end('ok')
-//                 })
-//                 .catch(err => {
-//                     console.log(err)
-//                     res.writeHead(200, {
-//                         'Content-Type': 'application/json'
-//                     });
-                
-//                     res.end(err)
-                
-//                 })
-//         } catch {
-//             console.log('Not saved')
-//         }
-//         // console.log(payloadObj)
-
-        
-        
-//     })
-// })
 
 app.post('/layout', (req, res) => {
     let chunks = [];
@@ -103,7 +69,12 @@ const readFile = () => {
                 // console.log(objJSON)
                 res(objJSON)
             }else {
-                rej(err)
+                const data = [{"w":6,"h":4,"x":0,"y":0,"i":"b","minW":3,"maxW":6,"minH":2,"maxH":6,"moved":false,"static":true,"obj":"mass"}]
+                saveFile(data)
+                    .then(() => {
+                        res(data)
+                    })
+                    .catch(err => console.log(err))
             }
         })
     })

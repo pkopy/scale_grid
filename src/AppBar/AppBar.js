@@ -44,9 +44,9 @@ export default function ButtonAppBar(props) {
                         SMART DISPLAY
                     </Typography>
 
-                    {!props.blocked && <IconButton color="inherit" onClick={() => props.getLayout()}>
+                    <IconButton color="inherit" onClick={() => props.getLayout()}>
                         <RefreshIcon />
-                    </IconButton>}
+                    </IconButton>
 
                     {!props.blocked  && <IconButton color="inherit" onClick={() => setOpenButtons(!openButtons)}>
                         <AddCircleOutlineIcon />
@@ -65,7 +65,7 @@ export default function ButtonAppBar(props) {
                     </IconButton>}
 
                 </Toolbar>
-                
+
             </AppBar>
 
             {openButtons && <Buttons
