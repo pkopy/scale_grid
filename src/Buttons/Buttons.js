@@ -27,6 +27,13 @@ const useStyles = makeStyles(theme => ({
         border: '1px solid rgb(0,0,0,0.2)',
         // margin: 1
     },
+    smallButton: {
+        width: 100,
+        height: 100,
+        border: '1px solid rgb(0,0,0,0.2)',
+        // margin: 1
+    },
+
     imgs: {
         transition: '2s',
         padding: 10,
@@ -169,8 +176,8 @@ export default function Buttons(props) {
                 {buttons[index]&&buttons[index].map((elem) =>
                     <Tooltip title={elem.Name} key={elem.Name}>
                         <IconButton style={{ padding: 5 }}  onClick={() => {props.add(elem); props.setOpenButtons(false)}}>
-                            <div className={classes.button} >
-                                <p style={{fontSize:'12px'}}>{elem.Name}</p>
+                            <div className={window.innerWidth > 800?classes.button:classes.smallButton} >
+                                <p style={{fontSize:window.innerWidth > 800?'12px':'8px'}}>{elem.Name}</p>
                                 {!elem.img && <img className={classes.imgs} width={30} src={load}></img>}
                                 {elem.img && <img className={classes.imgs} src={`data:image/png;base64, ${elem.img}`}></img>}
                             </div>

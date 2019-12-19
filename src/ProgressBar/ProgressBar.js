@@ -177,22 +177,41 @@ export default function LinearDeterminate(props) {
         let unitFontWidth;
         let unitBottom;
         let imgWidth;
-        
-        if (props.width === 6) {
-            digitWidth = 70;
-            unitFontWidth = 90;
-            unitBottom = 160;
-            imgWidth = 80;
-        } else if (props.width === 4) {
-            digitWidth = 50;
-            unitFontWidth = 50;
-            unitBottom = 120;
-            imgWidth = 50;
-        } else {
-            digitWidth = 20;
-            unitFontWidth = 20;
-            unitBottom = 50;
-            imgWidth = 35;
+        if (props.screen.width > 800) {
+            if (props.width === 6) {
+                digitWidth = 70;
+                unitFontWidth = 90;
+                unitBottom = 160;
+                imgWidth = 80;
+            } else if (props.width === 4) {
+                digitWidth = 50;
+                unitFontWidth = 50;
+                unitBottom = 120;
+                imgWidth = 50;
+            } else {
+                digitWidth = 20;
+                unitFontWidth = 20;
+                unitBottom = 50;
+                imgWidth = 35;
+            }
+
+        }else {
+            if (props.width === 6) {
+                digitWidth = 55;
+                unitFontWidth = 75;
+                unitBottom = 130;
+                imgWidth = 65;
+            } else if (props.width === 4) {
+                digitWidth = 35;
+                unitFontWidth = 35;
+                unitBottom = 115;
+                imgWidth = 40;
+            } else {
+                digitWidth = 13;
+                unitFontWidth = 13;
+                unitBottom = 45;
+                imgWidth = 30;
+            }
         }
 
         return (
