@@ -187,7 +187,7 @@ function App() {
 
     const getLayout = () => {
         setLoader(true)
-        fetch(`http://${window.location.hostname}:9000/layout`, {
+        fetch(`http://${window.location.hostname}:8400/layout`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -209,11 +209,12 @@ function App() {
                 setBlocked(true);
                 setLoader(false);
             })
+            .catch(err => console.log(err))
     };
 
     const saveLayout = (layout) => {
 
-        fetch(`http://${window.location.hostname}:9000/layout`, {
+        fetch(`http://${window.location.hostname}:8400/layout`, {
             method: 'POST',
             body: JSON.stringify(layout)
 

@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const close = () => {
-    fetch(`http://127.0.0.1:9000/close`)
+    fetch(`http://127.0.0.1:8400/close`)
         .then(data => console.log(data))
         .catch(err => console.log(err))
 }

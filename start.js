@@ -5,8 +5,9 @@ const path = require('path');
 const app = express();
 const {exec} = require('child_process')
 const fs = require('fs')
+// const cors = require('cors')
 
-
+// app.use(cors())
 app.use(express.static(path.join(__dirname, 'build')));
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
@@ -26,6 +27,7 @@ app.get('/layout', (req, res) => {
                 'Content-Type': 'application/json'
             });
             const payloadString = JSON.stringify(data);
+            // console.log(payloadString)
             res.end(payloadString)
         })
         .catch(err => {
@@ -60,7 +62,7 @@ app.post('/layout', (req, res) => {
 })
 	
 
-console.log(__dirname + '/.data')
+// console.log(__dirname + '/.data')
 const readFile = () => {
     return new Promise((res, rej) => {
         fs.readFile(__dirname + '/.data/layout.json', 'utf-8', (err, data) => {
@@ -95,4 +97,4 @@ const saveFile = (data) => {
 }
 
 
-app.listen(9000)
+app.listen(8400)
