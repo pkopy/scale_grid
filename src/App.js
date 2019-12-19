@@ -22,6 +22,7 @@ function App() {
     const [visible, setVisible] = React.useState(true);
     const [license, setLicense] = React.useState(true);
     const [openInfoLicence, setOpenLicenseInfo] = React.useState(false);
+    const [screen, setScreen] = React.useState({})
 
 
     const block = () => {
@@ -241,6 +242,7 @@ function App() {
         return (
 
             <ProgressBar
+                screen={screen}
                 socket={socket}
                 start={start}
                 width={elem.h}
@@ -253,6 +255,18 @@ function App() {
     React.useEffect(() => {
         getLayout();
         runSocket();
+        if (window.innerWidth > 1000) {
+            setScreen({
+                width:1000,
+                rowHeight:75
+            })
+        } else if( window.innerWidth < 900) {
+            setScreen({
+                width:640,
+                rowHeight:57
+            })
+        }
+        console.log(window.innerWidth)
     }, []);
 
     React.useEffect(() => {
@@ -286,6 +300,7 @@ function App() {
             {!openInfoLicence && <Alert />}
 
             <AppBar
+                
                 block={block}
                 blocked={blocked}
                 add={add}
@@ -303,7 +318,7 @@ function App() {
                 onResizeStart={() => setVisible(false)}
                 onResizeStop={() => setVisible(true)}
                 layout={layout}
-                cols={6} width={1000} rowHeight={75}
+                cols={6} width={screen.width} rowHeight={screen.rowHeight}
                 preventCollision={true}
             >
                 {layout.map(elem =>
