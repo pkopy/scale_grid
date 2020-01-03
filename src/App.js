@@ -8,7 +8,7 @@ import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import { IconButton } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Alert from './Alert/Alert'
-
+import ListPanel from './ListPanel/ListPanel'
 
 
 function App() {
@@ -17,12 +17,16 @@ function App() {
     const [loader, setLoader] = React.useState(false);
     const [blocked, setBlocked] = React.useState(false);
     const [busyFields, setBusyFields] = React.useState(new Array(18).fill(0));
-    const [socket, setSocket] = React.useState();
+    const [socketMass, setSocketMass] = React.useState();
+    const [socketAct, setSocketAct] = React.useState();
     const [start, setStart] = React.useState(false);
     const [visible, setVisible] = React.useState(true);
     const [license, setLicense] = React.useState(true);
     const [openInfoLicence, setOpenLicenseInfo] = React.useState(false);
-    const [screen, setScreen] = React.useState({})
+    const [screen, setScreen] = React.useState({});
+    const [hamburger, setHamburger] = React.useState(false)
+    const [menuButtons, setMenuButtons] = React.useState([])
+    
 
 
     const block = () => {
@@ -51,19 +55,55 @@ function App() {
 
 
     const runSocket = () => {
-        const socket = new WebSocket(`ws://${window.location.hostname}:4101`);
-
-        socket.onopen = () => {
+        // const socket = new WebSocket(`ws://${window.location.hostname}:4101`);
+        const socketMass = new WebSocket(`ws://10.10.2.232:4101`);
+        const socketAct = new WebSocket(`ws://10.10.2.232:4101`);
+        socketMass.onopen = () => {
 
             setStart(true);
+            console.log('mass start')
         }
-        socket.onclose = () => {
-
+        socketMass.onclose = () => {
         }
-        socket.onerror = (err) => {
+        socketMass.onerror = (err) => {
             console.log(err);
         }
-        setSocket(socket);
+        setSocketMass(socketMass);
+
+        socketAct.onopen = () => {
+            console.log('act start')
+            setStart(true);
+            // console.log(socketAct)
+            
+            const timerX = setInterval(() => {socketAct.send(JSON.stringify({"COMMAND": "REGISTER_LISTENER", "PARAM": "MENU"}))}, 5000);
+            // setTimer(timerX)
+            // socketAct.send(JSON.stringify({"COMMAND": "REGISTER_LISTENER", "PARAM": "MENU"}))
+            socketAct.onmessage = (e) => {
+                let data = e.data;
+                const response = JSON.parse(data);
+                console.log(response)
+                if (response.COMMAND === 'REGISTER_LISTENER' && response.PARAM === 'MENU' ) {
+                    // console.log(timer)
+                    clearInterval(timerX)
+                }
+                if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'SHOW' ) {
+                    setMenuButtons(response.RECORD.Items)
+                    console.log(response.RECORD.Items)
+                }
+            }
+        }
+        socketAct.onclose = () => {
+            
+        }
+        socketAct.onerror = (err) => {
+            console.log(err);
+        }
+        
+        setSocketAct(socketAct);
+        
+        
+
+
     }
 
     const addItem = (elem) => {
@@ -106,8 +146,23 @@ function App() {
     }
 
     const send = (elem) => {
-        if (start && socket.readyState === 1 && elem.elem && blocked) {
-            socket.send(JSON.stringify({ COMMAND: 'EXECUTE_ACTION', PARAM: elem.elem.Value }));
+        if (start && socketAct.readyState === 1 && elem.elem && blocked) {
+            socketAct.send(JSON.stringify({ COMMAND: 'EXECUTE_ACTION', PARAM: elem.elem.Value }));
+        }
+    }
+
+    const showMenu = () => {
+        if (start && socketAct.readyState === 1 ) {
+            socketAct.send(JSON.stringify({ COMMAND: 'EXECUTE_ACTION', PARAM: "actSetup" }));
+        }
+    }
+
+    const szend = () => {
+        console.log('send register', socketAct)
+        if (start && socketAct.readyState === 1 ) {
+            socketAct.send(JSON.stringify({"COMMAND": "REGISTER_LISTENER", "PARAM": "MENU"
+           }));
+           
         }
     }
 
@@ -188,7 +243,7 @@ function App() {
 
     const getLayout = () => {
         setLoader(true)
-        fetch(`http://${window.location.hostname}:8400/layout`, {
+        fetch(`http://localhost:8400/layout`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -243,7 +298,7 @@ function App() {
 
             <ProgressBar
                 screen={screen}
-                socket={socket}
+                socketMass={socketMass}
                 start={start}
                 width={elem.h}
                 visible={visible}
@@ -252,7 +307,15 @@ function App() {
         )
     }
 
+    const _listPanel = () => {
+        return (
+
+            <div>TESTOWANIE</div>
+        )
+    }
+
     React.useEffect(() => {
+        
         getLayout();
         runSocket();
         if (window.innerWidth > 1000) {
@@ -272,6 +335,8 @@ function App() {
     React.useEffect(() => {
         info();
     }, [license]);
+
+   
 
     const info = () => {
         if (window.location.hostname !== '127.0.0.1') {
@@ -306,8 +371,18 @@ function App() {
                 add={add}
                 getLayout={getLayout}
                 saveLayout={saveLayout}
-
+                setHamburger={setHamburger}
+                hamburger={hamburger}
                 license={license}
+                szend={szend}
+                showMenu={showMenu}
+                socketAct={socketAct}
+            />
+            <ListPanel 
+                setHamburger={setHamburger}
+                hamburger={hamburger}
+                socketAct={socketAct}
+                menuButtons={menuButtons}
             />
 
             <GridLayout
@@ -318,7 +393,7 @@ function App() {
                 onResizeStart={() => setVisible(false)}
                 onResizeStop={() => setVisible(true)}
                 layout={layout}
-                cols={6} width={screen.width} rowHeight={screen.rowHeight}
+                cols={12} width={screen.width} rowHeight={screen.rowHeight}
                 preventCollision={true}
             >
                 {layout.map(elem =>
@@ -347,12 +422,13 @@ function App() {
                                 </div>
                             }
                         </div>
-
+                        {elem.obj === 'list_panel' && _listPanel()}
                         {elem.obj === 'mass' && _mass(elem)}
                     </div>
                 )}
 
             </GridLayout>
+           
 
         </div>
     );

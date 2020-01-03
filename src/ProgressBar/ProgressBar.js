@@ -70,9 +70,9 @@ export default function LinearDeterminate(props) {
     React.useEffect(() => {
 
         function sendToSocket() {
-            if (props.socket.readyState === 1) {
-                props.socket.send(JSON.stringify({ COMMAND: 'GET_MASS' }));
-                props.socket.onmessage = (e) => {
+            if (props.socketMass.readyState === 1) {
+                props.socketMass.send(JSON.stringify({ COMMAND: 'GET_MASS' }));
+                props.socketMass.onmessage = (e) => {
                     let data = e.data;
                     const response = JSON.parse(data);
                     // console.log(response)

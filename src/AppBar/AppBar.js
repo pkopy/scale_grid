@@ -10,6 +10,8 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import Buttons from '../Buttons/Buttons'
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import MenuIcon from '@material-ui/icons/Menu';
+import ClearIcon from '@material-ui/icons/Clear';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -40,6 +42,10 @@ export default function ButtonAppBar(props) {
 
             <AppBar position="static">
                 <Toolbar>
+                    <IconButton color="inherit" onClick={() => {props.showMenu(); props.setHamburger(!props.hamburger)}}>
+                        {!props.hamburger&&<MenuIcon/>}
+                        {props.hamburger&&<ClearIcon/>}
+                    </IconButton>
                     <Typography variant="h6" className={classes.title}>
                         SMART DISPLAY
                     </Typography>
@@ -71,6 +77,7 @@ export default function ButtonAppBar(props) {
             {openButtons && <Buttons
                 setOpenButtons={setOpenButtons}
                 add={props.add}
+                socketAct={props.socketAct}
             />}
 
         </div>

@@ -5,7 +5,7 @@ import Dialog from '@material-ui/core/Dialog';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { IconButton } from '@material-ui/core';
 import Tooltip from '@material-ui/core/Tooltip';
-
+import ForwardIcon from '@material-ui/icons/Forward';
 
 const useStyles = makeStyles(theme => ({
     container: {
@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
         justifyContent: 'center',
         marginLeft: 'auto',
         marginRight: 'auto',
-
+        minHeight: 470,
         padding: 20,
         paddingTop: 0
 
@@ -57,7 +57,7 @@ export default function Buttons(props) {
 
     const runSocket = () => {
 
-        const socket = new WebSocket(`ws://${window.location.hostname}:4101`);
+        const socket = new WebSocket(`ws://10.10.2.232:4101`);
 
         socket.onopen = () => {
             setStart(true);
@@ -77,10 +77,18 @@ export default function Buttons(props) {
     };
 
     React.useEffect(() => {
-        runSocket();
+        // runSocket();
+        if (props.socketAct.readyState === 1) {
+            setStart(true);
+        }
     }, []);
+    React.useEffect(() => {
+        console.log('+++++', index)
+        getAllImgs(index)
+    }, [index])
 
     React.useEffect(() => {
+        console.log(props)
         sendCom()
             .then(data => setImgs(false));
     }, [start]);
@@ -94,17 +102,19 @@ export default function Buttons(props) {
     const sendCom = () => {
         return new Promise((res, rej) => {
 
-            if (start && socket.readyState === 1) {
-                socket.send(JSON.stringify({ COMMAND: 'GET_ACTIONS' }));
-                socket.onmessage = (e) => {
+            if (start && props.socketAct.readyState === 1) {
+                props.socketAct.send(JSON.stringify({ COMMAND: 'GET_ACTIONS' }));
+                props.socketAct.onmessage = (e) => {
                     let data = e.data;
+                    console.log(data)
                     const response = JSON.parse(data);
                     let arr = [];
                     let arr1 = [];
-                    if (response.RECORD) {
+                    if (response.RECORD && response.COMMAND === 'GET_ACTIONS') {
+                        console.log(response.RECORD.length)
                         for (let i = 0; i < response.RECORD.length; i++) {
-    
-                            if (arr1.length > 18) {
+
+                            if (arr1.length > 16) {
                                 arr1.push(response.RECORD[i]);
                                 arr.push(arr1);
                                 arr1 = [];
@@ -120,6 +130,7 @@ export default function Buttons(props) {
                     }
 
                     setButtons(arr);
+                    console.log(buttons)
 
                     res('ok');
                 }
@@ -130,14 +141,14 @@ export default function Buttons(props) {
 
     const getImg = (value) => {
         return new Promise((res, rej) => {
-            if (start && socket.readyState === 1) {
-                socket.send(JSON.stringify({ COMMAND: "GET_IMAGE_ACTION", PARAM: value }))
-                socket.onmessage = (e) => {
+            if (start && props.socketAct.readyState === 1) {
+                props.socketAct.send(JSON.stringify({ COMMAND: "GET_IMAGE_ACTION", PARAM: value }))
+                props.socketAct.onmessage = (e) => {
                     let data = e.data;
                     const response = JSON.parse(data);
                     res(response.DATA);
                 }
-                socket.onerror = (err) => {
+                props.socketAct.onerror = (err) => {
                     res('');
                 }
             }
@@ -148,8 +159,17 @@ export default function Buttons(props) {
     async function getAllImgs(index) {
         if (!index) {
             index = 0;
+        } else if (index < 0) {
+            setIndex(0)
+            return
+        } else if (index > buttons.length - 1) {
+            // console.log(index, buttons.length)
+            setIndex(buttons.length - 1)
+            return
         }
+        console.log(buttons)
         const helpArr = buttons[index] ? buttons[index].slice() : [];
+        // console.log(helpArr)
         const arr = [];
         for (let elem of helpArr) {
             await getImg(elem.Value).then(data => {
@@ -157,37 +177,53 @@ export default function Buttons(props) {
                 arr.push(elem);
             })
         }
-        setButtons([arr]);
+        const newButtons = [...buttons];
+        newButtons.splice(index, 1, arr)
+        setButtons(newButtons);
     };
 
     return (
-        <Dialog aria-labelledby="simple-dialog-title" open={true} fullWidth={true} maxWidth='xl' >
+        <Dialog aria-labelledby="simple-dialog-title" open={true} fullWidth={true} maxWidth='xl' style={{height:650}}>
 
-            <div style={{ textAlign: "right", paddingRight: 20 }}>
+            <div style={{ textAlign: "right", paddingRight: 20, display: 'flex', alignItems: 'stretch' }}>
+                <div style={{flexGrow:1}}>
+                    <IconButton  onClick={() => setIndex(index - 1)} disabled={index === 0}>
+                        <ForwardIcon style={{ fontSize: '2.5em', transform: 'rotate(180deg)' }} />
+                    </IconButton>
+                    <IconButton  onClick={() => setIndex(index + 1)} disabled={index === buttons.length - 1}>
+                        <ForwardIcon style={{ fontSize: '2.5em' }} />
+                    </IconButton>
 
-                <IconButton style={{ width: 50 }} onClick={() => props.setOpenButtons(false)}>
-                    <HighlightOffIcon />
-                </IconButton>
+                </div>
+                <div style={{flexGrow:9}}>
+                    <IconButton onClick={() => props.setOpenButtons(false)}>
+                        <HighlightOffIcon
+                            style={{ fontSize: '2.5em' }}
+
+                        />
+                    </IconButton>
+
+                </div>
 
             </div>
 
             <div className={classes.container}>
 
-                {buttons[index]&&buttons[index].map((elem) =>
+                {buttons[index] && buttons[index].map((elem) =>
                     <Tooltip title={elem.Name} key={elem.Name}>
-                        <IconButton style={{ padding: 5 }}  onClick={() => {props.add(elem); props.setOpenButtons(false)}}>
-                            <div className={window.innerWidth > 800?classes.button:classes.smallButton} >
-                                <p style={{fontSize:window.innerWidth > 800?'12px':'8px'}}>{elem.Name}</p>
+                        <IconButton style={{ padding: 5 }} onClick={() => { props.add(elem); props.setOpenButtons(false) }}>
+                            <div className={window.innerWidth > 800 ? classes.button : classes.smallButton} >
+                                <p style={{ fontSize: window.innerWidth > 800 ? '12px' : '8px' }}>{elem.Name}</p>
                                 {!elem.img && <img className={classes.imgs} width={30} src={load}></img>}
                                 {elem.img && <img className={classes.imgs} src={`data:image/png;base64, ${elem.img}`}></img>}
                             </div>
                         </IconButton>
                     </Tooltip>
                 )}
-                
+
             </div>
 
         </Dialog>
-        
+
     )
 }
