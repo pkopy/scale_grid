@@ -11,32 +11,33 @@ const useStyles = makeStyles(theme => ({
     container: {
         display: 'flex',
         flexWrap: 'wrap',
-        width: '95%',
+        // width: '95%',
         justifyContent: 'center',
         marginLeft: 'auto',
         marginRight: 'auto',
-        minHeight: 470,
+        // minHeight: 450,
         padding: 20,
         paddingTop: 0
 
     },
 
-    button: {
-        width: 142,
-        height: 142,
+    button1: {
+        width: 140,
+        height: 140,
         border: '1px solid rgb(0,0,0,0.2)',
         // margin: 1
     },
     smallButton: {
-        width: 100,
-        height: 100,
+        width: 70,
+        height: 70,
         border: '1px solid rgb(0,0,0,0.2)',
         // margin: 1
+        imgWidth: 30
     },
 
     imgs: {
         transition: '2s',
-        padding: 10,
+        // padding: 10,
         // display: 'none'
         "&:hover": {
             cursor: 'pointer'
@@ -183,7 +184,7 @@ export default function Buttons(props) {
     };
 
     return (
-        <Dialog aria-labelledby="simple-dialog-title" open={true} fullWidth={true} maxWidth='xl' style={{height:650}}>
+        <Dialog aria-labelledby="simple-dialog-title" open={true} fullWidth={true} maxWidth='xl' style={{ marginTop:'-10px'}}>
 
             <div style={{ textAlign: "right", paddingRight: 20, display: 'flex', alignItems: 'stretch' }}>
                 <div style={{flexGrow:1}}>
@@ -211,11 +212,11 @@ export default function Buttons(props) {
 
                 {buttons[index] && buttons[index].map((elem) =>
                     <Tooltip title={elem.Name} key={elem.Name}>
-                        <IconButton style={{ padding: 5 }} onClick={() => { props.add(elem); props.setOpenButtons(false) }}>
-                            <div className={window.innerWidth > 800 ? classes.button : classes.smallButton} >
+                        <IconButton style={{padding:5}} onClick={() => { props.add(elem); props.setOpenButtons(false) }}>
+                            <div className={window.innerWidth > 800 ? classes.button1 : classes.smallButton} >
                                 <p style={{ fontSize: window.innerWidth > 800 ? '12px' : '8px' }}>{elem.Name}</p>
                                 {!elem.img && <img className={classes.imgs} width={30} src={load}></img>}
-                                {elem.img && <img className={classes.imgs} src={`data:image/png;base64, ${elem.img}`}></img>}
+                                {elem.img && <img className={classes.imgs} width= {window.innerWidth < 800 ? 25:undefined} src={`data:image/png;base64, ${elem.img}`}></img>}
                             </div>
                         </IconButton>
                     </Tooltip>

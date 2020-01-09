@@ -16,17 +16,18 @@ function App() {
     const [layout, setLayout] = React.useState([]);
     const [loader, setLoader] = React.useState(false);
     const [blocked, setBlocked] = React.useState(false);
-    const [busyFields, setBusyFields] = React.useState(new Array(18).fill(0));
-    const [socketMass, setSocketMass] = React.useState();
-    const [socketAct, setSocketAct] = React.useState();
+    const [busyFields, setBusyFields] = React.useState(new Array(72).fill(0));
+    const [socketMass, setSocketMass] = React.useState({});
+    const [socketAct, setSocketAct] = React.useState({});
     const [start, setStart] = React.useState(false);
     const [visible, setVisible] = React.useState(true);
     const [license, setLicense] = React.useState(true);
     const [openInfoLicence, setOpenLicenseInfo] = React.useState(false);
     const [screen, setScreen] = React.useState({});
-    const [hamburger, setHamburger] = React.useState(false)
-    const [menuButtons, setMenuButtons] = React.useState([])
-    
+    const [hamburger, setHamburger] = React.useState(false);
+    const [menuButtons, setMenuButtons] = React.useState([]);
+    const [oldLayout, setOldLayout] = React.useState(layout);
+
 
 
     const block = () => {
@@ -35,11 +36,7 @@ function App() {
         //     getLayout()
         // }
         for (let elem of layout) {
-            if (!blocked) {
-                elem.static = true;
-            } else {
-                elem.static = false;
-            }
+            elem.static = !blocked;
             helpArr.push(elem);
         }
         if (!blocked) {
@@ -50,7 +47,7 @@ function App() {
             setBlocked(!blocked);
             setLayout(helpArr);
         }, 300)
-    }
+    };
 
 
 
@@ -62,49 +59,45 @@ function App() {
 
             setStart(true);
             console.log('mass start')
-        }
+        };
         socketMass.onclose = () => {
-        }
+        };
         socketMass.onerror = (err) => {
             console.log(err);
-        }
+        };
         setSocketMass(socketMass);
 
         socketAct.onopen = () => {
-            console.log('act start')
+            console.log('act start');
             setStart(true);
             // console.log(socketAct)
-            
-            const timerX = setInterval(() => {socketAct.send(JSON.stringify({"COMMAND": "REGISTER_LISTENER", "PARAM": "MENU"}))}, 5000);
+
+            const timerX = setInterval(() => { socketAct.send(JSON.stringify({ "COMMAND": "REGISTER_LISTENER", "PARAM": "MENU" })) }, 5000);
             // setTimer(timerX)
             // socketAct.send(JSON.stringify({"COMMAND": "REGISTER_LISTENER", "PARAM": "MENU"}))
             socketAct.onmessage = (e) => {
                 let data = e.data;
                 const response = JSON.parse(data);
-                console.log(response)
-                if (response.COMMAND === 'REGISTER_LISTENER' && response.PARAM === 'MENU' ) {
+                console.log(response);
+                if (response.COMMAND === 'REGISTER_LISTENER' && response.PARAM === 'MENU') {
                     // console.log(timer)
                     clearInterval(timerX)
                 }
-                if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'SHOW' ) {
+                if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'SHOW') {
                     setMenuButtons(response.RECORD.Items)
                     console.log(response.RECORD.Items)
                 }
             }
-        }
+        };
         socketAct.onclose = () => {
-            
-        }
+
+        };
         socketAct.onerror = (err) => {
             console.log(err);
-        }
-        
+        };
+
         setSocketAct(socketAct);
-        
-        
-
-
-    }
+    };
 
     const addItem = (elem) => {
         findBusyFields();
@@ -114,17 +107,24 @@ function App() {
         let allBusyFields = 0;
 
         busyFields.map(el => allBusyFields += el);
-        if (allBusyFields < 18) {
+        if (allBusyFields < 72) {
             for (let i = 0; i < busyFields.length; i++) {
-                if (busyFields[i] === 0 && allBusyFields < 18) {
-                    if (i > 11) {
-                        arr.push({ i: Date() + layout.length, w: 1, h: 2, x: (i - 12), y: 4, maxH: 6, minH: 2, maxW: 6, minW: 1, elem });
-                    } else if (i > 5) {
-                        arr.push({ i: Date() + layout.length, w: 1, h: 2, x: (i - 6), y: 2, maxH: 6, minH: 2, maxW: 6, minW: 1, elem });
+                if (busyFields[i] === 0 && allBusyFields < 72) {
+                    if (i > 59) {
+                        arr.push({ i: Date() + layout.length, w: 1, h: 1, x: (i - 60), y: 5, maxH: 6, minH: 1, maxW: 6, minW: 1, elem });
+                    } else if (i > 47) {
+                        arr.push({ i: Date() + layout.length, w: 1, h: 1, x: (i - 48), y: 4, maxH: 6, minH: 1, maxW: 6, minW: 1, elem });
+                                  
+                    } else if (i > 35) {
+                        arr.push({ i: Date() + layout.length, w: 1, h: 1, x: (i - 36), y: 3, maxH: 6, minH: 1, maxW: 6, minW: 1, elem });
+                    
+                    } else if (i > 23) {
+                        arr.push({ i: Date() + layout.length, w: 1, h: 1, x: (i - 24), y: 2, maxH: 6, minH: 1, maxW: 6, minW: 1, elem });
+                    } else if (i > 11) {
+                            arr.push({ i: Date() + layout.length, w: 1, h: 1, x: (i - 12), y: 1, maxH: 6, minH: 1, maxW: 6, minW: 1, elem });
                     } else {
-                        arr.push({ i: Date() + layout.length, w: 1, h: 2, x: i, y: 0, maxH: 6, minH: 2, maxW: 6, minW: 1, elem });
+                        arr.push({ i: Date() + layout.length, w: 1, h: 1, x: i, y: 0, maxH: 1, minH: 1, maxW: 6, minW: 1, elem });
                     }
-
                     break;
                 }
             }
@@ -134,7 +134,7 @@ function App() {
         }
         setLayout(arr);
         setLoader(false);
-    }
+    };
 
     const add = (elem) => {
 
@@ -143,28 +143,30 @@ function App() {
         setTimeout(() => {
             addItem(elem);
         }, 300)
-    }
+    };
 
     const send = (elem) => {
+        console.log('click action')
         if (start && socketAct.readyState === 1 && elem.elem && blocked) {
             socketAct.send(JSON.stringify({ COMMAND: 'EXECUTE_ACTION', PARAM: elem.elem.Value }));
         }
-    }
+    };
 
     const showMenu = () => {
-        if (start && socketAct.readyState === 1 ) {
+        if (start && socketAct.readyState === 1) {
             socketAct.send(JSON.stringify({ COMMAND: 'EXECUTE_ACTION', PARAM: "actSetup" }));
         }
-    }
+    };
 
     const szend = () => {
         console.log('send register', socketAct)
-        if (start && socketAct.readyState === 1 ) {
-            socketAct.send(JSON.stringify({"COMMAND": "REGISTER_LISTENER", "PARAM": "MENU"
-           }));
-           
+        if (start && socketAct.readyState === 1) {
+            socketAct.send(JSON.stringify({
+                "COMMAND": "REGISTER_LISTENER", "PARAM": "MENU"
+            }));
+
         }
-    }
+    };
 
     const deleteItem = (e, item) => {
         setLoader(true);
@@ -181,24 +183,32 @@ function App() {
             setLayout(newLayout);
             setLoader(false);
         }, 300)
-    }
+    };
 
-    const editAfterDragg = (e) => {
-
-        const oldArray = layout.slice()
+    const editAfterDrag = (e) => {
+        // console.log(busyFields.reduce((a, b) => a + b))
+        // const busyF = busyFields.reduce((a, b) => a + b)
+        // let ddd = findBusyFields().reduce((a, b) => a + b)
+        // console.log('busy', busyF)
+        // console.log('uuuuu',ddd)
+        const oldArray = [...layout];
         if (e && e.length > 0) {
             const helpArr = [];
 
             for (let i = 0; i < e.length; i++) {
                 if ((e[i].y + e[i].h) > 6) {
-                    e[i].y = 6 - e[i].h;
+                    //prevents to go out from a screen in vertical
+                    // e[i].y = 6 - e[i].h;
+                    e[i].h = oldArray[i].h;
+                    e[i].y = oldArray[i].y;
+                    e[i].x = oldArray[i].x
                 }
                 if (e[i].h >= 6 && e[i].obj === 'mass' && e.length <= 1) {
                     e[i].h = 6;
-                    e[i].w = 6;
+                    e[i].w = 12
                 } else if (e[i].h >= 6 && e[i].obj === 'mass' && e.length > 1) {
                     e[i].h = 2;
-                    e[i].w = 3;
+                    e[i].w = 3
                 }
 
                 if (e[i].h === 4 && e[i].w < 4 && e[i].obj === 'mass') {
@@ -213,15 +223,17 @@ function App() {
                     e[i].h = 6;
                     e[i].y = 0;
                 }
-                if (e[i].y % 2 !== 0) {
-                    e[i].y--;
-                }
-                if (e[i].h % 2 !== 0) {
-                    e[i].h--;
-                }
+                // if (e[i].y % 2 !== 0) {
+                //     e[i].y--;
+                // }
+                // if (e[i].h % 2 !== 0) {
+                //     e[i].h--;
+                // }
                 if (e[i].h < e[i].minH) {
                     e[i].h = e[i].minH;
                 }
+                // console.log(busyF ,ddd, oldArray)
+                
 
                 e[i].elem = oldArray[i].elem;
                 e[i].obj = oldArray[i].obj;
@@ -230,19 +242,28 @@ function App() {
             }
 
             findBusyFields();
+            // console.log('help', helpArr)
+            // if (busyF !== ddd ) {
+            //     getLayout()
+                
+            //     // setBlocked(false)
+            // } else {
 
-            setTimeout(() => {
-                setLayout(helpArr);
-            }, 50)
+                setTimeout(() => {
+                    setLayout(helpArr);
+                }, 50)
+            // }
         }
+    };
+
+    // React.useEffect(() => {
+    //     console.log(layout)
+    // }, [layout])
 
 
-    }
 
-
-
-    const getLayout = () => {
-        setLoader(true)
+    const getLayout = (isBadLayout = true) => {
+        setLoader(true);
         fetch(`http://localhost:8400/layout`, {
             method: 'GET',
             headers: {
@@ -262,7 +283,7 @@ function App() {
                 // }
 
                 setLayout(data);
-                setBlocked(true);
+                if (isBadLayout) setBlocked(true);
                 setLoader(false);
             })
             .catch(err => console.log(err))
@@ -278,17 +299,30 @@ function App() {
 
     };
 
+    const collision =() => {
+        let oldBusyFields = busyFields.reduce((a,b) => a+b)
+        let newBusyFields = findBusyFields().reduce((a,b) => a+b)
+
+        console.log(layout, oldLayout)
+        if (oldBusyFields !== newBusyFields) {
+            setLayout(oldLayout)
+        }
+    }
+ 
     const findBusyFields = () => {
-        let x = new Array(18).fill(0)
+        let x = new Array(72).fill(0);
+        // console.log(layout)
         for (let elem of layout) {
-            for (let k = elem.y / 2; k < (elem.y + elem.h) / 2; k++) {
+            for (let k = elem.y; k < (elem.y + elem.h); k++) {
                 for (let j = elem.x; j < elem.x + elem.w; j++) {
-                    let fieldPos = j + (k * 6)
+                    let fieldPos = j + (k * 12);
                     x[fieldPos] = 1
                 }
                 setBusyFields(x)
             }
         }
+        // console.log(x)
+        return x
     }
 
 
@@ -315,18 +349,22 @@ function App() {
     }
 
     React.useEffect(() => {
-        
+
         getLayout();
         runSocket();
         if (window.innerWidth > 1000) {
+            //1024x600
             setScreen({
-                width:1000,
-                rowHeight:75
+                width: 1024,
+                rowHeight: 77,
+                
             })
-        } else if( window.innerWidth < 900) {
+        } else if (window.innerWidth < 900) {
+            //640x480
             setScreen({
-                width:640,
-                rowHeight:57
+                width: 640,
+                rowHeight: 50,
+                imgWidth: 30
             })
         }
         console.log(window.innerWidth)
@@ -336,7 +374,7 @@ function App() {
         info();
     }, [license]);
 
-   
+
 
     const info = () => {
         if (window.location.hostname !== '127.0.0.1') {
@@ -365,7 +403,7 @@ function App() {
             {!openInfoLicence && <Alert />}
 
             <AppBar
-                
+
                 block={block}
                 blocked={blocked}
                 add={add}
@@ -378,7 +416,7 @@ function App() {
                 showMenu={showMenu}
                 socketAct={socketAct}
             />
-            <ListPanel 
+            <ListPanel
                 setHamburger={setHamburger}
                 hamburger={hamburger}
                 socketAct={socketAct}
@@ -389,9 +427,11 @@ function App() {
                 className="layout"
                 isResizable={true}
                 compactType={null}
-                onLayoutChange={e => editAfterDragg(e)}
+                onLayoutChange={e => editAfterDrag(e)}
                 onResizeStart={() => setVisible(false)}
                 onResizeStop={() => setVisible(true)}
+                onDragStart={()=>setOldLayout(layout)}
+                onDragStop={(e) => collision()}
                 layout={layout}
                 cols={12} width={screen.width} rowHeight={screen.rowHeight}
                 preventCollision={true}
@@ -401,20 +441,19 @@ function App() {
                         border: "1px solid rgb(0, 0, 0, 0.4)",
                         display: 'flex',
                         alignItems: 'center',
+                    }}
+                        id={elem.i} key={elem.i}>
 
-                    }} 
-                    id={elem.i} key={elem.i}>
+                        {visible && elem.elem && <div style={{ height:'100%', position: "relative", marginRight: "auto", marginLeft: "auto"}}>
+                            {elem.w>1&&elem.h>1&&<p>{elem.elem.Name}</p>}
 
-                        {visible && elem.elem && <div style={{ height: 100, position: "relative", marginRight: "auto", marginLeft: "auto", width: "100%", marginTop: '-50px' }}>
-                            <p>{elem.elem.Name}</p>
-
-                            <img src={`data:image/png;base64, ${elem.elem.img} `} alt='img'></img>
+                        <img src={`data:image/png;base64, ${elem.elem.img} `} style={{ pointerEvents: 'none' }} alt='img'  style={{width:screen.imgWidth}}/>
 
                         </div>}
 
                         <div style={{ position: 'absolute', bottom: '1%', left: '1%' }}>
 
-                            {!blocked && elem.obj !== 'mass' &&
+                            {!blocked && elem.obj !== 'mass' && (elem.h>1 || elem.w>1)&&
                                 <div>
                                     <IconButton onClick={(e) => deleteItem(e, elem)}>
                                         <DeleteOutlineIcon />
@@ -428,7 +467,7 @@ function App() {
                 )}
 
             </GridLayout>
-           
+
 
         </div>
     );
