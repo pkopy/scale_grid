@@ -591,8 +591,8 @@ function App() {
                         <div style={{height: '100%', position: "relative", marginRight: "auto", marginLeft: "auto"}}>
                             {elem.w > 1 && elem.h > 1 && <p>{elem.elem.Name}</p>}
 
-                            <img src={`data:image/png;base64, ${elem.elem.img} `} style={{pointerEvents: 'none'}}
-                                 alt='img' style={{width: screen.imgWidth}}/>
+                            <img src={`data:image/png;base64, ${elem.elem.img} `} draggable={false} onMouseDown={"return false"} style={{pointerEvents: 'none',width: screen.imgWidth}}
+                                 alt='img' />
 
                         </div>}
 
