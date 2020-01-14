@@ -5,25 +5,33 @@ import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css'
 import ProgressBar from './ProgressBar/ProgressBar'
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import { IconButton } from '@material-ui/core';
+import {IconButton} from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Alert from './Alert/Alert'
-
+import ListPanel from './ListPanel/ListPanel'
+import helpers from "./Helpers/helpers";
 
 
 function App() {
-    // console.log('xxxxxxxxxxxxxxx', data.data)
     const [layout, setLayout] = React.useState([]);
     const [loader, setLoader] = React.useState(false);
     const [blocked, setBlocked] = React.useState(false);
-    const [busyFields, setBusyFields] = React.useState(new Array(18).fill(0));
-    const [socket, setSocket] = React.useState();
+    const [busyFields, setBusyFields] = React.useState(new Array(72).fill(0));
+    const [socketMass, setSocketMass] = React.useState({});
+    const [socketAct, setSocketAct] = React.useState({});
     const [start, setStart] = React.useState(false);
     const [visible, setVisible] = React.useState(true);
     const [license, setLicense] = React.useState(true);
     const [openInfoLicence, setOpenLicenseInfo] = React.useState(false);
-    const [screen, setScreen] = React.useState({})
+    const [screen, setScreen] = React.useState({});
+    const [hamburger, setHamburger] = React.useState(false);
+    const [menuButtons, setMenuButtons] = React.useState([]);
+    const [menu, setMenu] = React.useState({});
+    const [oldLayout, setOldLayout] = React.useState(layout);
+    const [timer, setTimer] = React.useState(0);
+    const [nextClick, setNextClick] = React.useState(true);
 
+    const host = process.env.NODE_ENV !== 'production' ? '10.10.3.60' : window.location.hostname;
 
     const block = () => {
         const helpArr = [];
@@ -31,11 +39,7 @@ function App() {
         //     getLayout()
         // }
         for (let elem of layout) {
-            if (!blocked) {
-                elem.static = true;
-            } else {
-                elem.static = false;
-            }
+            elem.static = !blocked;
             helpArr.push(elem);
         }
         if (!blocked) {
@@ -46,25 +50,104 @@ function App() {
             setBlocked(!blocked);
             setLayout(helpArr);
         }, 300)
-    }
-
+    };
 
 
     const runSocket = () => {
-        const socket = new WebSocket(`ws://${window.location.hostname}:4101`);
-
-        socket.onopen = () => {
+        // const socket = new WebSocket(`ws://${window.location.hostname}:4101`);
+        const socketMass = new WebSocket(`ws://${host}:4101`);
+        const socketAct = new WebSocket(`ws://${host}:4101`);
+        socketMass.onopen = () => {
 
             setStart(true);
-        }
-        socket.onclose = () => {
-
-        }
-        socket.onerror = (err) => {
+            // console.log('mass start')
+        };
+        socketMass.onclose = () => {
+        };
+        socketMass.onerror = (err) => {
             console.log(err);
+        };
+        setSocketMass(socketMass);
+
+        socketAct.onopen = () => {
+            // console.log('act start');
+            setStart(true);
+            setSocketAct(socketAct);
+            const sendM = () => {
+                socketAct.send(JSON.stringify({"COMMAND": "REGISTER_LISTENER", "PARAM": "MENU"}));
+                // console.log('cccc')
+            };
+            sendM();
+            setTimer(setInterval(sendM, 5000))
+        };
+    };
+
+
+    // const timerX = setInterval(sendM, 5000);
+    socketAct.onmessage = (e) => {
+        let data = e.data;
+        const response = JSON.parse(data);
+        console.log(response);
+        if (response.COMMAND === 'REGISTER_LISTENER' && response.PARAM === 'MENU') {
+            clearInterval(timer)
         }
-        setSocket(socket);
+
+        if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'SHOW') {
+            showMenu();
+            // console.log('open');
+
+            setHamburger(true);
+            getAllImgs(socketAct, response.RECORD.Items)
+                .then(data => {
+                    setMenuButtons(data);
+                    setMenu(response.RECORD);
+                });
+        }
+        if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'CLOSE') {
+            // console.log('close');
+            setHamburger(false);
+            setMenu({Name:'SMART DISPLAY', isBig: true})
+        }
+    };
+    socketAct.onclose = () => {
+
+    };
+    socketAct.onerror = (err) => {
+        console.log(err);
+    };
+
+    async function getAllImgs(socket, menuButtons) {
+        const arr = [];
+        for (let elem of menuButtons) {
+            for (let i = 0; i < 3; i++) {
+                await helpers.getImg(true, socket, "GET_IMAGE_MENU", elem.GUID)
+                    .then(data => {
+                        if (data !== undefined) {
+                            i = 3;
+                            elem.img = data;
+                            // console.log(elem);
+                            arr.push(elem)
+                        }
+                    }).catch(err => console.log(err))
+            }
+        }
+        return arr
     }
+
+    //Click on the menu item
+    const tapParam = (param) => {
+        if (nextClick) {
+            console.log('clicllllccckk');
+            if (start && socketAct.readyState === 1) {
+                socketAct.send(JSON.stringify({COMMAND: 'TAP_PARAM', PARAM: param}))
+            }
+            setNextClick(false)
+        }
+
+        setTimeout(() => {
+            setNextClick(true)
+        }, 1000)
+    };
 
     const addItem = (elem) => {
         findBusyFields();
@@ -74,17 +157,90 @@ function App() {
         let allBusyFields = 0;
 
         busyFields.map(el => allBusyFields += el);
-        if (allBusyFields < 18) {
+        if (allBusyFields < 72) {
             for (let i = 0; i < busyFields.length; i++) {
-                if (busyFields[i] === 0 && allBusyFields < 18) {
-                    if (i > 11) {
-                        arr.push({ i: Date() + layout.length, w: 1, h: 2, x: (i - 12), y: 4, maxH: 6, minH: 2, maxW: 6, minW: 1, elem });
-                    } else if (i > 5) {
-                        arr.push({ i: Date() + layout.length, w: 1, h: 2, x: (i - 6), y: 2, maxH: 6, minH: 2, maxW: 6, minW: 1, elem });
-                    } else {
-                        arr.push({ i: Date() + layout.length, w: 1, h: 2, x: i, y: 0, maxH: 6, minH: 2, maxW: 6, minW: 1, elem });
-                    }
+                if (busyFields[i] === 0 && allBusyFields < 72) {
+                    if (i > 59) {
+                        arr.push({
+                            i: Date() + layout.length,
+                            w: 1,
+                            h: 1,
+                            x: (i - 60),
+                            y: 5,
+                            maxH: 6,
+                            minH: 1,
+                            maxW: 6,
+                            minW: 1,
+                            elem
+                        });
+                    } else if (i > 47) {
+                        arr.push({
+                            i: Date() + layout.length,
+                            w: 1,
+                            h: 1,
+                            x: (i - 48),
+                            y: 4,
+                            maxH: 6,
+                            minH: 1,
+                            maxW: 6,
+                            minW: 1,
+                            elem
+                        });
 
+                    } else if (i > 35) {
+                        arr.push({
+                            i: Date() + layout.length,
+                            w: 1,
+                            h: 1,
+                            x: (i - 36),
+                            y: 3,
+                            maxH: 6,
+                            minH: 1,
+                            maxW: 6,
+                            minW: 1,
+                            elem
+                        });
+
+                    } else if (i > 23) {
+                        arr.push({
+                            i: Date() + layout.length,
+                            w: 1,
+                            h: 1,
+                            x: (i - 24),
+                            y: 2,
+                            maxH: 6,
+                            minH: 1,
+                            maxW: 6,
+                            minW: 1,
+                            elem
+                        });
+                    } else if (i > 11) {
+                        arr.push({
+                            i: Date() + layout.length,
+                            w: 1,
+                            h: 1,
+                            x: (i - 12),
+                            y: 1,
+                            maxH: 6,
+                            minH: 1,
+                            maxW: 6,
+                            minW: 1,
+                            elem
+                        });
+                    } else {
+                        arr.push({
+                            i: Date() + layout.length,
+                            w: 1,
+                            h: 1,
+                            x: i,
+                            y: 0,
+                            maxH: 6,
+                            minH: 1,
+                            maxW: 6,
+                            minW: 1,
+                            elem
+                        });
+                    }
                     break;
                 }
             }
@@ -94,7 +250,7 @@ function App() {
         }
         setLayout(arr);
         setLoader(false);
-    }
+    };
 
     const add = (elem) => {
 
@@ -103,13 +259,37 @@ function App() {
         setTimeout(() => {
             addItem(elem);
         }, 300)
-    }
+    };
 
     const send = (elem) => {
-        if (start && socket.readyState === 1 && elem.elem && blocked) {
-            socket.send(JSON.stringify({ COMMAND: 'EXECUTE_ACTION', PARAM: elem.elem.Value }));
+        // console.log('click action');
+        if (start && socketAct.readyState === 1 && elem.elem && blocked) {
+            socketAct.send(JSON.stringify({COMMAND: 'EXECUTE_ACTION', PARAM: elem.elem.Value}));
         }
-    }
+    };
+
+    const close = () => {
+
+        if (start && socketAct.readyState === 1) {
+            // console.log('click close');
+            socketAct.send(JSON.stringify({COMMAND: 'EXECUTE_MENU_ACTION', PARAM: "BACK"}));
+        }
+    };
+
+    const showMenu = () => {
+        if (start && socketAct.readyState === 1) {
+            socketAct.send(JSON.stringify({COMMAND: 'EXECUTE_ACTION', PARAM: "actSetup"}))
+        }
+    };
+
+    const sendMenuListener = () => {
+        // console.log('send register', socketAct);
+        if (start && socketAct.readyState === 1) {
+            socketAct.send(JSON.stringify({
+                "COMMAND": "REGISTER_LISTENER", "PARAM": "MENU"
+            }));
+        }
+    };
 
     const deleteItem = (e, item) => {
         setLoader(true);
@@ -126,24 +306,32 @@ function App() {
             setLayout(newLayout);
             setLoader(false);
         }, 300)
-    }
+    };
 
-    const editAfterDragg = (e) => {
-
-        const oldArray = layout.slice()
+    const editAfterDrag = (e) => {
+        // console.log(busyFields.reduce((a, b) => a + b))
+        // const busyF = busyFields.reduce((a, b) => a + b)
+        // let ddd = findBusyFields().reduce((a, b) => a + b)
+        // console.log('busy', busyF)
+        // console.log('uuuuu',ddd)
+        const oldArray = [...layout];
         if (e && e.length > 0) {
             const helpArr = [];
 
             for (let i = 0; i < e.length; i++) {
                 if ((e[i].y + e[i].h) > 6) {
-                    e[i].y = 6 - e[i].h;
+                    //prevents to go out from a screen in vertical
+                    // e[i].y = 6 - e[i].h;
+                    e[i].h = oldArray[i].h;
+                    e[i].y = oldArray[i].y;
+                    e[i].x = oldArray[i].x
                 }
                 if (e[i].h >= 6 && e[i].obj === 'mass' && e.length <= 1) {
                     e[i].h = 6;
-                    e[i].w = 6;
+                    e[i].w = 12
                 } else if (e[i].h >= 6 && e[i].obj === 'mass' && e.length > 1) {
                     e[i].h = 2;
-                    e[i].w = 3;
+                    e[i].w = 3
                 }
 
                 if (e[i].h === 4 && e[i].w < 4 && e[i].obj === 'mass') {
@@ -158,15 +346,17 @@ function App() {
                     e[i].h = 6;
                     e[i].y = 0;
                 }
-                if (e[i].y % 2 !== 0) {
-                    e[i].y--;
-                }
-                if (e[i].h % 2 !== 0) {
-                    e[i].h--;
-                }
+                // if (e[i].y % 2 !== 0) {
+                //     e[i].y--;
+                // }
+                // if (e[i].h % 2 !== 0) {
+                //     e[i].h--;
+                // }
                 if (e[i].h < e[i].minH) {
                     e[i].h = e[i].minH;
                 }
+                // console.log(busyF ,ddd, oldArray)
+
 
                 e[i].elem = oldArray[i].elem;
                 e[i].obj = oldArray[i].obj;
@@ -175,20 +365,29 @@ function App() {
             }
 
             findBusyFields();
+            // console.log('help', helpArr)
+            // if (busyF !== ddd ) {
+            //     getLayout()
+
+            //     // setBlocked(false)
+            // } else {
 
             setTimeout(() => {
                 setLayout(helpArr);
             }, 50)
+            // }
         }
+    };
+
+    // React.useEffect(() => {
+    //     console.log(layout)
+    // }, [layout])
 
 
-    }
-
-
-
-    const getLayout = () => {
-        setLoader(true)
-        fetch(`http://${window.location.hostname}:8400/layout`, {
+    const getLayout = (isBadLayout = true) => {
+        setLoader(true);
+        fetch(`http://localhost:8400/layout`, {
+        // fetch(`http://${host}:8400/layout`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -207,15 +406,15 @@ function App() {
                 // }
 
                 setLayout(data);
-                setBlocked(true);
+                if (isBadLayout) setBlocked(true);
                 setLoader(false);
             })
             .catch(err => console.log(err))
     };
 
     const saveLayout = (layout) => {
-
-        fetch(`http://${window.location.hostname}:8400/layout`, {
+        fetch(`http://localhost:8400/layout`, {
+        // fetch(`http://${host}:8400/layout`, {
             method: 'POST',
             body: JSON.stringify(layout)
 
@@ -223,19 +422,31 @@ function App() {
 
     };
 
+    const collision = () => {
+        let oldBusyFields = busyFields.reduce((a, b) => a + b);
+        let newBusyFields = findBusyFields().reduce((a, b) => a + b);
+
+        // console.log(layout, oldLayout)
+        if (oldBusyFields !== newBusyFields) {
+            setLayout(oldLayout)
+        }
+    };
+
     const findBusyFields = () => {
-        let x = new Array(18).fill(0)
+        let x = new Array(72).fill(0);
+        // console.log(layout)
         for (let elem of layout) {
-            for (let k = elem.y / 2; k < (elem.y + elem.h) / 2; k++) {
+            for (let k = elem.y; k < (elem.y + elem.h); k++) {
                 for (let j = elem.x; j < elem.x + elem.w; j++) {
-                    let fieldPos = j + (k * 6)
+                    let fieldPos = j + (k * 12);
                     x[fieldPos] = 1
                 }
                 setBusyFields(x)
             }
         }
-    }
-
+        // console.log(x)
+        return x
+    };
 
 
     const _mass = (elem) => {
@@ -243,27 +454,39 @@ function App() {
 
             <ProgressBar
                 screen={screen}
-                socket={socket}
+                socketMass={socketMass}
                 start={start}
                 width={elem.h}
                 visible={visible}
                 setLicense={setLicense}
             />
         )
-    }
+    };
+
+    const _listPanel = () => {
+        return (
+
+            <div>TESTOWANIE</div>
+        )
+    };
 
     React.useEffect(() => {
+
         getLayout();
         runSocket();
         if (window.innerWidth > 1000) {
+            //1024x600
             setScreen({
-                width:1000,
-                rowHeight:75
+                width: 1024,
+                rowHeight: 77,
+
             })
-        } else if( window.innerWidth < 900) {
+        } else if (window.innerWidth < 900) {
+            //640x480
             setScreen({
-                width:640,
-                rowHeight:57
+                width: 640,
+                rowHeight: 50,
+                imgWidth: 30
             })
         }
         console.log(window.innerWidth)
@@ -272,6 +495,7 @@ function App() {
     React.useEffect(() => {
         info();
     }, [license]);
+
 
     const info = () => {
         if (window.location.hostname !== '127.0.0.1') {
@@ -288,71 +512,107 @@ function App() {
     return (
         <div className="App">
             {loader &&
-                <div>
-                    <div style={{ zIndex: 100, position: 'fixed', width: '100%', height: '100vh', backgroundColor: 'gray', opacity: .5, left: 0, top: 0 }}>
-
-                    </div>
-                    <CircularProgress style={{ left: '50%', top: '50%', color: '#fff', zIndex: 101, position: 'absolute', marginLeft: 'auto', marginRigh: 'auto' }} />
+            <div>
+                <div style={{
+                    zIndex: 100,
+                    position: 'fixed',
+                    width: '100%',
+                    height: '100vh',
+                    backgroundColor: 'gray',
+                    opacity: .5,
+                    left: 0,
+                    top: 0
+                }}>
 
                 </div>
+                <CircularProgress style={{
+                    left: '50%',
+                    top: '50%',
+                    color: '#fff',
+                    zIndex: 101,
+                    position: 'absolute',
+                    marginLeft: 'auto',
+                    marginRigh: 'auto'
+                }}/>
+
+            </div>
 
             }
-            {!openInfoLicence && <Alert />}
+            {!openInfoLicence && <Alert/>}
 
             <AppBar
-                
+
                 block={block}
                 blocked={blocked}
                 add={add}
                 getLayout={getLayout}
                 saveLayout={saveLayout}
-
+                setHamburger={setHamburger}
+                hamburger={hamburger}
                 license={license}
+                sendMenuListener={sendMenuListener}
+                showMenu={showMenu}
+                close={close}
+                socketAct={socketAct}
+                menu={menu}
+            />
+            <ListPanel
+                setHamburger={setHamburger}
+                hamburger={hamburger}
+                socketAct={socketAct}
+                menuButtons={menuButtons}
+                menu={menu}
+                tapParam={tapParam}
             />
 
             <GridLayout
                 className="layout"
                 isResizable={true}
                 compactType={null}
-                onLayoutChange={e => editAfterDragg(e)}
+                onLayoutChange={e => editAfterDrag(e)}
                 onResizeStart={() => setVisible(false)}
                 onResizeStop={() => setVisible(true)}
+                onDragStart={() => setOldLayout(layout)}
+                onDragStop={(e) => collision()}
                 layout={layout}
-                cols={6} width={screen.width} rowHeight={screen.rowHeight}
+                cols={12} width={screen.width} rowHeight={screen.rowHeight}
                 preventCollision={true}
+                // style={{border:"1px solid rgb(0, 0, 0, 0.4)"}}
             >
                 {layout.map(elem =>
                     <div className="xx" onClick={() => send(elem)} style={{
                         border: "1px solid rgb(0, 0, 0, 0.4)",
                         display: 'flex',
                         alignItems: 'center',
+                    }}
+                         id={elem.i} key={elem.i}>
 
-                    }} 
-                    id={elem.i} key={elem.i}>
+                        {visible && elem.elem &&
+                        <div style={{height: '100%', position: "relative", marginRight: "auto", marginLeft: "auto"}}>
+                            {elem.w > 1 && elem.h > 1 && <p>{elem.elem.Name}</p>}
 
-                        {visible && elem.elem && <div style={{ height: 100, position: "relative", marginRight: "auto", marginLeft: "auto", width: "100%", marginTop: '-50px' }}>
-                            <p>{elem.elem.Name}</p>
-
-                            <img src={`data:image/png;base64, ${elem.elem.img} `} alt='img'></img>
+                            <img src={`data:image/png;base64, ${elem.elem.img} `} draggable={false} onMouseDown={"return false"} style={{pointerEvents: 'none',width: screen.imgWidth}}
+                                 alt='img' />
 
                         </div>}
 
-                        <div style={{ position: 'absolute', bottom: '1%', left: '1%' }}>
+                        <div style={{position: 'absolute', bottom: '1%', left: '1%'}}>
 
-                            {!blocked && elem.obj !== 'mass' &&
-                                <div>
-                                    <IconButton onClick={(e) => deleteItem(e, elem)}>
-                                        <DeleteOutlineIcon />
-                                    </IconButton>
-                                </div>
+                            {!blocked && elem.obj !== 'mass' && (elem.h > 1 || elem.w > 1) &&
+                            <div>
+                                <IconButton onClick={(e) => deleteItem(e, elem)}>
+                                    <DeleteOutlineIcon/>
+                                </IconButton>
+                            </div>
                             }
                         </div>
-
+                        {elem.obj === 'list_panel' && _listPanel()}
                         {elem.obj === 'mass' && _mass(elem)}
                     </div>
                 )}
 
             </GridLayout>
+
 
         </div>
     );

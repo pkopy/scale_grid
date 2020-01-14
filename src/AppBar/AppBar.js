@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -10,6 +10,8 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import Buttons from '../Buttons/Buttons'
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import MenuIcon from '@material-ui/icons/Menu';
+import ClearIcon from '@material-ui/icons/Clear';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -26,42 +28,69 @@ const useStyles = makeStyles(theme => ({
 
 const close = () => {
     fetch(`http://127.0.0.1:8400/close`)
-        .then(data => console.log(data))
+        .then(data => {
+        })
         .catch(err => console.log(err))
-}
+};
 
 
 export default function ButtonAppBar(props) {
     const classes = useStyles();
     const [openButtons, setOpenButtons] = React.useState(false);
+    const [title, setTitle] = React.useState('SMART DISPLAY');
+    const clickHamburger = () => {
+        if (!props.hamburger) {
 
+            props.showMenu();
+            // if(props.menu)
+            // setTitle(props.menu.Name);
+            props.setHamburger(true);
+            console.log(props.menu)
+        } else {
+            props.close();
+
+            // setTitle('SMART DISPLAY');
+        }
+    };
+
+    React.useEffect(() => {
+
+
+        setTitle(props.menu.Name || 'SMART DISPLAY')
+
+    }, [props.menu]);
     return (
         <div className={classes.root}>
 
             <AppBar position="static">
                 <Toolbar>
+                    <IconButton color="inherit" onClick={clickHamburger}>
+                        {!props.hamburger && <MenuIcon/>}
+                        {props.hamburger && <ClearIcon/>}
+                    </IconButton>
                     <Typography variant="h6" className={classes.title}>
-                        SMART DISPLAY
+                        {props.menu.Name ? title.toUpperCase() : 'SMART DISPLAY'}
                     </Typography>
 
                     <IconButton color="inherit" onClick={() => props.getLayout()}>
-                        <RefreshIcon />
+                        <RefreshIcon/>
                     </IconButton>
 
-                    {!props.blocked  && <IconButton color="inherit" onClick={() => setOpenButtons(!openButtons)}>
-                        <AddCircleOutlineIcon />
+                    {!props.blocked && <IconButton color="inherit" onClick={() => setOpenButtons(!openButtons)}>
+                        <AddCircleOutlineIcon/>
                     </IconButton>}
 
-                    {!props.blocked &&  <IconButton color="inherit" onClick={props.block}>
-                        <LockOpenOutlinedIcon />
+                    {!props.blocked && <IconButton color="inherit" onClick={props.block}>
+                        <LockOpenOutlinedIcon/>
                     </IconButton>}
 
-                    {props.blocked && window.location.hostname === '127.0.0.1' &&<IconButton color="inherit" onClick={close}>
-                        <HighlightOffIcon />
+                    {props.blocked && window.location.hostname === '127.0.0.1' &&
+                    <IconButton color="inherit" onClick={close}>
+                        <HighlightOffIcon/>
                     </IconButton>}
 
                     {props.blocked && <IconButton color="inherit" onClick={props.block}>
-                        <LockIcon />
+                        <LockIcon/>
                     </IconButton>}
 
                 </Toolbar>
@@ -71,6 +100,7 @@ export default function ButtonAppBar(props) {
             {openButtons && <Buttons
                 setOpenButtons={setOpenButtons}
                 add={props.add}
+                socketAct={props.socketAct}
             />}
 
         </div>

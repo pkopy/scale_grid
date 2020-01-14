@@ -49,7 +49,8 @@ const useStyles = makeStyles({
 
     },
     icons: {
-        paddingTop: 4
+        paddingTop: 4,
+        pointerEvents: 'none'
     }
 });
 
@@ -70,9 +71,9 @@ export default function LinearDeterminate(props) {
     React.useEffect(() => {
 
         function sendToSocket() {
-            if (props.socket.readyState === 1) {
-                props.socket.send(JSON.stringify({ COMMAND: 'GET_MASS' }));
-                props.socket.onmessage = (e) => {
+            if (props.socketMass.readyState === 1) {
+                props.socketMass.send(JSON.stringify({ COMMAND: 'GET_MASS' }));
+                props.socketMass.onmessage = (e) => {
                     let data = e.data;
                     const response = JSON.parse(data);
                     // console.log(response)
@@ -229,7 +230,7 @@ export default function LinearDeterminate(props) {
 
                         <div>
                             {props.visible && result.map((elem, i) =>
-                                <img src={elem} style={{ width: digitWidth }} key={i} alt='digit'></img>
+                                <img src={elem} style={{ width: digitWidth, pointerEvents: 'none' }} key={i} alt='digit'></img>
                             )}
 
                             {props.visible && Unit !== "NoUnit" && <span style={{ fontSize: unitFontWidth, position: 'relative', bottom: unitBottom, display: 'inline-block', paddingLeft: '15px', transform: 'scaleY(3)' }}>{Unit}</span>}
@@ -240,7 +241,7 @@ export default function LinearDeterminate(props) {
                 <ThemeProvider theme={theme}>
                     {props.visible && <LinearProgress color="primary" variant="determinate" value={ValueCal > 0 ? (100 / (Max / ValueCal)) : 0} style={{ height: `25px`, width: '100%', marginBottom: '5px' }} />}
                 </ThemeProvider>
-
+                               
             </div>
 
         )
