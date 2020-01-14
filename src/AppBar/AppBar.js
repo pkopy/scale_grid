@@ -28,21 +28,29 @@ const useStyles = makeStyles(theme => ({
 
 const close = () => {
     fetch(`http://127.0.0.1:8400/close`)
-        .then(data => console.log(data))
+        .then(data => {})
         .catch(err => console.log(err))
-}
+};
 
 
 export default function ButtonAppBar(props) {
     const classes = useStyles();
     const [openButtons, setOpenButtons] = React.useState(false);
+    const clickHamburger = () => {
+        if (!props.hamburger) {
 
+            props.showMenu();
+            props.setHamburger(true)
+        } else {
+            props.close()
+        }
+    };
     return (
         <div className={classes.root}>
 
             <AppBar position="static">
                 <Toolbar>
-                    <IconButton color="inherit" onClick={() => {props.showMenu(); props.setHamburger(!props.hamburger)}}>
+                    <IconButton color="inherit" onClick={clickHamburger}>
                         {!props.hamburger&&<MenuIcon/>}
                         {props.hamburger&&<ClearIcon/>}
                     </IconButton>
