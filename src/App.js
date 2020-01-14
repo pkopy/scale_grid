@@ -13,7 +13,6 @@ import helpers from "./Helpers/helpers";
 
 
 function App() {
-    // console.log('xxxxxxxxxxxxxxx', data.data)
     const [layout, setLayout] = React.useState([]);
     const [loader, setLoader] = React.useState(false);
     const [blocked, setBlocked] = React.useState(false);
@@ -27,6 +26,7 @@ function App() {
     const [screen, setScreen] = React.useState({});
     const [hamburger, setHamburger] = React.useState(false);
     const [menuButtons, setMenuButtons] = React.useState([]);
+    const [menu, setMenu] = React.useState({});
     const [oldLayout, setOldLayout] = React.useState(layout);
     const [timer, setTimer] = React.useState(0);
     const [nextClick, setNextClick] = React.useState(true);
@@ -93,17 +93,20 @@ function App() {
         }
 
         if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'SHOW') {
-
-
             showMenu();
-            setHamburger(true);
             // console.log('open');
+
+            setHamburger(true);
             getAllImgs(socketAct, response.RECORD.Items)
-                .then(data => setMenuButtons(data));
+                .then(data => {
+                    setMenuButtons(data);
+                    setMenu(response.RECORD);
+                });
         }
         if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'CLOSE') {
             // console.log('close');
-            setHamburger(false)
+            setHamburger(false);
+            setMenu({Name:'SMART DISPLAY', isBig: true})
         }
     };
     socketAct.onclose = () => {
@@ -551,12 +554,14 @@ function App() {
                 showMenu={showMenu}
                 close={close}
                 socketAct={socketAct}
+                menu={menu}
             />
             <ListPanel
                 setHamburger={setHamburger}
                 hamburger={hamburger}
                 socketAct={socketAct}
                 menuButtons={menuButtons}
+                menu={menu}
                 tapParam={tapParam}
             />
 
