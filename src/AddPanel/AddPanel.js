@@ -1,0 +1,52 @@
+import React from 'react';
+import {makeStyles} from '@material-ui/core/styles';
+import Dialog from '@material-ui/core/Dialog';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import loader from '../img/search.gif'
+import {IconButton} from '@material-ui/core';
+import helpers from '../Helpers/helpers.js'
+
+
+const useStyles = makeStyles(theme => ({
+    listPanel: {
+        width: 1024,
+        height: 530,
+        border: '1px solid rgb(0,0,0,0.2)',
+        position: 'absolute',
+        zIndex: 100,
+        backgroundColor: '#f0f8ff', //bf
+        transition: '1s',
+        // left:-1100
+    }
+}));
+
+
+export default function AddPanel(props) {
+
+
+
+
+    const handleClose = () => {
+        props.setOpenMenu(false)
+    };
+
+    const openAddButton = () => {
+        handleClose();
+        props.setOpenButtons(true)
+    }
+
+    return (
+        <Menu
+            id="simple-menu"
+            anchorEl={props.anchorEl}
+            keepMounted
+            open={props.openMenu}
+            onClose={handleClose}
+        >
+            <MenuItem onClick={openAddButton}>Button</MenuItem>
+            <MenuItem onClick={handleClose}>Menu</MenuItem>
+            <MenuItem onClick={handleClose}>Text</MenuItem>
+        </Menu>
+    )
+}

@@ -26,7 +26,7 @@ export default function ListPanel(props) {
 
 
     React.useEffect(() => {
-        props.hamburger ? setLeft(0) : setLeft(-1100)
+        props.hamburger ? setLeft(0) : setLeft(-1100);
         console.log(props.menu)
     }, [props.hamburger]);
 
@@ -39,7 +39,7 @@ export default function ListPanel(props) {
                     <div key={i} style={{background:'#fff', margin: 5, padding:5, width: 150, height: 150, border: '1px solid rgb(0,0,0,0.2)' }} onMouseDown={() => props.tapParam(elem.GUID)} >{elem.Name}
                         {/*<img src={loader} width='25px' alt={'menu img'}/>*/}
                         {!elem.img && <img className={classes.imgs} width={30} src={loader} alt={'loader'}/>}
-                        {elem.img && <img className={classes.imgs} width= {window.innerWidth < 800 ? 25:80} style={{ pointerEvents: 'none' }} src={`data:image/png;base64, ${elem.img}`} alt={'img'}/>}
+                        {elem.img && <img className={classes.imgs} width= {window.innerWidth < 800 ? 25:75} style={{ pointerEvents: 'none' }} src={`data:image/png;base64, ${elem.img}`} alt={'img'}/>}
                     </div>
                 )}
             </div>

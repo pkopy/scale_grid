@@ -12,7 +12,7 @@ import Buttons from '../Buttons/Buttons'
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import MenuIcon from '@material-ui/icons/Menu';
 import ClearIcon from '@material-ui/icons/Clear';
-
+import AddPanel from "../AddPanel/AddPanel";
 const useStyles = makeStyles(theme => ({
     root: {
         flexGrow: 1,
@@ -38,6 +38,8 @@ export default function ButtonAppBar(props) {
     const classes = useStyles();
     const [openButtons, setOpenButtons] = React.useState(false);
     const [title, setTitle] = React.useState('SMART DISPLAY');
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [openMenu, setOpenMenu] = React.useState(false);
     const clickHamburger = () => {
         if (!props.hamburger) {
 
@@ -76,7 +78,7 @@ export default function ButtonAppBar(props) {
                         <RefreshIcon/>
                     </IconButton>
 
-                    {!props.blocked && <IconButton color="inherit" onClick={() => setOpenButtons(!openButtons)}>
+                    {!props.blocked && <IconButton color="inherit" onClick={(e) => {setOpenMenu(!openMenu); setAnchorEl(e.currentTarget); console.log(e.currentTarget)}}>
                         <AddCircleOutlineIcon/>
                     </IconButton>}
 
@@ -99,8 +101,17 @@ export default function ButtonAppBar(props) {
 
             {openButtons && <Buttons
                 setOpenButtons={setOpenButtons}
+                // setOpenButtons={false}
                 add={props.add}
                 socketAct={props.socketAct}
+            />}
+
+            {openMenu && <AddPanel
+                setOpenButtons={setOpenButtons}
+                setOpenMenu={setOpenMenu}
+                openMenu={openMenu}
+                anchorEl={anchorEl}
+                setAnchorEl={setAnchorEl}
             />}
 
         </div>
