@@ -122,21 +122,6 @@ export default function Buttons(props) {
         })
     };
 
-    const getImg = (value) => {
-        return new Promise((res, rej) => {
-            if (start && props.socketAct.readyState === 1) {
-                props.socketAct.send(JSON.stringify({COMMAND: "GET_IMAGE_ACTION", PARAM: value}));
-                props.socketAct.onmessage = (e) => {
-                    let data = e.data;
-                    const response = JSON.parse(data);
-                    res(response.DATA);
-                };
-                props.socketAct.onerror = (err) => {
-                    res('');
-                }
-            }
-        })
-    };
 
     async function getAllImgs(index) {
         if (!index) {
@@ -207,7 +192,7 @@ export default function Buttons(props) {
                 {buttons[index] && buttons[index].map((elem) =>
                     <Tooltip title={elem.Name} key={elem.Name}>
                         <IconButton style={{padding: 5}} onMouseDown={() => {
-                            props.add(elem);
+                            props.add(elem, 'button');
                             props.setOpenButtons(false)
                         }}>
                             <div className={window.innerWidth > 800 ? classes.button1 : classes.smallButton}>
@@ -215,7 +200,7 @@ export default function Buttons(props) {
                                 {!elem.img && <img className={classes.imgs} width={30} src={load}></img>}
                                 {elem.img &&
                                 <img className={classes.imgs} width={window.innerWidth < 800 ? 25 : undefined}
-                                     src={`data:image/png;base64, ${elem.img}`}></img>}
+                                     src={`data:image/png;base64, ${elem.img}`}/>}
                             </div>
                         </IconButton>
                     </Tooltip>

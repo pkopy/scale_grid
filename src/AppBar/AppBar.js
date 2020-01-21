@@ -111,6 +111,7 @@ export default function ButtonAppBar(props) {
                 setOpenMenu={setOpenMenu}
                 openMenu={openMenu}
                 anchorEl={anchorEl}
+                add={props.add}
                 setAnchorEl={setAnchorEl}
             />}
 

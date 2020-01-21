@@ -11,9 +11,10 @@ const useStyles = makeStyles(theme => ({
         backgroundColor: '#f0f8ff', //bf
         transition: '1s',
         // left:-1100
+        overflowY: 'auto'
     }
 }));
-
+//TODO split the number of items in the menu, when items go out the screen
 export default function ListPanel(props) {
     const [left, setLeft] = React.useState(-1100);
     // console.log(props)
@@ -23,17 +24,16 @@ export default function ListPanel(props) {
     //     setLeft(-1100)
     // }
 
-
-
     React.useEffect(() => {
         props.hamburger ? setLeft(0) : setLeft(-1100);
-        console.log(props.menu)
+        console.log('xxxxx', props)
     }, [props.hamburger]);
 
     const classes = useStyles();
 
     return (
-        <div>
+        <>
+
             <div className={classes.listPanel} style={{ left: left, display: 'flex', flexWrap: 'wrap',justifyContent: 'center' }}>
                 {props.menu.isBig&&props.menuButtons.map((elem, i) =>
                     <div key={i} style={{background:'#fff', margin: 5, padding:5, width: 150, height: 150, border: '1px solid rgb(0,0,0,0.2)' }} onMouseDown={() => props.tapParam(elem.GUID)} >{elem.Name}
@@ -52,6 +52,6 @@ export default function ListPanel(props) {
                     </div>
                 )}
             </div>
-        </div>
+        </>
     )
 }

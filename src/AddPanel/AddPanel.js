@@ -17,14 +17,13 @@ const useStyles = makeStyles(theme => ({
         zIndex: 100,
         backgroundColor: '#f0f8ff', //bf
         transition: '1s',
+
         // left:-1100
     }
 }));
 
 
 export default function AddPanel(props) {
-
-
 
 
     const handleClose = () => {
@@ -34,7 +33,7 @@ export default function AddPanel(props) {
     const openAddButton = () => {
         handleClose();
         props.setOpenButtons(true)
-    }
+    };
 
     return (
         <Menu
@@ -45,7 +44,10 @@ export default function AddPanel(props) {
             onClose={handleClose}
         >
             <MenuItem onClick={openAddButton}>Button</MenuItem>
-            <MenuItem onClick={handleClose}>Menu</MenuItem>
+            <MenuItem onClick={() => {
+                handleClose();
+                props.add({}, 'menu')
+            }}>Menu</MenuItem>
             <MenuItem onClick={handleClose}>Text</MenuItem>
         </Menu>
     )

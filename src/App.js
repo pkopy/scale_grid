@@ -58,9 +58,7 @@ function App() {
         const socketMass = new WebSocket(`ws://${host}:4101`);
         const socketAct = new WebSocket(`ws://${host}:4101`);
         socketMass.onopen = () => {
-
             setStart(true);
-            // console.log('mass start')
         };
         socketMass.onclose = () => {
         };
@@ -70,12 +68,10 @@ function App() {
         setSocketMass(socketMass);
 
         socketAct.onopen = () => {
-            // console.log('act start');
             setStart(true);
             setSocketAct(socketAct);
             const sendM = () => {
                 socketAct.send(JSON.stringify({"COMMAND": "REGISTER_LISTENER", "PARAM": "MENU"}));
-                // console.log('cccc')
             };
             sendM();
             setTimer(setInterval(sendM, 5000))
@@ -88,48 +84,104 @@ function App() {
         let data = e.data;
         const response = JSON.parse(data);
         console.log(response);
+        // if (response.RECORD) {
+        //
+        //     setMenu(response.RECORD);
+        //
+        // }
         if (response.COMMAND === 'REGISTER_LISTENER' && response.PARAM === 'MENU') {
             clearInterval(timer)
-        }
 
+        }
         if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'SHOW') {
             showMenu();
+            // setMenu(response.RECORD);
             // console.log('open');
-
             setHamburger(true);
-            getAllImgs(socketAct, response.RECORD.Items)
+            getAllImgs(socketAct, response.RECORD.Items, response.RECORD.GUID)
                 .then(data => {
+
                     setMenuButtons(data);
+                    // console.log(menuButtons)
                     setMenu(response.RECORD);
-                });
+
+                })
+
+
         }
         if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'CLOSE') {
             // console.log('close');
             setHamburger(false);
-            setMenu({Name:'SMART DISPLAY', isBig: true})
+            setMenu({Name: 'SMART DISPLAY', isBig: true})
         }
     };
     socketAct.onclose = () => {
 
     };
+    const add = (elem, type) => {
+        const objectType = {};
+        switch (type) {
+            case 'button':
+                objectType.w = 2;
+                objectType.h = 2;
+                break;
+            case 'menu':
+                objectType.w = 4;
+                objectType.h = 3;
+                break;
+            default:
+                objectType.w = 1;
+                objectType.h = 1;
+                break;
+        }
+
+        findBusyFields();
+        setLoader(true);
+        setTimeout(() => {
+            addItem(elem, objectType);
+        }, 300)
+    };
+
     socketAct.onerror = (err) => {
         console.log(err);
     };
+    React.useEffect(() => {
+        console.log('hhhhhhhhhhh', menu)
+        if (menu.Items) {
+            // getAllImgs(socketAct, menu.Items, menu.GUID)
+            //     .then(data => {
+            //
+            //         setMenuButtons(data);
+            //         // console.log(menuButtons)
+            //         // setMenu(response.RECORD);
+            //
+            //     })
 
-    async function getAllImgs(socket, menuButtons) {
+        }
+
+
+    }, [menu]);
+
+    async function getAllImgs(socket, menuButtons, menuId) {
         const arr = [];
         for (let elem of menuButtons) {
-            for (let i = 0; i < 3; i++) {
-                await helpers.getImg(true, socket, "GET_IMAGE_MENU", elem.GUID)
-                    .then(data => {
-                        if (data !== undefined) {
-                            i = 3;
-                            elem.img = data;
-                            // console.log(elem);
-                            arr.push(elem)
-                        }
-                    }).catch(err => console.log(err))
+            // console.log('guid', menuId);
+            // console.log('guidXXxxx', menu);
+            if (!elem.img) {
+                // console.log(elem)
+                for (let i = 0; i < 3; i++) {
+                    await helpers.getImg(true, socket, "GET_IMAGE_MENU", elem.GUID)
+                        .then(data => {
+                            if (data !== undefined) {
+                                i = 3;
+                                elem.img = data;
+                                // console.log(elem);
+                                arr.push(elem)
+                            }
+                        }).catch(err => console.log(err))
+                }
             }
+
         }
         return arr
     }
@@ -137,7 +189,6 @@ function App() {
     //Click on the menu item
     const tapParam = (param) => {
         if (nextClick) {
-            console.log('clicllllccckk');
             if (start && socketAct.readyState === 1) {
                 socketAct.send(JSON.stringify({COMMAND: 'TAP_PARAM', PARAM: param}))
             }
@@ -149,22 +200,24 @@ function App() {
         }, 1000)
     };
 
-    const addItem = (elem) => {
+    const addItem = (elem, type) => {
         findBusyFields();
         setLoader(true);
 
         let arr = layout.slice();
         let allBusyFields = 0;
 
+
         busyFields.map(el => allBusyFields += el);
-        if (allBusyFields < 72) {
+        if (allBusyFields < 72 ) {
             for (let i = 0; i < busyFields.length; i++) {
-                if (busyFields[i] === 0 && allBusyFields < 72) {
+                // console.log('QWERTY',helpers.findFreeSpace(busyFields, i, type));
+                if (busyFields[i] === 0 && allBusyFields < 72 && helpers.findFreeSpace(busyFields, i, type) ) {
                     if (i > 59) {
                         arr.push({
                             i: Date() + layout.length,
-                            w: 1,
-                            h: 1,
+                            w: type.w,
+                            h: type.h,
                             x: (i - 60),
                             y: 5,
                             maxH: 6,
@@ -176,8 +229,8 @@ function App() {
                     } else if (i > 47) {
                         arr.push({
                             i: Date() + layout.length,
-                            w: 1,
-                            h: 1,
+                            w: type.w,
+                            h: type.h,
                             x: (i - 48),
                             y: 4,
                             maxH: 6,
@@ -190,8 +243,8 @@ function App() {
                     } else if (i > 35) {
                         arr.push({
                             i: Date() + layout.length,
-                            w: 1,
-                            h: 1,
+                            w: type.w,
+                            h: type.h,
                             x: (i - 36),
                             y: 3,
                             maxH: 6,
@@ -204,8 +257,8 @@ function App() {
                     } else if (i > 23) {
                         arr.push({
                             i: Date() + layout.length,
-                            w: 1,
-                            h: 1,
+                            w: type.w,
+                            h: type.h,
                             x: (i - 24),
                             y: 2,
                             maxH: 6,
@@ -217,8 +270,8 @@ function App() {
                     } else if (i > 11) {
                         arr.push({
                             i: Date() + layout.length,
-                            w: 1,
-                            h: 1,
+                            w: type.w,
+                            h: type.h,
                             x: (i - 12),
                             y: 1,
                             maxH: 6,
@@ -230,8 +283,8 @@ function App() {
                     } else {
                         arr.push({
                             i: Date() + layout.length,
-                            w: 1,
-                            h: 1,
+                            w: type.w,
+                            h: type.h,
                             x: i,
                             y: 0,
                             maxH: 6,
@@ -241,24 +294,14 @@ function App() {
                             elem
                         });
                     }
+
                     break;
                 }
             }
 
-        } else {
-            alert('Not enough space');
         }
         setLayout(arr);
         setLoader(false);
-    };
-
-    const add = (elem) => {
-
-        findBusyFields();
-        setLoader(true);
-        setTimeout(() => {
-            addItem(elem);
-        }, 300)
     };
 
     const send = (elem) => {
@@ -387,7 +430,7 @@ function App() {
     const getLayout = (isBadLayout = true) => {
         setLoader(true);
         fetch(`http://localhost:8400/layout`, {
-        // fetch(`http://${host}:8400/layout`, {
+            // fetch(`http://${host}:8400/layout`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -414,7 +457,7 @@ function App() {
 
     const saveLayout = (layout) => {
         fetch(`http://localhost:8400/layout`, {
-        // fetch(`http://${host}:8400/layout`, {
+            // fetch(`http://${host}:8400/layout`, {
             method: 'POST',
             body: JSON.stringify(layout)
 
@@ -422,15 +465,15 @@ function App() {
 
     };
 
-    const collision = () => {
-        let oldBusyFields = busyFields.reduce((a, b) => a + b);
-        let newBusyFields = findBusyFields().reduce((a, b) => a + b);
-
-        // console.log(layout, oldLayout)
-        if (oldBusyFields !== newBusyFields) {
-            setLayout(oldLayout)
-        }
-    };
+    // const collision = () => {
+    //     let oldBusyFields = busyFields.reduce((a, b) => a + b);
+    //     let newBusyFields = findBusyFields().reduce((a, b) => a + b);
+    //
+    //     // console.log(layout, oldLayout)
+    //     if (oldBusyFields !== newBusyFields) {
+    //         setLayout(oldLayout)
+    //     }
+    // };
 
     const findBusyFields = () => {
         let x = new Array(72).fill(0);
@@ -573,10 +616,11 @@ function App() {
                 onResizeStart={() => setVisible(false)}
                 onResizeStop={() => setVisible(true)}
                 onDragStart={() => setOldLayout(layout)}
-                onDragStop={(e) => collision()}
+                // onDragStop={(e) => collision()}
                 layout={layout}
                 cols={12} width={screen.width} rowHeight={screen.rowHeight}
                 preventCollision={true}
+
                 // style={{border:"1px solid rgb(0, 0, 0, 0.4)"}}
             >
                 {layout.map(elem =>
@@ -591,8 +635,9 @@ function App() {
                         <div style={{height: '100%', position: "relative", marginRight: "auto", marginLeft: "auto"}}>
                             {elem.w > 1 && elem.h > 1 && <p>{elem.elem.Name}</p>}
 
-                            <img src={`data:image/png;base64, ${elem.elem.img} `} draggable={false} onMouseDown={() => false} style={{pointerEvents: 'none',width: screen.imgWidth}}
-                                 alt='img' />
+                            <img src={`data:image/png;base64, ${elem.elem.img} `} draggable={false}
+                                 onMouseDown={() => false} style={{pointerEvents: 'none', width: screen.imgWidth}}
+                                 alt='img'/>
 
                         </div>}
 
