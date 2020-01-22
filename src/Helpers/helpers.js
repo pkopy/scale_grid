@@ -9,11 +9,12 @@ helpers.getImg = (socketOn, socket, command, value) => {
             socket.onmessage = (e) => {
                 let data = e.data;
                 const response = JSON.parse(data);
-                // console.log(response);
+                console.log(response);
+
                 res(response.DATA);
             };
             socket.onerror = (err) => {
-                res('noImg');
+                rej('noImg');
             }
         }
     })

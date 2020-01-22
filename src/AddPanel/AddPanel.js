@@ -3,7 +3,7 @@ import {makeStyles} from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import loader from '../img/search.gif'
+import loader from '../img/six.svg'
 import {IconButton} from '@material-ui/core';
 import helpers from '../Helpers/helpers.js'
 
@@ -46,9 +46,12 @@ export default function AddPanel(props) {
             <MenuItem onClick={openAddButton}>Button</MenuItem>
             <MenuItem onClick={() => {
                 handleClose();
-                props.add({}, 'menu')
+                props.add({Name: 'MENU'}, 'menu')
             }}>Menu</MenuItem>
-            <MenuItem onClick={handleClose}>Text</MenuItem>
+            <MenuItem onClick={() => {
+                handleClose();
+                props.add({Name: 'Demo text', img1: {loader}}, 'text')
+            }}>Text</MenuItem>
         </Menu>
     )
 }

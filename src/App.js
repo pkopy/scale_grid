@@ -10,7 +10,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Alert from './Alert/Alert'
 import ListPanel from './ListPanel/ListPanel'
 import helpers from "./Helpers/helpers";
-
+import six  from './img/six.svg'
 
 function App() {
     const [layout, setLayout] = React.useState([]);
@@ -83,7 +83,7 @@ function App() {
     socketAct.onmessage = (e) => {
         let data = e.data;
         const response = JSON.parse(data);
-        console.log(response);
+        // console.log(response);
         // if (response.RECORD) {
         //
         //     setMenu(response.RECORD);
@@ -105,7 +105,7 @@ function App() {
                     // console.log(menuButtons)
                     setMenu(response.RECORD);
 
-                })
+                }).catch((err) => console.log('eeeeeee', err))
 
 
         }
@@ -129,6 +129,10 @@ function App() {
                 objectType.w = 4;
                 objectType.h = 3;
                 break;
+            case 'text':
+                objectType.w = 4;
+                objectType.h = 2;
+                break;
             default:
                 objectType.w = 1;
                 objectType.h = 1;
@@ -146,7 +150,7 @@ function App() {
         console.log(err);
     };
     React.useEffect(() => {
-        console.log('hhhhhhhhhhh', menu)
+        // console.log('hhhhhhhhhhh', menu)
         if (menu.Items) {
             // getAllImgs(socketAct, menu.Items, menu.GUID)
             //     .then(data => {
@@ -352,11 +356,6 @@ function App() {
     };
 
     const editAfterDrag = (e) => {
-        // console.log(busyFields.reduce((a, b) => a + b))
-        // const busyF = busyFields.reduce((a, b) => a + b)
-        // let ddd = findBusyFields().reduce((a, b) => a + b)
-        // console.log('busy', busyF)
-        // console.log('uuuuu',ddd)
         const oldArray = [...layout];
         if (e && e.length > 0) {
             const helpArr = [];
@@ -507,9 +506,10 @@ function App() {
     };
 
     const _listPanel = () => {
+        console.log('dddd')
         return (
 
-            <div>TESTOWANIE</div>
+            <div>TEXT</div>
         )
     };
 
@@ -550,7 +550,7 @@ function App() {
         } else {
             setOpenLicenseInfo(true);
         }
-    }
+    };
 
     return (
         <div className="App">
@@ -575,7 +575,7 @@ function App() {
                     zIndex: 101,
                     position: 'absolute',
                     marginLeft: 'auto',
-                    marginRigh: 'auto'
+                    marginRight: 'auto'
                 }}/>
 
             </div>
@@ -638,7 +638,9 @@ function App() {
                             <img src={`data:image/png;base64, ${elem.elem.img} `} draggable={false}
                                  onMouseDown={() => false} style={{pointerEvents: 'none', width: screen.imgWidth}}
                                  alt='img'/>
-
+                            {/*{!elem.elem.img&&<img src={six} width={10} draggable={false}*/}
+                            {/*                      onMouseDown={() => false} style={{pointerEvents: 'none', width: screen.imgWidth}}*/}
+                            {/*                      alt='img'/>}*/}
                         </div>}
 
                         <div style={{position: 'absolute', bottom: '1%', left: '1%'}}>
@@ -651,7 +653,7 @@ function App() {
                             </div>
                             }
                         </div>
-                        {elem.obj === 'list_panel' && _listPanel()}
+                        {elem.obj === 'text' && _listPanel()}
                         {elem.obj === 'mass' && _mass(elem)}
                     </div>
                 )}
