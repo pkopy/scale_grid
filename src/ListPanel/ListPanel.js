@@ -124,7 +124,7 @@ export default function ListPanel(props) {
                              onClick={(e) => e.stopPropagation()}
                              onMouseDown={(e) => {
                                  e.stopPropagation();
-                                 props.tapParam(elem.GUID)
+                                 props.tapParam(elem.GUID);
 
                                  {/*<img src={loader} width='25px' alt={'menu img'}/>*/
                                  }

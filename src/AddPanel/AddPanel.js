@@ -50,7 +50,7 @@ export default function AddPanel(props) {
             }}>Menu</MenuItem>
             <MenuItem onClick={() => {
                 handleClose();
-                props.add({Name: 'Demo text', img1: {loader}}, 'text')
+                props.add({Name: 'Demo text', img1: {loader}, type:'text'}, 'text')
             }}>Text</MenuItem>
         </Menu>
     )

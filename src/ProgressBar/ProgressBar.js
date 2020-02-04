@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect}from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -57,19 +57,20 @@ const useStyles = makeStyles({
 export default function LinearDeterminate(props) {
     const classes = useStyles();
 
-    const [completed, setCompleted] = React.useState(0);
-    const [Max, setMax] = React.useState(0);
-    const [Value, setValue] = React.useState();
-    const [ValueCal, setValueCal] = React.useState(0);
-    const [Unit, setUnit] = React.useState('');
-    const [isStab, setIsStab] = React.useState();
-    const [isTare, setIsTare] = React.useState();
-    const [isZero, setIsZero] = React.useState();
-    const [precision, setPrecision] = React.useState();
-    const [platform, setPlatform] = React.useState(0);
-    const [platfomsArray, setPlatformsArray] = React.useState([]);
+    const [completed, setCompleted] = useState(0);
+    const [Max, setMax] = useState(0);
+    const [Value, setValue] = useState();
+    const [ValueCal, setValueCal] = useState(0);
+    const [Unit, setUnit] = useState('');
+    const [isStab, setIsStab] = useState();
+    const [isTare, setIsTare] = useState();
+    const [isZero, setIsZero] = useState();
+    const [precision, setPrecision] = useState();
+    const [platform, setPlatform] = useState(0);
+    const [platfomsArray, setPlatformsArray] = useState([]);
+    const [labels, setLabels] = useState([])
 
-    React.useEffect(() => {
+    useEffect(() => {
 
         function sendToSocket() {
             if (props.socketMass.readyState === 1) {
@@ -83,6 +84,8 @@ export default function LinearDeterminate(props) {
                     if (response.RECORD) {
                         Mass = response.RECORD.Mass
                         setPlatformsArray(Mass)
+                        props.setTextLabels(response.RECORD.var_labels)
+                        // setLabels(response.RECORD.var_labels)
                     }
                     // console.log(response.RECORD)
                     if (Mass.length>0 && Mass[platform].NetAct && Mass[platform].NetCal) {
@@ -110,13 +113,31 @@ export default function LinearDeterminate(props) {
                 setValue('-----');
             }
         }
-
+        props.setTextLabels(labels)
         const timer = setInterval(sendToSocket, 250);
         return () => {
             clearInterval(timer);
         };
 
     }, [platform]);
+
+    // useEffect(() => {
+    //     if (props.socketMass.readyState === 1) {
+    //         props.socketMass.send(JSON.stringify({COMMAND: 'GET_MOD_INFO'}));
+    //         props.socketMass.onmessage = (e) => {
+    //             let data = e.data;
+    //             const response = JSON.parse(data);
+    //             console.log(response)
+    //
+    //
+    //             if (response.RECORD) {
+    //
+    //
+    //
+    //             }
+    //         }
+    //     }
+    // },[])
 
     const choosePlatform = () => {
         let length = platfomsArray.length;
@@ -130,7 +151,7 @@ export default function LinearDeterminate(props) {
 
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
 
         function progress() {
             setCompleted(oldCompleted => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './App.scss';
 import AppBar from './AppBar/AppBar'
 import GridLayout from 'react-grid-layout';
@@ -10,31 +10,32 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Alert from './Alert/Alert'
 import ListPanel from './ListPanel/ListPanel'
 import helpers from "./Helpers/helpers";
+import TextPanel from "./TextPanel/TextPanel";
 import six from './img/six.svg'
 
 function App() {
-    const [layout, setLayout] = React.useState([]);
-    const [loader, setLoader] = React.useState(false);
-    const [blocked, setBlocked] = React.useState(false);
-    const [busyFields, setBusyFields] = React.useState(new Array(72).fill(0));
-    const [socketMass, setSocketMass] = React.useState({});
-    const [socketAct, setSocketAct] = React.useState({});
-    const [start, setStart] = React.useState(false);
-    const [visible, setVisible] = React.useState(true);
-    const [license, setLicense] = React.useState(true);
-    const [openInfoLicence, setOpenLicenseInfo] = React.useState(false);
-    const [screen, setScreen] = React.useState({});
-    const [hamburger, setHamburger] = React.useState(false);
-    const [menuButtons, setMenuButtons] = React.useState([]);
-    const [menu, setMenu] = React.useState({});
+    const [layout, setLayout] = useState([]);
+    const [loader, setLoader] = useState(false);
+    const [blocked, setBlocked] = useState(false);
+    const [busyFields, setBusyFields] = useState(new Array(72).fill(0));
+    const [socketMass, setSocketMass] = useState({});
+    const [socketAct, setSocketAct] = useState({});
+    const [start, setStart] = useState(false);
+    const [visible, setVisible] = useState(true);
+    const [license, setLicense] = useState(true);
+    const [openInfoLicence, setOpenLicenseInfo] = useState(false);
+    const [screen, setScreen] = useState({});
+    const [hamburger, setHamburger] = useState(false);
+    const [menuButtons, setMenuButtons] = useState([]);
+    const [menu, setMenu] = useState({});
     // const [oldLayout, setOldLayout] = React.useState(layout);
-    const [timer, setTimer] = React.useState(0);
+    const [timer, setTimer] = useState(0);
     //setting timeout 1000ms between the clicks
-    const [nextClick, setNextClick] = React.useState(true);
+    const [nextClick, setNextClick] = useState(true);
     //checking if there is a menu component
     const [disabledAddMenuButton, setDisabledAddMenuButton] = React.useState(false)
-
-    const host = process.env.NODE_ENV !== 'production' ? '10.10.3.60' : window.location.hostname;
+    const [textLabels, setTextLabels] = useState([]);
+    const host = process.env.NODE_ENV !== 'production' ? '10.10.2.232' : window.location.hostname;
 
 
     // blocking the ability to drag and drop items
@@ -125,7 +126,7 @@ function App() {
             case 'menu':
                 objectType.w = 4;
                 objectType.h = 3;
-                setDisabledAddMenuButton(true)
+                setDisabledAddMenuButton(true);
                 break;
             case 'text':
                 objectType.w = 4;
@@ -382,10 +383,10 @@ function App() {
                     e[i].h = oldArray[i].h;
                     e[i].w = oldArray[i].w
                 }
-                if (e[i].h === 2 && e[i].obj === 'mass') {
-                    // e[i].h = oldArray[i].h;
-                    // e[i].minW = 6;
-                }
+                // if (e[i].h === 2 && e[i].obj === 'mass') {
+                //     e[i].h = oldArray[i].h;
+                //     // e[i].minW = 6;
+                // }
                 if (e[i].h === 4 && e[i].obj === 'mass') {
                     // e[i].h = oldArray[i].h;
                     if (e[i].w < 8) {
@@ -395,7 +396,7 @@ function App() {
                 }
                 if (e[i].h % 2 !== 0 && e[i].obj === 'mass') {
                     e[i].h = oldArray[i].h;
-                    e[i].w = oldArray[i].w
+                    e[i].w = oldArray[i].w;
                     e[i].minW = 6;
                     // e[i].w = 6;
                 }
@@ -485,15 +486,18 @@ function App() {
                 width={elem.h}
                 visible={visible}
                 setLicense={setLicense}
+                setTextLabels={setTextLabels}
             />
         )
     };
 
-    const _listPanel = () => {
-        console.log('dddd')
+    const _textComponent = () => {
+        // console.log('dddd')
         return (
 
-            <div>TEXT</div>
+            <TextPanel
+                textLabels={textLabels}
+            />
         )
     };
 
@@ -522,7 +526,9 @@ function App() {
     React.useEffect(() => {
         info();
     }, [license]);
-
+    React.useEffect(() => {
+        // console.log('labels;',textLabels)
+    }, [textLabels]);
 
     const info = () => {
         if (window.location.hostname !== '127.0.0.1') {
@@ -620,20 +626,21 @@ function App() {
                     return (
 
 
-                    <div className="xx" onClick={() => send(elem)} style={{
+                    <div className="xx" onClick={elem.elem&&elem.elem.type!=='text'?() => send(elem):undefined} style={{
                         border: "1px solid rgb(0, 0, 0, 0.4)",
                         display: 'flex',
                         alignItems: 'center',
                     }}
                          id={elem.i} key={elem.i}>
 
-                        {visible && elem.elem &&
+                        {visible && elem.elem && elem.elem.type!=='text'&&
                         <div style={{height: '100%', position: "relative", marginRight: "auto", marginLeft: "auto"}}>
+                            {/*hide the name of a component if its height is smaller than 2*/}
                             {elem.w > 1 && elem.h > 1 && <p>{elem.elem.Name}</p>}
 
-                            <img src={`data:image/png;base64, ${elem.elem.img} `} draggable={false}
+                            {elem.elem.img&&<img src={`data:image/png;base64, ${elem.elem.img} `} draggable={false}
                                  onMouseDown={() => false} style={{pointerEvents: 'none', width: screen.imgWidth}}
-                                 alt='img'/>
+                                 alt='img'/>}
                             {/*{!elem.elem.img&&<img src={six} width={10} draggable={false}*/}
                             {/*                      onMouseDown={() => false} style={{pointerEvents: 'none', width: screen.imgWidth}}*/}
                             {/*                      alt='img'/>}*/}
@@ -650,7 +657,7 @@ function App() {
                             }
                         </div>
                         {/*{elem.elem && elem.elem.Name === 'MENU' && setDisabledAddMenuButton(true)}*/}
-                        {elem.obj === 'text' && _listPanel()}
+                        {elem.elem&&elem.elem.type === 'text' && _textComponent()}
                         {elem.obj === 'mass' && _mass(elem)}
                     </div>
                     )}

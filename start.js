@@ -80,7 +80,7 @@ const readFile = () => {
                 // console.log(objJSON)
                 res(objJSON)
             }else {
-                const data = [{"w":6,"h":4,"x":0,"y":0,"i":"b","minW":6,"maxW":12,"minH":2,"maxH":6,"moved":false,"static":true,"obj":"mass"}];
+                const data = [{"w":6,"h":2,"x":0,"y":0,"i":"b","minW":6,"maxW":12,"minH":2,"maxH":6,"moved":false,"static":true,"obj":"mass"}];
 
                 saveFile(data)
                     .then(() => {
