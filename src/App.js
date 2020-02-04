@@ -10,7 +10,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Alert from './Alert/Alert'
 import ListPanel from './ListPanel/ListPanel'
 import helpers from "./Helpers/helpers";
-import six  from './img/six.svg'
+import six from './img/six.svg'
 
 function App() {
     const [layout, setLayout] = React.useState([]);
@@ -27,18 +27,22 @@ function App() {
     const [hamburger, setHamburger] = React.useState(false);
     const [menuButtons, setMenuButtons] = React.useState([]);
     const [menu, setMenu] = React.useState({});
-    const [oldLayout, setOldLayout] = React.useState(layout);
+    // const [oldLayout, setOldLayout] = React.useState(layout);
     const [timer, setTimer] = React.useState(0);
+    //setting timeout 1000ms between the clicks
     const [nextClick, setNextClick] = React.useState(true);
+    //checking if there is a menu component
+    const [disabledAddMenuButton, setDisabledAddMenuButton] = React.useState(false)
 
     const host = process.env.NODE_ENV !== 'production' ? '10.10.3.60' : window.location.hostname;
 
+
+    // blocking the ability to drag and drop items
     const block = () => {
         const helpArr = [];
-        // if (!blocked) {
-        //     getLayout()
-        // }
+
         for (let elem of layout) {
+            if (elem.elem && elem.elem.Name === 'MENU') setDisabledAddMenuButton(true);
             elem.static = !blocked;
             helpArr.push(elem);
         }
@@ -78,35 +82,28 @@ function App() {
         };
     };
 
-
-    // const timerX = setInterval(sendM, 5000);
     socketAct.onmessage = (e) => {
         let data = e.data;
         const response = JSON.parse(data);
-        // console.log(response);
-        // if (response.RECORD) {
-        //
-        //     setMenu(response.RECORD);
-        //
-        // }
+        console.log(response)
         if (response.COMMAND === 'REGISTER_LISTENER' && response.PARAM === 'MENU') {
             clearInterval(timer)
 
         }
         if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'SHOW') {
             showMenu();
-            // setMenu(response.RECORD);
-            // console.log('open');
+
             setHamburger(true);
             getAllImgs(socketAct, response.RECORD.Items, response.RECORD.GUID)
                 .then(data => {
-
+                    console.log('data:', data)
                     setMenuButtons(data);
-                    // console.log(menuButtons)
                     setMenu(response.RECORD);
-
-                }).catch((err) => console.log('eeeeeee', err))
-
+                }).catch((err) => console.log(err))
+        }
+        //text component
+        if (response.COMMAND === 'GET_MOD_INFO') {
+            console.log('text:', response);
 
         }
         if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'CLOSE') {
@@ -128,6 +125,7 @@ function App() {
             case 'menu':
                 objectType.w = 4;
                 objectType.h = 3;
+                setDisabledAddMenuButton(true)
                 break;
             case 'text':
                 objectType.w = 4;
@@ -149,6 +147,7 @@ function App() {
     socketAct.onerror = (err) => {
         console.log(err);
     };
+
     React.useEffect(() => {
         // console.log('hhhhhhhhhhh', menu)
         if (menu.Items) {
@@ -210,13 +209,17 @@ function App() {
 
         let arr = layout.slice();
         let allBusyFields = 0;
-
+        if (elem.Name === 'MENU') {
+            setDisabledAddMenuButton(true);
+        }
 
         busyFields.map(el => allBusyFields += el);
-        if (allBusyFields < 72 ) {
+        if (allBusyFields < 72) {
             for (let i = 0; i < busyFields.length; i++) {
                 // console.log('QWERTY',helpers.findFreeSpace(busyFields, i, type));
-                if (busyFields[i] === 0 && allBusyFields < 72 && helpers.findFreeSpace(busyFields, i, type) ) {
+                // if (elem.Name === 'MENU' && !helpers.findFreeSpace(busyFields, i, type)) setDisabledAddMenuButton(false)
+                if (busyFields[i] === 0 && allBusyFields < 72 && helpers.findFreeSpace(busyFields, i, type)) {
+
                     if (i > 59) {
                         arr.push({
                             i: Date() + layout.length,
@@ -284,7 +287,7 @@ function App() {
                             minW: 1,
                             elem
                         });
-                    } else {
+                    } else if (i < 12) {
                         arr.push({
                             i: Date() + layout.length,
                             w: type.w,
@@ -297,10 +300,13 @@ function App() {
                             minW: 1,
                             elem
                         });
-                    }
+                    } else{
 
+                    }
                     break;
                 }
+                // if (elem.Name === 'MENU' && !helpers.findFreeSpace(busyFields, i, type)) setDisabledAddMenuButton(false)
+                // break;
             }
 
         }
@@ -309,12 +315,13 @@ function App() {
     };
 
     const send = (elem) => {
-        // console.log('click action');
+        // console.log(elem);
         if (start && socketAct.readyState === 1 && elem.elem && blocked) {
             socketAct.send(JSON.stringify({COMMAND: 'EXECUTE_ACTION', PARAM: elem.elem.Value}));
         }
     };
 
+    //closing the actual menu
     const close = () => {
 
         if (start && socketAct.readyState === 1) {
@@ -341,6 +348,7 @@ function App() {
     const deleteItem = (e, item) => {
         setLoader(true);
         const newLayout = layout.slice();
+        if (item.elem && item.elem.Name === 'MENU') setDisabledAddMenuButton(false)
         e.stopPropagation();
         for (let i = 0; i < newLayout.length; i++) {
             if (newLayout[i].i === item.i) {
@@ -363,7 +371,6 @@ function App() {
             for (let i = 0; i < e.length; i++) {
                 if ((e[i].y + e[i].h) > 6) {
                     //prevents to go out from a screen in vertical
-                    // e[i].y = 6 - e[i].h;
                     e[i].h = oldArray[i].h;
                     e[i].y = oldArray[i].y;
                     e[i].x = oldArray[i].x
@@ -372,32 +379,38 @@ function App() {
                     e[i].h = 6;
                     e[i].w = 12
                 } else if (e[i].h >= 6 && e[i].obj === 'mass' && e.length > 1) {
-                    e[i].h = 2;
-                    e[i].w = 3
+                    e[i].h = oldArray[i].h;
+                    e[i].w = oldArray[i].w
                 }
-
-                if (e[i].h === 4 && e[i].w < 4 && e[i].obj === 'mass') {
-                    e[i].h = 4;
-                    e[i].w = 4;
+                if (e[i].h === 2 && e[i].obj === 'mass') {
+                    // e[i].h = oldArray[i].h;
+                    // e[i].minW = 6;
                 }
-                if (e[i].h === 2 && e[i].w < 2 && e[i].obj === 'mass') {
-
-                    e[i].w = 3;
+                if (e[i].h === 4 && e[i].obj === 'mass') {
+                    // e[i].h = oldArray[i].h;
+                    if (e[i].w < 8) {
+                        e[i].w = 8
+                    }
+                    // e[i].minW = 8;
                 }
+                if (e[i].h % 2 !== 0 && e[i].obj === 'mass') {
+                    e[i].h = oldArray[i].h;
+                    e[i].w = oldArray[i].w
+                    e[i].minW = 6;
+                    // e[i].w = 6;
+                }
+                // if (e[i].h === 2 && e[i].w < 2 && e[i].obj === 'mass') {
+                //
+                //     e[i].w = 3;
+                // }
                 if (e[i].h > 6) {
                     e[i].h = 6;
                     e[i].y = 0;
                 }
-                // if (e[i].y % 2 !== 0) {
-                //     e[i].y--;
-                // }
-                // if (e[i].h % 2 !== 0) {
-                //     e[i].h--;
-                // }
+
                 if (e[i].h < e[i].minH) {
                     e[i].h = e[i].minH;
                 }
-                // console.log(busyF ,ddd, oldArray)
 
 
                 e[i].elem = oldArray[i].elem;
@@ -407,12 +420,6 @@ function App() {
             }
 
             findBusyFields();
-            // console.log('help', helpArr)
-            // if (busyF !== ddd ) {
-            //     getLayout()
-
-            //     // setBlocked(false)
-            // } else {
 
             setTimeout(() => {
                 setLayout(helpArr);
@@ -420,11 +427,6 @@ function App() {
             // }
         }
     };
-
-    // React.useEffect(() => {
-    //     console.log(layout)
-    // }, [layout])
-
 
     const getLayout = (isBadLayout = true) => {
         setLoader(true);
@@ -437,15 +439,6 @@ function App() {
         })
             .then(data => data.json())
             .then(data => {
-
-                // for (let elem of data) {
-                //     if (!blocked) {
-                //         elem.static = true;
-                //     } else {
-                //         elem.static = false;
-                //     }
-
-                // }
 
                 setLayout(data);
                 if (isBadLayout) setBlocked(true);
@@ -464,15 +457,6 @@ function App() {
 
     };
 
-    // const collision = () => {
-    //     let oldBusyFields = busyFields.reduce((a, b) => a + b);
-    //     let newBusyFields = findBusyFields().reduce((a, b) => a + b);
-    //
-    //     // console.log(layout, oldLayout)
-    //     if (oldBusyFields !== newBusyFields) {
-    //         setLayout(oldLayout)
-    //     }
-    // };
 
     const findBusyFields = () => {
         let x = new Array(72).fill(0);
@@ -588,6 +572,7 @@ function App() {
                 block={block}
                 blocked={blocked}
                 add={add}
+                layout={layout}
                 getLayout={getLayout}
                 saveLayout={saveLayout}
                 setHamburger={setHamburger}
@@ -598,6 +583,8 @@ function App() {
                 close={close}
                 socketAct={socketAct}
                 menu={menu}
+                disabledAddMenuButton={disabledAddMenuButton}
+                setDisabledAddMenuButton={setDisabledAddMenuButton}
             />
             <ListPanel
                 setHamburger={setHamburger}
@@ -615,7 +602,7 @@ function App() {
                 onLayoutChange={e => editAfterDrag(e)}
                 onResizeStart={() => setVisible(false)}
                 onResizeStop={() => setVisible(true)}
-                onDragStart={() => setOldLayout(layout)}
+                // onDragStart={() => setOldLayout(layout)}
                 // onDragStop={(e) => collision()}
                 layout={layout}
                 cols={12} width={screen.width} rowHeight={screen.rowHeight}
@@ -623,7 +610,16 @@ function App() {
 
                 // style={{border:"1px solid rgb(0, 0, 0, 0.4)"}}
             >
-                {layout.map(elem =>
+                {layout.map(elem =>{
+                    // console.log(elem)
+                    // if (elem.elem && elem.elem.Name === 'MENU') {
+                    //     console.log('elem', elem);
+                    //     setDisabledAddMenuButton(true)
+                    // }
+
+                    return (
+
+
                     <div className="xx" onClick={() => send(elem)} style={{
                         border: "1px solid rgb(0, 0, 0, 0.4)",
                         display: 'flex',
@@ -653,9 +649,11 @@ function App() {
                             </div>
                             }
                         </div>
+                        {/*{elem.elem && elem.elem.Name === 'MENU' && setDisabledAddMenuButton(true)}*/}
                         {elem.obj === 'text' && _listPanel()}
                         {elem.obj === 'mass' && _mass(elem)}
                     </div>
+                    )}
                 )}
 
             </GridLayout>

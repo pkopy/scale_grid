@@ -9,7 +9,7 @@ helpers.getImg = (socketOn, socket, command, value) => {
             socket.onmessage = (e) => {
                 let data = e.data;
                 const response = JSON.parse(data);
-                console.log(response);
+                // console.log(response);
 
                 res(response.DATA);
             };
@@ -25,7 +25,7 @@ helpers.findFreeSpace = (array, index, elem) => {
     // console.log('array:', array[index]);
 
     // console.log('row', row)
-    console.log('index:', array);
+    // console.log('index:', array);
     let row = Math.floor(index / 12);
     if ((row+1)*12 - index < elem.w) {
         return false

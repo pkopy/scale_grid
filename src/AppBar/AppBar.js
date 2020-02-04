@@ -42,7 +42,7 @@ export default function ButtonAppBar(props) {
     const [openMenu, setOpenMenu] = React.useState(false);
     const clickHamburger = () => {
         if (!props.hamburger) {
-
+            if (!props.blocked) props.block();
             props.showMenu();
             // if(props.menu)
             // setTitle(props.menu.Name);
@@ -52,6 +52,20 @@ export default function ButtonAppBar(props) {
             props.close();
 
             // setTitle('SMART DISPLAY');
+        }
+    };
+
+    const handleOpen = () => {
+        setOpenMenu(!openMenu);
+
+        const layout = props.layout;
+        for (let item of layout) {
+            if (item.elem && item.elem.Name === 'MENU') {
+                props.setDisabledAddMenuButton(true);
+                break;
+            } else {
+                props.setDisabledAddMenuButton(false);
+            }
         }
     };
 
@@ -78,7 +92,7 @@ export default function ButtonAppBar(props) {
                         <RefreshIcon/>
                     </IconButton>
 
-                    {!props.blocked && <IconButton color="inherit" onClick={(e) => {setOpenMenu(!openMenu); setAnchorEl(e.currentTarget); console.log(e.currentTarget)}}>
+                    {!props.blocked && <IconButton color="inherit" onClick={(e) => {handleOpen(); setAnchorEl(e.currentTarget); console.log(e.currentTarget)}}>
                         <AddCircleOutlineIcon/>
                     </IconButton>}
 
@@ -112,6 +126,7 @@ export default function ButtonAppBar(props) {
                 openMenu={openMenu}
                 anchorEl={anchorEl}
                 add={props.add}
+                disabledAddMenuButton={props.disabledAddMenuButton}
                 setAnchorEl={setAnchorEl}
             />}
 

@@ -66,27 +66,36 @@ export default function LinearDeterminate(props) {
     const [isTare, setIsTare] = React.useState();
     const [isZero, setIsZero] = React.useState();
     const [precision, setPrecision] = React.useState();
-
+    const [platform, setPlatform] = React.useState(0);
+    const [platfomsArray, setPlatformsArray] = React.useState([]);
 
     React.useEffect(() => {
 
         function sendToSocket() {
             if (props.socketMass.readyState === 1) {
-                props.socketMass.send(JSON.stringify({ COMMAND: 'GET_MASS' }));
+                props.socketMass.send(JSON.stringify({ COMMAND: 'GET_MOD_INFO' }));
                 props.socketMass.onmessage = (e) => {
                     let data = e.data;
                     const response = JSON.parse(data);
                     // console.log(response)
-                    if (response.NetAct && response.NetCal) {
+                    let Mass = []
+
+                    if (response.RECORD) {
+                        Mass = response.RECORD.Mass
+                        setPlatformsArray(Mass)
+                    }
+                    // console.log(response.RECORD)
+                    if (Mass.length>0 && Mass[platform].NetAct && Mass[platform].NetCal) {
                         props.setLicense(true);
-                        setMax(response.Max * 1);
-                        setValue(response.NetAct.Value);
-                        setUnit(response.NetAct.Unit);
-                        setValueCal(response.NetCal.Value);
-                        setIsStab(response.isStab);
-                        setIsTare(response.isTare);
-                        setIsZero(response.isZero);
-                        setPrecision(response.NetAct.Precision);
+                        setMax(Mass[platform].Max * 1);
+                        setValue(Mass[platform].NetAct.Value);
+                        // setValue('-8,88888');
+                        setUnit(Mass[platform].NetAct.Unit);
+                        setValueCal(Mass[platform].NetCal.Value);
+                        setIsStab(Mass[platform].isStab);
+                        setIsTare(Mass[platform].isTare);
+                        setIsZero(Mass[platform].isZero);
+                        setPrecision(Mass[platform].NetAct.Precision);
                     } else if(response.STS_DETAILS === 'The license for this module has not been activated'){
                         setValue('-----');
                         setUnit('');
@@ -107,7 +116,19 @@ export default function LinearDeterminate(props) {
             clearInterval(timer);
         };
 
-    }, [])
+    }, [platform]);
+
+    const choosePlatform = () => {
+        let length = platfomsArray.length;
+        let newPlatform = platform;
+        newPlatform++;
+        if (newPlatform < length) {
+            setPlatform(newPlatform)
+        } else {
+            setPlatform(0)
+        }
+
+    };
 
     React.useEffect(() => {
 
@@ -126,6 +147,10 @@ export default function LinearDeterminate(props) {
 
     }, [Value]);
 
+    const changePlatform = () => {
+
+    }
+
     const _digits = (value) => {
         value = isNaN(value) ? '-----' : value;
         const digits = (value.toString()).split('');
@@ -133,44 +158,44 @@ export default function LinearDeterminate(props) {
         for (let digit of digits) {
             switch (digit) {
                 case '0':
-                    result.push(zero2)
-                    break
+                    result.push(zero2);
+                    break;
                 case '1':
-                    result.push(one)
-                    break
+                    result.push(one);
+                    break;
                 case '2':
-                    result.push(two)
-                    break
+                    result.push(two);
+                    break;
                 case '3':
-                    result.push(three)
-                    break
+                    result.push(three);
+                    break;
                 case '4':
-                    result.push(four)
-                    break
+                    result.push(four);
+                    break;
                 case '5':
-                    result.push(five)
-                    break
+                    result.push(five);
+                    break;
                 case '6':
-                    result.push(six)
-                    break
+                    result.push(six);
+                    break;
                 case '7':
-                    result.push(seven)
-                    break
+                    result.push(seven);
+                    break;
                 case '8':
-                    result.push(eight)
-                    break
+                    result.push(eight);
+                    break;
                 case '9':
-                    result.push(nine)
-                    break
+                    result.push(nine);
+                    break;
                 case '-':
-                    result.push(minus)
-                    break
+                    result.push(minus);
+                    break;
                 case '.':
-                    result.push(dot)
-                    break
+                    result.push(dot);
+                    break;
                 default:
-                    result.push(minus)
-                    break
+                    result.push(minus);
+                    break;
             }
         }
 
@@ -182,17 +207,17 @@ export default function LinearDeterminate(props) {
             if (props.width === 6) {
                 digitWidth = 70;
                 unitFontWidth = 90;
-                unitBottom = 160;
+                unitBottom = 120;
                 imgWidth = 80;
             } else if (props.width === 4) {
                 digitWidth = 50;
                 unitFontWidth = 50;
-                unitBottom = 120;
+                unitBottom = 70;
                 imgWidth = 50;
             } else {
                 digitWidth = 20;
                 unitFontWidth = 20;
-                unitBottom = 50;
+                unitBottom = 30;
                 imgWidth = 35;
             }
 
@@ -200,7 +225,7 @@ export default function LinearDeterminate(props) {
             if (props.width === 6) {
                 digitWidth = 55;
                 unitFontWidth = 75;
-                unitBottom = 130;
+                unitBottom = 65;
                 imgWidth = 65;
             } else if (props.width === 4) {
                 digitWidth = 35;
@@ -221,16 +246,18 @@ export default function LinearDeterminate(props) {
                 {props.visible && <div style={{ display: 'flex', width: '100%' }}>
 
                     <div style={{ width: 100, display: 'flex', flexDirection: 'column', textAlign: 'left', marginTop: '10px' }}>
-                        <div className={classes.icons}>{isStab && <img src={stableIcon} width={`${imgWidth}%`} alt='stab'></img>}</div>
-                        <div className={classes.icons}>{isZero && <img src={zeroIcon} width={`${imgWidth}%`} alt='zero'></img>}</div>
-                        <div className={classes.icons}>{isTare && <img src={taraIcon} width={`${imgWidth}%`} alt='tare'></img>}</div>
+                        <div className={classes.icons}>{isStab && <img src={stableIcon} width={`${imgWidth}%`} alt='stab'/>}</div>
+                        <div className={classes.icons}>{isZero && <img src={zeroIcon} width={`${imgWidth}%`} alt='zero'/>}</div>
+                        <div className={classes.icons}>{isTare && <img src={taraIcon} width={`${imgWidth}%`} alt='tare'/>}</div>
                     </div>
                     
                     <div className={classes.value} >
-
+                        <div onClick={choosePlatform} style={{width:30, height:30, background:'#000', position:'absolute', right:0, color:'#fff', fontSize:'2.5em', textAlign: 'center'}}>
+                            {platform}
+                        </div>
                         <div>
                             {props.visible && result.map((elem, i) =>
-                                <img src={elem} style={{ width: digitWidth, pointerEvents: 'none' }} key={i} alt='digit'></img>
+                                <img src={elem} style={{ width: digitWidth, pointerEvents: 'none' }} key={i} alt='digit'/>
                             )}
 
                             {props.visible && Unit !== "NoUnit" && <span style={{ fontSize: unitFontWidth, position: 'relative', bottom: unitBottom, display: 'inline-block', paddingLeft: '15px', transform: 'scaleY(3)' }}>{Unit}</span>}
