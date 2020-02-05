@@ -53,9 +53,10 @@ const useStyles = makeStyles(theme => ({
 
 export default function Buttons(props) {
     const [buttons, setButtons] = React.useState([[]]);
-    const [socket, setSocket] = React.useState();
     const [start, setStart] = React.useState(false);
     const [imgs, setImgs] = React.useState(true);
+
+    //paging all buttons - index shows a number of an current page
     const [index, setIndex] = React.useState(0);
     const classes = useStyles();
 
@@ -146,12 +147,16 @@ export default function Buttons(props) {
             for (let i = 0; i < 3; i++) {
                 await helpers.getImg(start, props.socketAct, "GET_IMAGE_ACTION", elem.Value)
                     .then(data => {
+                        // console.log(data)
                         if (data !== undefined) {
                             i = 3;
                             elem.img = data;
                             arr.push(elem)
                         }
 
+                    })
+                    .catch((err) => {
+                        console.log(err)
                     })
             }
 

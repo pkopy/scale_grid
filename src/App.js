@@ -35,7 +35,7 @@ function App() {
     //checking if there is a menu component
     const [disabledAddMenuButton, setDisabledAddMenuButton] = React.useState(false)
     const [textLabels, setTextLabels] = useState([]);
-    const host = process.env.NODE_ENV !== 'production' ? '10.10.2.232' : window.location.hostname;
+    const host = process.env.NODE_ENV !== 'production' ? '10.10.3.60' : window.location.hostname;
 
 
     // blocking the ability to drag and drop items
@@ -62,6 +62,7 @@ function App() {
         // const socket = new WebSocket(`ws://${window.location.hostname}:4101`);
         const socketMass = new WebSocket(`ws://${host}:4101`);
         const socketAct = new WebSocket(`ws://${host}:4101`);
+
         socketMass.onopen = () => {
             setStart(true);
         };
@@ -92,15 +93,22 @@ function App() {
 
         }
         if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'SHOW') {
-            showMenu();
+            // showMenu();
 
             setHamburger(true);
-            getAllImgs(socketAct, response.RECORD.Items, response.RECORD.GUID)
-                .then(data => {
-                    console.log('data:', data)
-                    setMenuButtons(data);
-                    setMenu(response.RECORD);
-                }).catch((err) => console.log(err))
+            if (response.RECORD.Items.length > 0) {
+
+                getAllImgs(socketAct, response.RECORD.Items, response.RECORD.GUID)
+                    .then(data => {
+                        console.log('data:', data)
+                        setMenuButtons(data)
+                        console.log()
+                        setMenu(response.RECORD);
+                    }).catch((err) => console.log(err))
+            } else {
+                setMenuButtons([]);
+                setMenu(response.RECORD);
+            }
         }
         //text component
         if (response.COMMAND === 'GET_MOD_INFO') {
@@ -168,24 +176,28 @@ function App() {
 
     async function getAllImgs(socket, menuButtons, menuId) {
         const arr = [];
-        for (let elem of menuButtons) {
-            // console.log('guid', menuId);
-            // console.log('guidXXxxx', menu);
-            if (!elem.img) {
-                // console.log(elem)
-                for (let i = 0; i < 3; i++) {
-                    await helpers.getImg(true, socket, "GET_IMAGE_MENU", elem.GUID)
-                        .then(data => {
-                            if (data !== undefined) {
-                                i = 3;
-                                elem.img = data;
-                                // console.log(elem);
-                                arr.push(elem)
-                            }
-                        }).catch(err => console.log(err))
-                }
-            }
+        if (menuButtons.length > 0) {
 
+
+            for (let elem of menuButtons) {
+                // console.log('guid', menuId);
+                // console.log('guidXXxxx', menu);
+                if (!elem.img) {
+                    // console.log(elem)
+                    for (let i = 0; i < 3; i++) {
+                        await helpers.getImg(true, socket, "GET_IMAGE_MENU", elem.GUID)
+                            .then(data => {
+                                if (data !== undefined) {
+                                    i = 3;
+                                    elem.img = data;
+                                    // console.log(elem);
+                                    arr.push(elem)
+                                }
+                            }).catch(err => console.log(err))
+                    }
+                }
+
+            }
         }
         return arr
     }
@@ -301,7 +313,7 @@ function App() {
                             minW: 1,
                             elem
                         });
-                    } else{
+                    } else {
 
                     }
                     break;
@@ -316,7 +328,7 @@ function App() {
     };
 
     const send = (elem) => {
-        // console.log(elem);
+        console.log('send',elem);
         if (start && socketAct.readyState === 1 && elem.elem && blocked) {
             socketAct.send(JSON.stringify({COMMAND: 'EXECUTE_ACTION', PARAM: elem.elem.Value}));
         }
@@ -332,6 +344,7 @@ function App() {
     };
 
     const showMenu = () => {
+        console.log('show')
         if (start && socketAct.readyState === 1) {
             socketAct.send(JSON.stringify({COMMAND: 'EXECUTE_ACTION', PARAM: "actSetup"}))
         }
@@ -616,51 +629,55 @@ function App() {
 
                 // style={{border:"1px solid rgb(0, 0, 0, 0.4)"}}
             >
-                {layout.map(elem =>{
-                    // console.log(elem)
-                    // if (elem.elem && elem.elem.Name === 'MENU') {
-                    //     console.log('elem', elem);
-                    //     setDisabledAddMenuButton(true)
-                    // }
+                {layout.map(elem => {
+                        // console.log(elem)
+                        // if (elem.elem && elem.elem.Name === 'MENU') {
+                        //     console.log('elem', elem);
+                        //     setDisabledAddMenuButton(true)
+                        // }
 
-                    return (
+                        return (
 
 
-                    <div className="xx" onClick={elem.elem&&elem.elem.type!=='text'?() => send(elem):undefined} style={{
-                        border: "1px solid rgb(0, 0, 0, 0.4)",
-                        display: 'flex',
-                        alignItems: 'center',
-                    }}
-                         id={elem.i} key={elem.i}>
+                            <div className="xx"
+                                 onClick={elem.elem && elem.elem.type !== 'text' ? () => send(elem) : undefined} style={{
+                                border: "1px solid rgb(0, 0, 0, 0.4)",
+                                display: 'flex',
+                                alignItems: 'center',
+                            }}
+                                 id={elem.i} key={elem.i}>
 
-                        {visible && elem.elem && elem.elem.type!=='text'&&
-                        <div style={{height: '100%', position: "relative", marginRight: "auto", marginLeft: "auto"}}>
-                            {/*hide the name of a component if its height is smaller than 2*/}
-                            {elem.w > 1 && elem.h > 1 && <p>{elem.elem.Name}</p>}
+                                {visible && elem.elem && elem.elem.type !== 'text' &&
+                                <div
+                                    style={{height: '100%', position: "relative", marginRight: "auto", marginLeft: "auto"}}>
+                                    {/*hide the name of a component if its height is smaller than 2*/}
+                                    {elem.w > 1 && elem.h > 1 && <p>{elem.elem.Name}</p>}
 
-                            {elem.elem.img&&<img src={`data:image/png;base64, ${elem.elem.img} `} draggable={false}
-                                 onMouseDown={() => false} style={{pointerEvents: 'none', width: screen.imgWidth}}
-                                 alt='img'/>}
-                            {/*{!elem.elem.img&&<img src={six} width={10} draggable={false}*/}
-                            {/*                      onMouseDown={() => false} style={{pointerEvents: 'none', width: screen.imgWidth}}*/}
-                            {/*                      alt='img'/>}*/}
-                        </div>}
+                                    {elem.elem.img &&
+                                    <img src={`data:image/png;base64, ${elem.elem.img} `} draggable={false}
+                                         onMouseDown={() => false} style={{pointerEvents: 'none', width: screen.imgWidth}}
+                                         alt='img'/>}
+                                    {/*{!elem.elem.img&&<img src={six} width={10} draggable={false}*/}
+                                    {/*                      onMouseDown={() => false} style={{pointerEvents: 'none', width: screen.imgWidth}}*/}
+                                    {/*                      alt='img'/>}*/}
+                                </div>}
 
-                        <div style={{position: 'absolute', bottom: '1%', left: '1%'}}>
+                                <div style={{position: 'absolute', bottom: '1%', left: '1%'}}>
 
-                            {!blocked && elem.obj !== 'mass' && (elem.h > 1 || elem.w > 1) &&
-                            <div>
-                                <IconButton onClick={(e) => deleteItem(e, elem)}>
-                                    <DeleteOutlineIcon/>
-                                </IconButton>
+                                    {!blocked && elem.obj !== 'mass' && (elem.h > 1 || elem.w > 1) &&
+                                    <div>
+                                        <IconButton onClick={(e) => deleteItem(e, elem)}>
+                                            <DeleteOutlineIcon/>
+                                        </IconButton>
+                                    </div>
+                                    }
+                                </div>
+                                {/*{elem.elem && elem.elem.Name === 'MENU' && setDisabledAddMenuButton(true)}*/}
+                                {elem.elem && elem.elem.type === 'text' && _textComponent()}
+                                {elem.obj === 'mass' && _mass(elem)}
                             </div>
-                            }
-                        </div>
-                        {/*{elem.elem && elem.elem.Name === 'MENU' && setDisabledAddMenuButton(true)}*/}
-                        {elem.elem&&elem.elem.type === 'text' && _textComponent()}
-                        {elem.obj === 'mass' && _mass(elem)}
-                    </div>
-                    )}
+                        )
+                    }
                 )}
 
             </GridLayout>

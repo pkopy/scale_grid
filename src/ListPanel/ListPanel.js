@@ -3,10 +3,13 @@ import {makeStyles} from '@material-ui/core/styles';
 import loader from '../img/search.gif';
 import checkGreen from '../img/Check_green.svg';
 import checkGray from '../img/Check_gray.svg'
+import ForwardIcon from '@material-ui/icons/Forward';
+import {IconButton} from '@material-ui/core';
+
 const useStyles = makeStyles(theme => ({
     listPanel: {
         width: 1024,
-        height: 400,
+        height: 530,
         border: '1px solid rgb(0,0,0,0.2)',
         position: 'absolute',
         zIndex: 100,
@@ -17,9 +20,10 @@ const useStyles = makeStyles(theme => ({
         overflowX: 'hidden'
     }
 }));
-//TODO split the number of items in the menu, when items go out the screen
+//TODO hide and show a scrollBar arrows
 export default function ListPanel(props) {
     const [left, setLeft] = React.useState(-1100);
+    const [visibleScroll, setVisibleScroll] = React.useState(false)
     // console.log(props)
     // if (props.hamburger) {
     //     setLeft(0)
@@ -27,34 +31,39 @@ export default function ListPanel(props) {
     //     setLeft(-1100)
     // }
     const ref = React.useRef();
+    // const refContainer = React.useRef()
     React.useEffect(() => {
         props.hamburger ? setLeft(0) : setLeft(-1100);
         console.log('xxxxx', props)
         if (ref) ref.current.scrollTop = 0
+
     }, [props.hamburger]);
 
     React.useEffect(() => {
         console.log('menu:', props.menuButtons)
+        // console.log(ref)
+        // console.log(ref.current.scrollHeight)
+        if (ref.current.scrollHeight > 530) setVisibleScroll(true)
+        // console.log(ref.current.scrollHeight)
     }, [props.menuButtons])
 
     const classes = useStyles();
-    const str = (node) => {
+    //
+    const scroll = (node, directionUp = false) => {
         // node.stopPropagation()
         // node.scrollTop = 0
-        console.log(node.scrollTop)
+        // console.log(node)
         let x = 0;
         const timer = setInterval(() => {
 
             x++;
-            node.scrollTop += x;
-            console.log(x)
-            if (x >= 130) {
-
+            directionUp ? node.scrollTop -= x : node.scrollTop += x;
+            // console.log(x);
+            if (x >= 80) {
                 x = 0;
                 clearInterval(timer)
             }
         }, 15);
-
 
     }
 
@@ -63,18 +72,17 @@ export default function ListPanel(props) {
 
             <div className={classes.listPanel}
                  style={{left: left, display: 'flex'}}>
-                <div id='container' ref={ref} onClick={(e) => {
-                    console.log(ref);
-                    str(ref.current, e)
-                }} style={{
-                    width: '100%',
-                    display: 'grid',
-                    gridTemplateColumns: props.menu.isBig ? 'auto auto auto auto auto' : '50% 50%',
-                    gridAutoRows: 'min-content',
-                    flexWrap: 'wrap',
-                    justifyContent: 'center',
-                    overflowY: 'hidden',
-                }}>
+                <div id='container' ref={ref}
+                     style={{
+                         width: '90%',
+                         display: 'grid',
+                         gridTemplateColumns: props.menu.isBig ? 'auto auto auto auto auto' : '50% 50%',
+                         gridAutoRows: 'min-content',
+                         // flexWrap: 'wrap',
+                         // justifyContent: 'center',
+                         marginLeft: 80,
+                         overflowY: 'hidden',
+                     }}>
 
 
                     {props.menu.isBig && props.menuButtons.map((elem, i) =>
@@ -87,7 +95,8 @@ export default function ListPanel(props) {
                             border: '1px solid rgb(0,0,0,0.2)'
                         }} onClick={(e) => e.stopPropagation()}
                              onMouseDown={(e) => {
-                                 e.stopPropagation();
+                                 console.log('TAPPPPPP')
+                                 // e.stopPropagation();
                                  props.tapParam(elem.GUID)
                              }}>{elem.Name}
                             {/*<img src={loader} width='25px' alt={'menu img'}/>*/}
@@ -123,6 +132,7 @@ export default function ListPanel(props) {
                         }}
                              onClick={(e) => e.stopPropagation()}
                              onMouseDown={(e) => {
+                                 console.log('TAPPPPPP')
                                  e.stopPropagation();
                                  props.tapParam(elem.GUID);
 
@@ -139,24 +149,39 @@ export default function ListPanel(props) {
                                     // paddingLeft: 15
                                 }} src={`data:image/png;base64, ${elem.img}`} alt={'img'}/>}
                             </div>
-                            <div style={{width: '100%', display:'flex'}}>
-                                <div style={{width:'50%', textAlign:'left', paddingLeft:10}}>
+                            <div style={{width: '100%', display: 'flex'}}>
+                                <div style={{width: '50%', textAlign: 'left', paddingLeft: 10}}>
                                     <p>{elem.Name}</p>
 
                                 </div>
-                                <div style={{width:'50%', textAlign:'right', paddingRight:10}}>
+                                <div style={{width: '50%', textAlign: 'right', paddingRight: 10}}>
 
-                                    {elem.Type === 'EditEnumSwitch'? <div>
-                                            {elem.Value === "True"?<img src={checkGreen} alt={'check icon'} width={40} style={{paddingTop:10}}/>:<img src={checkGray} alt={'check icon'} width={40} style={{paddingTop:10}}/>}
-                                    </div>:<p>{elem.Value}</p>}
+                                    {elem.Type === 'EditEnumSwitch' ? <div>
+                                        {elem.Value === "True" ? <img src={checkGreen} alt={'check icon'} width={40}
+                                                                      style={{paddingTop: 10}}/> :
+                                            <img src={checkGray} alt={'check icon'} width={40}
+                                                 style={{paddingTop: 10}}/>}
+                                    </div> : <p>{elem.Value}</p>}
                                 </div>
                             </div>
                         </div>
                     )}
                     {/*</div>*/}
                 </div>
-                <div>
-                    dddd
+                <div style={{width: 80}}>
+                    {visibleScroll&&<IconButton
+                        onClick={(e) => {
+                            // console.log(ref);
+                            scroll(ref.current, true)
+                        }}>
+                        <ForwardIcon style={{fontSize: '2.5em', transform: 'rotate(-90deg)'}}/>
+                    </IconButton>}
+                    {visibleScroll&&<IconButton onClick={() => {
+                        console.log(ref);
+                        scroll(ref.current)
+                    }}>
+                        <ForwardIcon style={{fontSize: '2.5em', transform: 'rotate(90deg)'}}/>
+                    </IconButton>}
                 </div>
             </div>
         </div>

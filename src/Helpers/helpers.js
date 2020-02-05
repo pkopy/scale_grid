@@ -17,6 +17,7 @@ helpers.getImg = (socketOn, socket, command, value) => {
                 rej('noImg');
             }
         }
+        // rej('err')
     })
 };
 
