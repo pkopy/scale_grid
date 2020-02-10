@@ -150,7 +150,7 @@ export default function Buttons(props) {
                         // console.log(data)
                         if (data !== undefined) {
                             i = 3;
-                            elem.img = data;
+                            elem.img = data.DATA;
                             arr.push(elem)
                         }
 

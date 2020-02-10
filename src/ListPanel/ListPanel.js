@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
 //TODO hide and show a scrollBar arrows
 export default function ListPanel(props) {
     const [left, setLeft] = React.useState(-1100);
-    const [visibleScroll, setVisibleScroll] = React.useState(false)
+    const [visibleScroll, setVisibleScroll] = React.useState(true)
     // console.log(props)
     // if (props.hamburger) {
     //     setLeft(0)
@@ -34,17 +34,18 @@ export default function ListPanel(props) {
     // const refContainer = React.useRef()
     React.useEffect(() => {
         props.hamburger ? setLeft(0) : setLeft(-1100);
-        console.log('xxxxx', props)
+        // console.log('xxxxx', props)
         if (ref) ref.current.scrollTop = 0
 
     }, [props.hamburger]);
 
     React.useEffect(() => {
-        console.log('menu:', props.menuButtons)
+        // console.log('menu:', props.menuButtons)
         // console.log(ref)
         // console.log(ref.current.scrollHeight)
-        if (ref.current.scrollHeight > 530) setVisibleScroll(true)
+        // if (ref.current.scrollHeight > 530) setVisibleScroll(true)
         // console.log(ref.current.scrollHeight)
+        console.log(props.menuButtons)
     }, [props.menuButtons])
 
     const classes = useStyles();
@@ -59,11 +60,11 @@ export default function ListPanel(props) {
             x++;
             directionUp ? node.scrollTop -= x : node.scrollTop += x;
             // console.log(x);
-            if (x >= 80) {
+            if (x >= 20) {
                 x = 0;
                 clearInterval(timer)
             }
-        }, 15);
+        }, 20);
 
     }
 
@@ -85,7 +86,7 @@ export default function ListPanel(props) {
                      }}>
 
 
-                    {props.menu.isBig && props.menuButtons.map((elem, i) =>
+                    {props.menu.isBig && props.menuButtons && props.menuButtons.map((elem, i) =>
                         <div key={i} style={{
                             background: '#fff',
                             margin: 5,
@@ -98,12 +99,27 @@ export default function ListPanel(props) {
                                  console.log('TAPPPPPP')
                                  // e.stopPropagation();
                                  props.tapParam(elem.GUID)
-                             }}>{elem.Name}
+                             }}>
                             {/*<img src={loader} width='25px' alt={'menu img'}/>*/}
-                            {!elem.img && <img className={classes.imgs} width={30} src={loader} alt={'loader'}/>}
-                            {elem.img && <img className={classes.imgs} width={window.innerWidth < 800 ? 25 : 75}
-                                              style={{pointerEvents: 'none'}} src={`data:image/png;base64, ${elem.img}`}
-                                              alt={'img'}/>}
+                            <div style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                height: 120
+                            }}>
+
+                                <div>
+                                    {!elem.img &&
+                                    <img className={classes.imgs} width={30} src={loader} alt={'loader'}/>}
+                                    {elem.img &&
+                                    <img className={classes.imgs} width={window.innerWidth < 800 ? 25 : 100}
+                                         style={{pointerEvents: 'none'}} src={`data:image/png;base64, ${elem.img}`}
+                                         alt={'img'}/>}
+                                </div>
+
+                            </div>
+                            <div>{elem.Name}</div>
+
                         </div>
                     )}
 
@@ -119,7 +135,7 @@ export default function ListPanel(props) {
                     {/*    marginLeft: '20px',*/}
                     {/*    left:0*/}
                     {/*}}>*/}
-                    {!props.menu.isBig && props.menuButtons.map((elem, i) =>
+                    {!props.menu.isBig && props.menuButtons && props.menuButtons.map((elem, i) =>
                         <div key={i} style={{
                             background: '#fff',
                             // position: 'relative',
@@ -169,14 +185,14 @@ export default function ListPanel(props) {
                     {/*</div>*/}
                 </div>
                 <div style={{width: 80}}>
-                    {visibleScroll&&<IconButton
+                    {visibleScroll && <IconButton
                         onClick={(e) => {
                             // console.log(ref);
                             scroll(ref.current, true)
                         }}>
                         <ForwardIcon style={{fontSize: '2.5em', transform: 'rotate(-90deg)'}}/>
                     </IconButton>}
-                    {visibleScroll&&<IconButton onClick={() => {
+                    {visibleScroll && <IconButton onClick={() => {
                         console.log(ref);
                         scroll(ref.current)
                     }}>

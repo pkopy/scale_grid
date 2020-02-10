@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
+import TextContainer from "./TextContainer";
 
 const useStyles = makeStyles(theme => ({
     textPanel: {
@@ -30,15 +31,23 @@ const useStyles = makeStyles(theme => ({
 export default function TextPanel(props) {
     const classes = useStyles();
     const [activeIndex, setActiveIndex] = useState(0);
+
+
     const activeTab = `${classes.tabs} ${classes.activeTab}`;
     const tab = classes.tabs;
+
+    // console.log(TextContainer.textLabels)
+
+
     // console.log(props.textLabels.length > 0 ? props.textLabels[1].split('\n') : undefined)
     const changeActiveTab = (index) => {
         setActiveIndex(index);
         // console.log(index);
     };
     return (
+
         <div style={{width: '100%', height: '100%'}}>
+            {props.children}
             <div className={classes.textPanel}>
                 <div className={classes.tabContainer} onClick={() => changeActiveTab(0)}>
                     <div className={activeIndex === 0 ? activeTab : tab}></div>
@@ -53,7 +62,7 @@ export default function TextPanel(props) {
             </div>
             <div style={{width: '100%', height: '80%', overflowY: 'auto', marginTop: 40}}>
                 <div style={{textAlign: 'left', marginLeft: 15}}>
-                    {props.textLabels.length > 0 && props.textLabels[activeIndex].split('\n').map((elem, i) =>
+                    {TextContainer.textLabels.length > 0 && TextContainer.textLabels[activeIndex].split('\n').map((elem, i) =>
                         <p key={i} style={{margin: 0}}>{elem}</p>
                     )}
                 </div>

@@ -17,6 +17,7 @@ import eight from '../img/eight.svg'
 import nine from '../img/nine.svg'
 import minus from '../img/minus.svg'
 import dot from '../img/dot.svg'
+import TextContainer from "../TextPanel/TextContainer";
 
 
 const theme = createMuiTheme({
@@ -68,8 +69,8 @@ export default function LinearDeterminate(props) {
     const [precision, setPrecision] = useState();
     const [platform, setPlatform] = useState(0);
     const [platfomsArray, setPlatformsArray] = useState([]);
-    const [labels, setLabels] = useState([])
-
+    const [labels, setLabels] = useState(0)
+    const [oldLabels, setOldLabels] = useState([])
     useEffect(() => {
 
         function sendToSocket() {
@@ -80,14 +81,20 @@ export default function LinearDeterminate(props) {
                     const response = JSON.parse(data);
                     // console.log(response)
                     let Mass = []
-
+                    // console.log(equalsArray(oldLabels,labels))
                     if (response.RECORD) {
                         Mass = response.RECORD.Mass
                         setPlatformsArray(Mass)
-                        props.setTextLabels(response.RECORD.var_labels)
+                        // if (oldLabels !== labels) console.log('xman')
                         // setLabels(response.RECORD.var_labels)
+                        // if (!props.textLabels) {
+                        //     props.setTextLabels(props.socketMass.readyState)
+                        //     // props.setTextLabels(response.RECORD.var_labels)
+                        // }
+                        TextContainer.setTextLabels(response.RECORD.var_labels)
+                        // console.log(TextContainer)
                     }
-                    // console.log(response.RECORD)
+                    // console.log(TextContainer.textLabels)
                     if (Mass.length>0 && Mass[platform].NetAct && Mass[platform].NetCal) {
                         props.setLicense(true);
                         setMax(Mass[platform].Max * 1);
@@ -112,8 +119,8 @@ export default function LinearDeterminate(props) {
             } else {
                 setValue('-----');
             }
+            // props.setTextLabels(labels)
         }
-        props.setTextLabels(labels)
         const timer = setInterval(sendToSocket, 250);
         return () => {
             clearInterval(timer);
@@ -121,6 +128,20 @@ export default function LinearDeterminate(props) {
 
     }, [platform]);
 
+    const equalsArray = (arr1, arr2) => {
+        // console.log(arr1, arr2)
+        if (arr1.length !== arr2.length) return false
+        for (let i = 0; i < arr1.length; i++) {
+            if (arr1[i] !== arr2[i]) return false
+        }
+        return true
+    }
+    // useEffect(() => {
+    //
+    //     setInterval(() =>{
+    //         props.setTextLabels(labels)
+    //     }, 1000)
+    // },[labels])
     // useEffect(() => {
     //     if (props.socketMass.readyState === 1) {
     //         props.socketMass.send(JSON.stringify({COMMAND: 'GET_MOD_INFO'}));
@@ -263,7 +284,7 @@ export default function LinearDeterminate(props) {
 
         return (
             <div style={{width:'100%'}}>
-                
+
                 {props.visible && <div style={{ display: 'flex', width: '100%' }}>
 
                     <div style={{ width: 100, display: 'flex', flexDirection: 'column', textAlign: 'left', marginTop: '10px' }}>

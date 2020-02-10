@@ -1,6 +1,6 @@
 const helpers = {};
-
-helpers.getImg = (socketOn, socket, command, value) => {
+helpers.arr = []
+helpers.getImg = (socketOn, socket, command, value, arr) => {
     // console.log('socket',socketOn, command, value, socket)
     return new Promise((res, rej) => {
         if (socketOn && socket.readyState === 1) {
@@ -9,9 +9,16 @@ helpers.getImg = (socketOn, socket, command, value) => {
             socket.onmessage = (e) => {
                 let data = e.data;
                 const response = JSON.parse(data);
-                // console.log(response);
+                console.log('helpers:', value)
+                console.log('helpers:',response);
+                if (response.DATA) {
+                    // arr.push(response)
+                    res(response);
+                } else {
+                    // arr.push(response)
+                    res(response);
 
-                res(response.DATA);
+                }
             };
             socket.onerror = (err) => {
                 rej('noImg');

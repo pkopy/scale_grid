@@ -13,6 +13,7 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import MenuIcon from '@material-ui/icons/Menu';
 import ClearIcon from '@material-ui/icons/Clear';
 import AddPanel from "../AddPanel/AddPanel";
+import DateTime from "../DateTime/DateTime";
 const useStyles = makeStyles(theme => ({
     root: {
         flexGrow: 1,
@@ -47,7 +48,7 @@ export default function ButtonAppBar(props) {
             // if(props.menu)
             // setTitle(props.menu.Name);
             props.setHamburger(true);
-            console.log(props.menu)
+            // console.log(props.menu)
         } else {
             props.close();
 
@@ -88,10 +89,12 @@ export default function ButtonAppBar(props) {
                         {props.menu.Name ? title.toUpperCase() : 'SMART DISPLAY'}
                     </Typography>
 
+                    <DateTime
+                        date={'2020-02-05'}
+                    />
                     <IconButton color="inherit" onClick={() => props.getLayout()}>
                         <RefreshIcon/>
                     </IconButton>
-
                     {!props.blocked && <IconButton color="inherit" onClick={(e) => {handleOpen(); setAnchorEl(e.currentTarget); console.log(e.currentTarget)}}>
                         <AddCircleOutlineIcon/>
                     </IconButton>}
