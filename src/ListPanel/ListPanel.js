@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
 //TODO hide and show a scrollBar arrows
 export default function ListPanel(props) {
     const [left, setLeft] = React.useState(-1100);
-    const [visibleScroll, setVisibleScroll] = React.useState(true)
+    const [visibleScroll, setVisibleScroll] = React.useState(false);
     // console.log(props)
     // if (props.hamburger) {
     //     setLeft(0)
@@ -40,13 +40,11 @@ export default function ListPanel(props) {
     }, [props.hamburger]);
 
     React.useEffect(() => {
-        // console.log('menu:', props.menuButtons)
-        // console.log(ref)
-        // console.log(ref.current.scrollHeight)
-        // if (ref.current.scrollHeight > 530) setVisibleScroll(true)
-        // console.log(ref.current.scrollHeight)
-        console.log(props.menuButtons)
-    }, [props.menuButtons])
+
+        setVisibleScroll(false);
+        if ((props.menuButtons.length > 15 && props.menu.isBig) ||(props.menuButtons.length > 12 && !props.menu.isBig)) setVisibleScroll(true)
+
+    }, [props.menuButtons]);
 
     const classes = useStyles();
     //
@@ -118,7 +116,7 @@ export default function ListPanel(props) {
                                 </div>
 
                             </div>
-                            <div>{elem.Name}</div>
+                            <div style={{top:-10, position:"relative"}}>{elem.Name}</div>
 
                         </div>
                     )}
@@ -143,7 +141,7 @@ export default function ListPanel(props) {
                             margin: 5,
                             padding: 5,
                             // width: '46%',
-                            height: 60,
+                            height: 66,
                             border: '1px solid rgb(0,0,0,0.2)'
                         }}
                              onClick={(e) => e.stopPropagation()}

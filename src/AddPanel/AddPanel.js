@@ -46,7 +46,7 @@ export default function AddPanel(props) {
             <MenuItem onClick={openAddButton}>Button</MenuItem>
             <MenuItem disabled={props.disabledAddMenuButton} onClick={() => {
                 handleClose();
-                props.add({Name: 'MENU'}, 'menu')
+                props.add({Name: 'MENU',type:'menu'}, 'menu')
             }}>Menu</MenuItem>
             <MenuItem onClick={() => {
                 handleClose();

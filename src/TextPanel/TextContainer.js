@@ -6,4 +6,6 @@ const TextContainer = {
         TextContainer.textLabels = labels
     }
 };
+
+
 export default TextContainer

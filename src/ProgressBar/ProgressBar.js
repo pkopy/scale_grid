@@ -83,8 +83,8 @@ export default function LinearDeterminate(props) {
                     let Mass = []
                     // console.log(equalsArray(oldLabels,labels))
                     if (response.RECORD) {
-                        Mass = response.RECORD.Mass
-                        setPlatformsArray(Mass)
+                        Mass = response.RECORD.Mass;
+                        setPlatformsArray(Mass);
                         // if (oldLabels !== labels) console.log('xman')
                         // setLabels(response.RECORD.var_labels)
                         // if (!props.textLabels) {
@@ -94,7 +94,7 @@ export default function LinearDeterminate(props) {
                         TextContainer.setTextLabels(response.RECORD.var_labels)
                         // console.log(TextContainer)
                     }
-                    // console.log(TextContainer.textLabels)
+
                     if (Mass.length>0 && Mass[platform].NetAct && Mass[platform].NetCal) {
                         props.setLicense(true);
                         setMax(Mass[platform].Max * 1);

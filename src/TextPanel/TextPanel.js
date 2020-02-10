@@ -31,13 +31,23 @@ const useStyles = makeStyles(theme => ({
 export default function TextPanel(props) {
     const classes = useStyles();
     const [activeIndex, setActiveIndex] = useState(0);
-
+    const [textLabels, setTextLabels] = useState(TextContainer.textLabels);
 
     const activeTab = `${classes.tabs} ${classes.activeTab}`;
     const tab = classes.tabs;
 
     // console.log(TextContainer.textLabels)
+    useEffect(() => {
+        const start = () => {
+            setTextLabels(TextContainer.textLabels);
+            // console.log(textLabels)
+        }
 
+        const timer = setInterval(start, 2000)
+        return () => {
+            clearInterval(timer)
+        }
+},[])
 
     // console.log(props.textLabels.length > 0 ? props.textLabels[1].split('\n') : undefined)
     const changeActiveTab = (index) => {
@@ -46,7 +56,7 @@ export default function TextPanel(props) {
     };
     return (
 
-        <div style={{width: '100%', height: '100%'}}>
+        <div style={{width: '100%', height: '100%', backgroundColor:"#ececec"}}>
             {props.children}
             <div className={classes.textPanel}>
                 <div className={classes.tabContainer} onClick={() => changeActiveTab(0)}>
@@ -62,7 +72,7 @@ export default function TextPanel(props) {
             </div>
             <div style={{width: '100%', height: '80%', overflowY: 'auto', marginTop: 40}}>
                 <div style={{textAlign: 'left', marginLeft: 15}}>
-                    {TextContainer.textLabels.length > 0 && TextContainer.textLabels[activeIndex].split('\n').map((elem, i) =>
+                    {textLabels.length > 0 && textLabels[activeIndex].split('\n').map((elem, i) =>
                         <p key={i} style={{margin: 0}}>{elem}</p>
                     )}
                 </div>

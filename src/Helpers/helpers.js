@@ -9,8 +9,8 @@ helpers.getImg = (socketOn, socket, command, value, arr) => {
             socket.onmessage = (e) => {
                 let data = e.data;
                 const response = JSON.parse(data);
-                console.log('helpers:', value)
-                console.log('helpers:',response);
+                // console.log('helpers:', value)
+                // console.log('helpers:',response);
                 if (response.DATA) {
                     // arr.push(response)
                     res(response);

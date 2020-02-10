@@ -50,6 +50,7 @@ export default function ButtonAppBar(props) {
             props.setHamburger(true);
             // console.log(props.menu)
         } else {
+            // props.block()
             props.close();
 
             // setTitle('SMART DISPLAY');
