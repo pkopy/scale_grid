@@ -5,6 +5,7 @@ import checkGreen from '../img/Check_green.svg';
 import checkGray from '../img/Check_gray.svg'
 import ForwardIcon from '@material-ui/icons/Forward';
 import {IconButton} from '@material-ui/core';
+import helpers from "../Helpers/helpers";
 
 const useStyles = makeStyles(theme => ({
     listPanel: {
@@ -48,23 +49,23 @@ export default function ListPanel(props) {
 
     const classes = useStyles();
     //
-    const scroll = (node, directionUp = false) => {
-        // node.stopPropagation()
-        // node.scrollTop = 0
-        // console.log(node)
-        let x = 0;
-        const timer = setInterval(() => {
-
-            x++;
-            directionUp ? node.scrollTop -= x : node.scrollTop += x;
-            // console.log(x);
-            if (x >= 20) {
-                x = 0;
-                clearInterval(timer)
-            }
-        }, 20);
-
-    }
+    // const scroll = (node, directionUp = false) => {
+    //     // node.stopPropagation()
+    //     // node.scrollTop = 0
+    //     // console.log(node)
+    //     let x = 0;
+    //     const timer = setInterval(() => {
+    //
+    //         x++;
+    //         directionUp ? node.scrollTop -= x : node.scrollTop += x;
+    //         // console.log(x);
+    //         if (x >= 20) {
+    //             x = 0;
+    //             clearInterval(timer)
+    //         }
+    //     }, 20);
+    //
+    // }
 
     return (
         <div>
@@ -186,13 +187,13 @@ export default function ListPanel(props) {
                     {visibleScroll && <IconButton
                         onClick={(e) => {
                             // console.log(ref);
-                            scroll(ref.current, true)
+                            helpers.scroll(ref.current, true)
                         }}>
                         <ForwardIcon style={{fontSize: '2.5em', transform: 'rotate(-90deg)'}}/>
                     </IconButton>}
                     {visibleScroll && <IconButton onClick={() => {
                         console.log(ref);
-                        scroll(ref.current)
+                        helpers.scroll(ref.current)
                     }}>
                         <ForwardIcon style={{fontSize: '2.5em', transform: 'rotate(90deg)'}}/>
                     </IconButton>}

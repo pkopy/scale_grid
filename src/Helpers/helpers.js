@@ -52,5 +52,23 @@ helpers.findFreeSpace = (array, index, elem) => {
     return true
 };
 
+helpers.scroll = (node, directionUp = false) => {
+    // node.stopPropagation()
+    // node.scrollTop = 0
+    // console.log(node)
+    let x = 0;
+    const timer = setInterval(() => {
+
+        x++;
+        directionUp ? node.scrollTop -= x : node.scrollTop += x;
+        // console.log(x);
+        if (x >= 20) {
+            x = 0;
+            clearInterval(timer)
+        }
+    }, 20);
+
+}
+
 
 export default helpers
