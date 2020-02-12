@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import loader from '../img/search.gif';
 import checkGreen from '../img/Check_green.svg';
@@ -25,54 +25,47 @@ const useStyles = makeStyles(theme => ({
 export default function ListPanel(props) {
     const [left, setLeft] = React.useState(-1100);
     const [visibleScroll, setVisibleScroll] = React.useState(false);
+    const [scrollTop, setScrollTop] = useState(0)
     // console.log(props)
     // if (props.hamburger) {
     //     setLeft(0)
     // } else {
     //     setLeft(-1100)
     // }
-    const ref = React.useRef();
+    const refMenu = React.useRef();
     // const refContainer = React.useRef()
     React.useEffect(() => {
         props.hamburger ? setLeft(0) : setLeft(-1100);
         // console.log('xxxxx', props)
-        if (ref) ref.current.scrollTop = 0
+        if (refMenu) refMenu.current.scrollTop = 0
 
     }, [props.hamburger]);
-
+    useEffect(() => {
+        if (refMenu.current.scrollHeight > refMenu.current.clientHeight) {
+            setVisibleScroll(true)
+        }
+        // console.log(refMenu);
+    });
     React.useEffect(() => {
-
+        setScrollTop(0)
         setVisibleScroll(false);
         if ((props.menuButtons.length > 15 && props.menu.isBig) ||(props.menuButtons.length > 12 && !props.menu.isBig)) setVisibleScroll(true)
 
     }, [props.menuButtons]);
 
+    useEffect(() => {
+        // console.log(scrollTop)
+    }, [scrollTop])
+
     const classes = useStyles();
-    //
-    // const scroll = (node, directionUp = false) => {
-    //     // node.stopPropagation()
-    //     // node.scrollTop = 0
-    //     // console.log(node)
-    //     let x = 0;
-    //     const timer = setInterval(() => {
-    //
-    //         x++;
-    //         directionUp ? node.scrollTop -= x : node.scrollTop += x;
-    //         // console.log(x);
-    //         if (x >= 20) {
-    //             x = 0;
-    //             clearInterval(timer)
-    //         }
-    //     }, 20);
-    //
-    // }
+
 
     return (
         <div>
 
             <div className={classes.listPanel}
                  style={{left: left, display: 'flex'}}>
-                <div id='container' ref={ref}
+                <div id='container' ref={refMenu}
                      style={{
                          width: '90%',
                          display: 'grid',
@@ -90,8 +83,8 @@ export default function ListPanel(props) {
                             background: '#fff',
                             margin: 5,
                             padding: 5,
-                            width: 150,
-                            height: 150,
+                            width: 153,
+                            height: 153,
                             border: '1px solid rgb(0,0,0,0.2)'
                         }} onClick={(e) => e.stopPropagation()}
                              onMouseDown={(e) => {
@@ -185,16 +178,35 @@ export default function ListPanel(props) {
                 </div>
                 <div style={{width: 80}}>
                     {visibleScroll && <IconButton
+                        disabled={scrollTop === 0}
                         onClick={(e) => {
                             // console.log(ref);
-                            helpers.scroll(ref.current, true)
+
+                            helpers.scroll(refMenu.current, 500,true)
+                            // setScrollTop('')
+                            setTimeout(() => {
+                                // console.log(refMenu.current.scrollTop)
+                                setScrollTop(refMenu.current.scrollTop)
+                            }, 50);
+
+
+                            if (refMenu.current.scrollTop === 0) setScrollTop(0)
+
                         }}>
                         <ForwardIcon style={{fontSize: '2.5em', transform: 'rotate(-90deg)'}}/>
                     </IconButton>}
-                    {visibleScroll && <IconButton onClick={() => {
-                        console.log(ref);
-                        helpers.scroll(ref.current)
-                    }}>
+                    {visibleScroll && <IconButton
+                        onClick={() => {
+                            helpers.scroll(refMenu.current, 500)
+                            // setScrollTop('')
+                            setTimeout(() => {
+                                // console.log(refMenu.current.scrollTop)
+                                setScrollTop(refMenu.current.scrollTop)
+                            }, 50);
+                    }}
+                        disabled={scrollTop + refMenu.current.clientHeight >= refMenu.current.scrollHeight }
+
+                    >
                         <ForwardIcon style={{fontSize: '2.5em', transform: 'rotate(90deg)'}}/>
                     </IconButton>}
                 </div>

@@ -52,21 +52,21 @@ helpers.findFreeSpace = (array, index, elem) => {
     return true
 };
 
-helpers.scroll = (node, directionUp = false) => {
+helpers.scroll = (node, step = 20, directionUp = false) => {
     // node.stopPropagation()
     // node.scrollTop = 0
     // console.log(node)
     let x = 0;
-    const timer = setInterval(() => {
+    // const timer = setInterval(() => {
 
         x++;
-        directionUp ? node.scrollTop -= x : node.scrollTop += x;
+        directionUp ? node.scrollTop -= step : node.scrollTop += step;
         // console.log(x);
-        if (x >= 20) {
-            x = 0;
-            clearInterval(timer)
-        }
-    }, 20);
+        // if (x >= step) {
+        //     x = 0;
+        //     clearInterval(timer)
+        // }
+    // }, 20);
 
 }
 

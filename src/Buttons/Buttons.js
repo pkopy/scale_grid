@@ -91,12 +91,12 @@ export default function Buttons(props) {
                 props.socketAct.send(JSON.stringify({COMMAND: 'GET_ACTIONS'}));
                 props.socketAct.onmessage = (e) => {
                     let data = e.data;
-                    console.log(data);
+                    // console.log(data);
                     const response = JSON.parse(data);
                     let arr = [];
                     let arr1 = [];
                     if (response.RECORD && response.COMMAND === 'GET_ACTIONS') {
-                        console.log(response.RECORD.length);
+                        // console.log(response.RECORD.length);
                         for (let i = 0; i < response.RECORD.length; i++) {
 
                             if (arr1.length > 16) {
@@ -114,7 +114,7 @@ export default function Buttons(props) {
                     }
 
                     setButtons(arr);
-                    console.log(buttons);
+                    // console.log(buttons);
 
                     res('ok');
                 }
@@ -135,7 +135,7 @@ export default function Buttons(props) {
             setIndex(buttons.length - 1);
             return
         }
-        console.log(buttons);
+        // console.log(buttons);
         const helpArr = buttons[index] ? buttons[index].slice() : [];
         // console.log(helpArr)
         const arr = [];
@@ -172,16 +172,16 @@ export default function Buttons(props) {
 
             <div style={{textAlign: "right", paddingRight: 20, display: 'flex', alignItems: 'stretch'}}>
                 <div style={{flexGrow: 1}}>
-                    <IconButton onClick={() => setIndex(index - 1)} disabled={index === 0}>
+                    <IconButton onMouseDown={() => setIndex(index - 1)} disabled={index === 0}>
                         <ForwardIcon style={{fontSize: '2.5em', transform: 'rotate(180deg)'}}/>
                     </IconButton>
-                    <IconButton onClick={() => setIndex(index + 1)} disabled={index === buttons.length - 1}>
+                    <IconButton onMouseDown={() => setIndex(index + 1)} disabled={index === buttons.length - 1}>
                         <ForwardIcon style={{fontSize: '2.5em'}}/>
                     </IconButton>
 
                 </div>
                 <div style={{flexGrow: 9}}>
-                    <IconButton onClick={() => props.setOpenButtons(false)}>
+                    <IconButton onMouseDown={() => props.setOpenButtons(false)}>
                         <HighlightOffIcon
                             style={{fontSize: '2.5em'}}
 

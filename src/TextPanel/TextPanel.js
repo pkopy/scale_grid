@@ -47,7 +47,7 @@ export default function TextPanel(props) {
         return () => {
             clearInterval(timer)
         }
-},[])
+    }, [])
 
     // console.log(props.textLabels.length > 0 ? props.textLabels[1].split('\n') : undefined)
     const changeActiveTab = (index) => {
@@ -56,7 +56,7 @@ export default function TextPanel(props) {
     };
     return (
 
-        <div style={{width: '100%', height: '100%', backgroundColor:"#ececec"}}>
+        <div style={{width: '100%', height: '100%', backgroundColor: "#ececec"}}>
             {props.children}
             <div className={classes.textPanel}>
                 <div className={classes.tabContainer} onClick={() => changeActiveTab(0)}>

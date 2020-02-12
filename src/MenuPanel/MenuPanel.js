@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import load from "../img/search.gif";
 import checkGreen from "../img/Check_green.svg";
@@ -35,26 +35,17 @@ const useStyles = makeStyles(theme => ({
 
 export default function MenuPanel(props) {
     const classes = useStyles();
-    const ref = React.useRef();
-    // console.log(props)
-    // const scroll = (node, directionUp = false) => {
-    //     // node.stopPropagation()
-    //     // node.scrollTop = 0
-    //     // console.log(node)
-    //     let x = 0;
-    //     const timer = setInterval(() => {
-    //
-    //         x++;
-    //         directionUp ? node.scrollTop -= x : node.scrollTop += x;
-    //         // console.log(x);
-    //         if (x >= 20) {
-    //             x = 0;
-    //             clearInterval(timer)
-    //         }
-    //     }, 20);
-    //
-    // }
-    const [visibleScroll, setVisibleScroll] = React.useState(true);
+    const ref = useRef();
+    const [visibleArrows, setVisibleArrows] = useState(false);
+    const [scrollTop, setScrollTop] = useState(0)
+
+    useEffect(() => {
+        if (ref.current.scrollHeight > ref.current.clientHeight) {
+            setVisibleArrows(true)
+        }
+        // console.log(ref);
+    });
+
     return (
 
         <div className={classes.menuPanel}>
@@ -65,12 +56,12 @@ export default function MenuPanel(props) {
                     transform: 'translate(0, 50%)'
                 }}><b>{props.menuCatalogLocal.Name}</b></div>
             </div>
-            <div  style={{display: "flex",overflowY: "auto",  height: '100%'}}>
+            <div style={{display: "flex", overflowY: "auto", height: '100%'}}>
                 <div
 
                     style={{
                         overflowY: "auto",
-                        width:'100%',
+                        width: '100%',
                         height: '100%'
                     }}>
                     <div
@@ -83,7 +74,7 @@ export default function MenuPanel(props) {
                             height: '100%',
                             // width: '80%'
                         }}>
-                        {props.menuButtons && props.menuButtons.map((elem, i) =>
+                        {props.menuButtonsCatalogLocal && props.menuButtonsCatalogLocal.map((elem, i) =>
                             <div
                                 key={i}
                                 style={{
@@ -106,38 +97,56 @@ export default function MenuPanel(props) {
                                         // paddingLeft: 15
                                     }} src={`data:image/png;base64, ${elem.img}`} alt={'img'}/>}
                                 </div>
-                                <div style={{color: '#000', position: "relative", top: 5, marginLeft: 10}}>
+                                <div
+                                    style={{color: '#000', position: "relative", top: 5, marginLeft: 10, fontSize: 12}}>
                                     {elem.Name}
                                 </div>
                                 <div style={{width: '50%', textAlign: 'right', paddingRight: 10}}>
 
                                     {elem.Type === 'EditEnumSwitch' ? <div>
-                                        {elem.Value === "True" ? <img src={checkGreen} alt={'check icon'} width={40}
+                                        {elem.Value === "True" ? <img src={checkGreen} alt={'check icon'} width={20}
                                                                       style={{paddingTop: 10}}/> :
-                                            <img src={checkGray} alt={'check icon'} width={40}
+                                            <img src={checkGray} alt={'check icon'} width={20}
                                                  style={{paddingTop: 10}}/>}
-                                    </div> : <p>{elem.Value}</p>}
+                                    </div> : <div style={{
+                                        color: '#000',
+                                        fontSize: 12,
+                                        top: 5,
+                                        position: "relative"
+                                    }}>{elem.Value}</div>}
                                 </div>
 
                             </div>
                         )}
                     </div>
                 </div>
-                <div style={{width:'20%'}}>
-                    {visibleScroll && <IconButton className={classes.arrows}
-                        onClick={(e) => {
-                            // console.log(ref);
-                            helpers.scroll(ref.current, true)
-                        }}>
+                {visibleArrows && <div style={{width: '20%'}}>
+                    <IconButton className={classes.arrows}
+                                disabled={!scrollTop}
+                                onClick={(e) => {
+                                    // console.log(ref);
+                                    setTimeout(() => {
+
+                                        setScrollTop(ref.current.scrollTop)
+                                    }, 50);
+                                    helpers.scroll(ref.current, true)
+                                }}>
                         <ForwardIcon style={{fontSize: '2em', transform: 'rotate(-90deg)'}}/>
-                    </IconButton>}
-                    {visibleScroll && <IconButton className={classes.arrows} onClick={() => {
-                        // console.log(ref);
-                        helpers.scroll(ref.current)
-                    }}>
+                    </IconButton>
+                    <IconButton className={classes.arrows} disabled={scrollTop >= ref.current.scrollTop}
+                                onClick={() => {
+                                    // console.log(ref);
+
+                                    setTimeout(() => {
+
+                                        setScrollTop(ref.current.scrollTop)
+                                    }, 50);
+                                    helpers.scroll(ref.current);
+                                    console.log(ref)
+                                }}>
                         <ForwardIcon style={{fontSize: '2em', transform: 'rotate(90deg)'}}/>
-                    </IconButton>}
-                </div>
+                    </IconButton>
+                </div>}
             </div>
         </div>
 

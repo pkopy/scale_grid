@@ -70,7 +70,7 @@ export default function LinearDeterminate(props) {
     const [platform, setPlatform] = useState(0);
     const [platfomsArray, setPlatformsArray] = useState([]);
     const [labels, setLabels] = useState(0)
-    const [oldLabels, setOldLabels] = useState([])
+    const [textLabels, setTextLabels] = useState([])
     useEffect(() => {
 
         function sendToSocket() {
@@ -91,7 +91,8 @@ export default function LinearDeterminate(props) {
                         //     props.setTextLabels(props.socketMass.readyState)
                         //     // props.setTextLabels(response.RECORD.var_labels)
                         // }
-                        TextContainer.setTextLabels(response.RECORD.var_labels)
+                        TextContainer.setTextLabels(response.RECORD.var_labels);
+                        TextContainer.setDade(response.RECORD.Date)
                         // console.log(TextContainer)
                     }
 
