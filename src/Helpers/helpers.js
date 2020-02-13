@@ -30,10 +30,6 @@ helpers.getImg = (socketOn, socket, command, value, arr) => {
 
 
 helpers.findFreeSpace = (array, index, elem) => {
-    // console.log('array:', array[index]);
-
-    // console.log('row', row)
-    // console.log('index:', array);
     let row = Math.floor(index / 12);
     if ((row+1)*12 - index < elem.w) {
         return false
@@ -41,7 +37,6 @@ helpers.findFreeSpace = (array, index, elem) => {
     for (let x = 0; x < elem.h; x++) {
         for (let j = index; j < elem.w + index; j++) {
             if (array[j + x * 12] || (j + x * 12) > 71) {
-                // console.log('false');
                 return false
             }
         }
@@ -56,10 +51,9 @@ helpers.scroll = (node, step = 20, directionUp = false) => {
     // node.stopPropagation()
     // node.scrollTop = 0
     // console.log(node)
-    let x = 0;
+    // let x = 0;
     // const timer = setInterval(() => {
-
-        x++;
+        // x++;
         directionUp ? node.scrollTop -= step : node.scrollTop += step;
         // console.log(x);
         // if (x >= step) {
@@ -68,7 +62,7 @@ helpers.scroll = (node, step = 20, directionUp = false) => {
         // }
     // }, 20);
 
-}
+};
 
 
 export default helpers

@@ -1,13 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import {makeStyles} from '@material-ui/core/styles';
 import TextContainer from "../TextPanel/TextContainer";
 
-const useStyles = makeStyles(theme => ({
-
-}));
-
 export default function DateTime(props) {
-    const [date,setDate] = useState('')
+    const [date, setDate] = useState('')
     useEffect(() => {
         const start = () => {
             setDate(TextContainer.textLabels);

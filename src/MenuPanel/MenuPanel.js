@@ -41,16 +41,14 @@ export default function MenuPanel(props) {
 
     useEffect(() => {
         if (ref.current.scrollHeight > ref.current.clientHeight) {
-            setVisibleArrows(true)
+            setVisibleArrows(true);
         }
-        // console.log(ref);
     });
+
 
     return (
 
         <div className={classes.menuPanel}>
-
-
             <div className={classes.menuHeader}>
                 <div style={{
                     transform: 'translate(0, 50%)'
@@ -58,7 +56,6 @@ export default function MenuPanel(props) {
             </div>
             <div style={{display: "flex", overflowY: "auto", height: '100%'}}>
                 <div
-
                     style={{
                         overflowY: "auto",
                         width: '100%',
@@ -74,49 +71,71 @@ export default function MenuPanel(props) {
                             height: '100%',
                             // width: '80%'
                         }}>
-                        {props.menuButtonsCatalogLocal && props.menuButtonsCatalogLocal.map((elem, i) =>
-                            <div
-                                key={i}
-                                style={{
-                                    background: '#fff',
-                                    // position: 'relative',
-                                    display: 'flex',
-                                    margin: 5,
-                                    padding: 5,
-                                    // width: '46%',
-                                    height: 30,
-                                    border: '1px solid rgb(0,0,0,0.2)'
-                                }}
-                            >
-                                <div>
-                                    {!elem.img && <img className={classes.imgs} width={30} src={load}/>}
-                                    {elem.img && <img width='30px' style={{
-                                        pointerEvents: 'none',
-                                        // position: 'absolute',
-                                        // left: 0,
-                                        // paddingLeft: 15
-                                    }} src={`data:image/png;base64, ${elem.img}`} alt={'img'}/>}
-                                </div>
-                                <div
-                                    style={{color: '#000', position: "relative", top: 5, marginLeft: 10, fontSize: 12}}>
-                                    {elem.Name}
-                                </div>
-                                <div style={{width: '50%', textAlign: 'right', paddingRight: 10}}>
+                        {props.menuButtonsCatalogLocal && props.menuButtonsCatalogLocal.map((elem, i) => {
+                                console.log(elem)
+                                return (
+                                    <div
+                                        key={i}
+                                        style={{
+                                            background: elem.isSelected?'#f0f8ff':'#fff',
+                                            // position: 'relative',
 
-                                    {elem.Type === 'EditEnumSwitch' ? <div>
-                                        {elem.Value === "True" ? <img src={checkGreen} alt={'check icon'} width={20}
-                                                                      style={{paddingTop: 10}}/> :
-                                            <img src={checkGray} alt={'check icon'} width={20}
-                                                 style={{paddingTop: 10}}/>}
-                                    </div> : <div style={{
-                                        color: '#000',
-                                        fontSize: 12,
-                                        top: 5,
-                                        position: "relative"
-                                    }}>{elem.Value}</div>}
-                                </div>
+                                            display: 'flex',
+                                            margin: 5,
+                                            padding: 5,
+                                            // width: '46%',
+                                            height: 30,
+                                            border: '1px solid rgb(0,0,0,0.2)'
+                                        }}
+                                        onMouseDown={(e) => {
+                                            e.stopPropagation();
+                                            props.tapParam(elem.GUID, props.menuCatalogLocal.GUID);
+                                        }}
+                                    >
+                                        <div>
+                                            {!elem.img && <img width={30} src={load} alt={'loader'}/>}
+                                            {elem.img && <img width='30px' style={{
+                                                pointerEvents: 'none',
+                                                // position: 'absolute',
+                                                // left: 0,
+                                                // paddingLeft: 15
+                                            }} src={`data:image/png;base64, ${elem.img}`} alt={'img'}/>}
+                                        </div>
+                                        <div style={{
+                                            display: 'flex',
+                                            width: '100%',
+                                            alignItems: "stretch",
+                                            textAlign: 'left'
+                                        }}>
+                                            <div
+                                                style={{
+                                                    color: '#000',
+                                                    position: "relative",
+                                                    top: 5,
+                                                    marginLeft: 10,
+                                                    fontSize: 12,
+                                                    flexGrow: 1
+                                                }}>
+                                                {elem.Name}
+                                            </div>
+                                            <div style={{width: '50%', textAlign: 'right', marginRight: 20, flexGrow: 2}}>
 
-                            </div>
+                                                {elem.Type === 'EditEnumSwitch' ? <div>
+                                                    {elem.Value === "True" ?
+                                                        <img src={checkGreen} alt={'check icon'} width={20}
+                                                             style={{paddingTop: 10}}/> :
+                                                        <img src={checkGray} alt={'check icon'} width={20}
+                                                             style={{paddingTop: 10}}/>}
+                                                </div> : <div style={{
+                                                    color: '#000',
+                                                    fontSize: 12,
+                                                    top: 5,
+                                                    position: "relative"
+                                                }}>{elem.Value}</div>}
+                                            </div>
+                                        </div>
+                                    </div>)
+                            }
                         )}
                     </div>
                 </div>
@@ -124,25 +143,23 @@ export default function MenuPanel(props) {
                     <IconButton className={classes.arrows}
                                 disabled={!scrollTop}
                                 onClick={(e) => {
-                                    // console.log(ref);
                                     setTimeout(() => {
 
                                         setScrollTop(ref.current.scrollTop)
                                     }, 50);
-                                    helpers.scroll(ref.current, true)
+                                    helpers.scroll(ref.current, 50, true);
+                                    if (ref.current.scrollTop === 0) setScrollTop(0);
                                 }}>
                         <ForwardIcon style={{fontSize: '2em', transform: 'rotate(-90deg)'}}/>
                     </IconButton>
-                    <IconButton className={classes.arrows} disabled={scrollTop >= ref.current.scrollTop}
+                    <IconButton className={classes.arrows}
+                                disabled={scrollTop + ref.current.clientHeight >= ref.current.scrollHeight}
                                 onClick={() => {
-                                    // console.log(ref);
-
                                     setTimeout(() => {
 
-                                        setScrollTop(ref.current.scrollTop)
+                                        setScrollTop(ref.current.scrollTop);
                                     }, 50);
-                                    helpers.scroll(ref.current);
-                                    console.log(ref)
+                                    helpers.scroll(ref.current, 50);
                                 }}>
                         <ForwardIcon style={{fontSize: '2em', transform: 'rotate(90deg)'}}/>
                     </IconButton>

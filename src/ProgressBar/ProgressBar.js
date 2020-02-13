@@ -69,8 +69,7 @@ export default function LinearDeterminate(props) {
     const [precision, setPrecision] = useState();
     const [platform, setPlatform] = useState(0);
     const [platfomsArray, setPlatformsArray] = useState([]);
-    const [labels, setLabels] = useState(0)
-    const [textLabels, setTextLabels] = useState([])
+
     useEffect(() => {
 
         function sendToSocket() {
@@ -92,7 +91,7 @@ export default function LinearDeterminate(props) {
                         //     // props.setTextLabels(response.RECORD.var_labels)
                         // }
                         TextContainer.setTextLabels(response.RECORD.var_labels);
-                        TextContainer.setDade(response.RECORD.Date)
+                        TextContainer.setDate(response.RECORD.Date)
                         // console.log(TextContainer)
                     }
 
@@ -129,14 +128,14 @@ export default function LinearDeterminate(props) {
 
     }, [platform]);
 
-    const equalsArray = (arr1, arr2) => {
-        // console.log(arr1, arr2)
-        if (arr1.length !== arr2.length) return false
-        for (let i = 0; i < arr1.length; i++) {
-            if (arr1[i] !== arr2[i]) return false
-        }
-        return true
-    }
+    // const equalsArray = (arr1, arr2) => {
+    //     // console.log(arr1, arr2)
+    //     if (arr1.length !== arr2.length) return false
+    //     for (let i = 0; i < arr1.length; i++) {
+    //         if (arr1[i] !== arr2[i]) return false
+    //     }
+    //     return true
+    // }
     // useEffect(() => {
     //
     //     setInterval(() =>{
@@ -190,9 +189,6 @@ export default function LinearDeterminate(props) {
 
     }, [Value]);
 
-    const changePlatform = () => {
-
-    }
 
     const _digits = (value) => {
         value = isNaN(value) ? '-----' : value;

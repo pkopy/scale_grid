@@ -202,10 +202,10 @@ export default function Buttons(props) {
                         }}>
                             <div className={window.innerWidth > 800 ? classes.button1 : classes.smallButton}>
                                 <p style={{fontSize: window.innerWidth > 800 ? '12px' : '8px'}}>{elem.Name}</p>
-                                {!elem.img && <img className={classes.imgs} width={30} src={load}></img>}
+                                {!elem.img && <img className={classes.imgs} width={30} src={load} alt={'loader'}/>}
                                 {elem.img &&
                                 <img className={classes.imgs} width={window.innerWidth < 800 ? 25 : undefined}
-                                     src={`data:image/png;base64, ${elem.img}`}/>}
+                                     src={`data:image/png;base64, ${elem.img}`} alt={'img'}/>}
                             </div>
                         </IconButton>
                     </Tooltip>

@@ -41,13 +41,14 @@ export default function ButtonAppBar(props) {
     const [title, setTitle] = React.useState('SMART DISPLAY');
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [openMenu, setOpenMenu] = React.useState(false);
+
     const clickHamburger = () => {
         if (!props.hamburger) {
             if (!props.blocked) props.block();
             props.showMenu();
             // if(props.menu)
             // setTitle(props.menu.Name);
-            props.setHamburger(true);
+            // props.setHamburger(true);
             // console.log(props.menu)
         } else {
             // props.block()
@@ -96,7 +97,7 @@ export default function ButtonAppBar(props) {
                     <IconButton color="inherit" onClick={() => props.getLayout()}>
                         <RefreshIcon/>
                     </IconButton>
-                    {!props.blocked && <IconButton color="inherit" onClick={(e) => {handleOpen(); setAnchorEl(e.currentTarget); console.log(e.currentTarget)}}>
+                    {!props.blocked && <IconButton color="inherit" onClick={(e) => {handleOpen(); setAnchorEl(e.currentTarget)}}>
                         <AddCircleOutlineIcon/>
                     </IconButton>}
 

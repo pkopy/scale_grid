@@ -12,10 +12,10 @@ const useStyles = makeStyles(theme => ({
         width: 1024,
         height: 530,
         border: '1px solid rgb(0,0,0,0.2)',
-        position: 'absolute',
+        position: 'relative',
         zIndex: 100,
         backgroundColor: '#f0f8ff', //bf
-        transition: '1s',
+        transition: '0.5s',
         // left:-1100
         overflowY: 'hidden',
         overflowX: 'hidden'
@@ -23,8 +23,8 @@ const useStyles = makeStyles(theme => ({
 }));
 //TODO hide and show a scrollBar arrows
 export default function ListPanel(props) {
-    const [left, setLeft] = React.useState(-1100);
-    const [visibleScroll, setVisibleScroll] = React.useState(false);
+    const [left, setLeft] = useState(-1100);
+    const [visibleScroll, setVisibleScroll] = useState(false);
     const [scrollTop, setScrollTop] = useState(0)
     // console.log(props)
     // if (props.hamburger) {
@@ -34,17 +34,16 @@ export default function ListPanel(props) {
     // }
     const refMenu = React.useRef();
     // const refContainer = React.useRef()
-    React.useEffect(() => {
+    useEffect(() => {
         props.hamburger ? setLeft(0) : setLeft(-1100);
-        // console.log('xxxxx', props)
         if (refMenu) refMenu.current.scrollTop = 0
 
     }, [props.hamburger]);
+
     useEffect(() => {
         if (refMenu.current.scrollHeight > refMenu.current.clientHeight) {
             setVisibleScroll(true)
         }
-        // console.log(refMenu);
     });
     React.useEffect(() => {
         setScrollTop(0)
@@ -52,10 +51,6 @@ export default function ListPanel(props) {
         if ((props.menuButtons.length > 15 && props.menu.isBig) ||(props.menuButtons.length > 12 && !props.menu.isBig)) setVisibleScroll(true)
 
     }, [props.menuButtons]);
-
-    useEffect(() => {
-        // console.log(scrollTop)
-    }, [scrollTop])
 
     const classes = useStyles();
 
@@ -67,14 +62,15 @@ export default function ListPanel(props) {
                  style={{left: left, display: 'flex'}}>
                 <div id='container' ref={refMenu}
                      style={{
-                         width: '90%',
+                         width: '92%',
                          display: 'grid',
                          gridTemplateColumns: props.menu.isBig ? 'auto auto auto auto auto' : '50% 50%',
                          gridAutoRows: 'min-content',
                          // flexWrap: 'wrap',
                          // justifyContent: 'center',
-                         marginLeft: 80,
+                         marginLeft: 75,
                          overflowY: 'hidden',
+                         overflowX: 'hidden'
                      }}>
 
 
@@ -88,11 +84,8 @@ export default function ListPanel(props) {
                             border: '1px solid rgb(0,0,0,0.2)'
                         }} onClick={(e) => e.stopPropagation()}
                              onMouseDown={(e) => {
-                                 console.log('TAPPPPPP')
-                                 // e.stopPropagation();
-                                 props.tapParam(elem.GUID)
+                                 props.tapParam(elem.GUID, props.menu.GUID)
                              }}>
-                            {/*<img src={loader} width='25px' alt={'menu img'}/>*/}
                             <div style={{
                                 display: "flex",
                                 flexDirection: "column",
@@ -115,21 +108,9 @@ export default function ListPanel(props) {
                         </div>
                     )}
 
-                    {/*<div style={{*/}
-                    {/*    width: 1024,*/}
-                    {/*    position: 'absolute',*/}
-                    {/*    zIndex: 100,*/}
-                    {/*    padding: 20,*/}
-                    {/*    display: 'flex',*/}
-                    {/*    flexWrap: 'wrap',*/}
-                    {/*    overflowY: 'hidden',*/}
-                    {/*    overflowX: 'hidden',*/}
-                    {/*    marginLeft: '20px',*/}
-                    {/*    left:0*/}
-                    {/*}}>*/}
                     {!props.menu.isBig && props.menuButtons && props.menuButtons.map((elem, i) =>
                         <div key={i} style={{
-                            background: '#fff',
+                            background: elem.isSelected?'#f0f8ff':'#fff',
                             // position: 'relative',
                             display: 'flex',
                             margin: 5,
@@ -140,13 +121,8 @@ export default function ListPanel(props) {
                         }}
                              onClick={(e) => e.stopPropagation()}
                              onMouseDown={(e) => {
-                                 console.log('TAPPPPPP')
                                  e.stopPropagation();
-                                 props.tapParam(elem.GUID);
-
-                                 {/*<img src={loader} width='25px' alt={'menu img'}/>*/
-                                 }
-
+                                 props.tapParam(elem.GUID, props.menu.GUID);
                              }}>
                             <div style={{textAlign: 'left'}}>
                                 {!elem.img && <img width={30} src={loader} alt={'loader'}/>}
@@ -174,33 +150,25 @@ export default function ListPanel(props) {
                             </div>
                         </div>
                     )}
-                    {/*</div>*/}
+
                 </div>
                 <div style={{width: 80}}>
                     {visibleScroll && <IconButton
                         disabled={scrollTop === 0}
                         onClick={(e) => {
-                            // console.log(ref);
-
-                            helpers.scroll(refMenu.current, 500,true)
-                            // setScrollTop('')
+                            helpers.scroll(refMenu.current, 500,true);
                             setTimeout(() => {
-                                // console.log(refMenu.current.scrollTop)
-                                setScrollTop(refMenu.current.scrollTop)
+                                setScrollTop(refMenu.current.scrollTop);
                             }, 50);
-
-
-                            if (refMenu.current.scrollTop === 0) setScrollTop(0)
+                            if (refMenu.current.scrollTop === 0) setScrollTop(0);
 
                         }}>
                         <ForwardIcon style={{fontSize: '2.5em', transform: 'rotate(-90deg)'}}/>
                     </IconButton>}
                     {visibleScroll && <IconButton
                         onClick={() => {
-                            helpers.scroll(refMenu.current, 500)
-                            // setScrollTop('')
+                            helpers.scroll(refMenu.current, 500);
                             setTimeout(() => {
-                                // console.log(refMenu.current.scrollTop)
                                 setScrollTop(refMenu.current.scrollTop)
                             }, 50);
                     }}
