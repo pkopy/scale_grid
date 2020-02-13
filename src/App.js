@@ -32,7 +32,7 @@ function App() {
     const [hamburger, setHamburger] = useState(false);
     const [menuButtons, setMenuButtons] = useState([]);
     const [menu, setMenu] = useState({});
-    // const [oldLayout, setOldLayout] = React.useState(layout);
+    const [images, setImages] = useState({});
     const [timer, setTimer] = useState(0);
     //setting timeout 1000ms between the clicks
     const [nextClick, setNextClick] = useState(true);
@@ -70,7 +70,7 @@ function App() {
 
 
     const runSocket = () => {
-        //this socket is used in Buttons and App to getting images
+        //this socket is used in ProgressBar
         const socketMass = new WebSocket(`ws://${host}:4101`);
         //this socked is used in Buttons and App - getting images
         const socketAct = new WebSocket(`ws://${host}:4101`);
@@ -135,7 +135,7 @@ function App() {
             setMenuCatalogLocal(response.RECORD);
             setMenuButtonsCatalogLocal([]);
             if (response.RECORD.Items.length > 0) {
-                setMenuButtonsCatalogLocal(response.RECORD.Items)
+                setMenuButtonsCatalogLocal(response.RECORD.Items);
                 setMenuCatalogLocal(response.RECORD);
                 getAllImgs(socketLocalMenu, response.RECORD.Items)
                     .then(data => {
@@ -176,6 +176,10 @@ function App() {
                         delete openPanels[response.KEY];
                         setOpenEnumPanel(false);
                         break;
+                    case 'messageBox':
+                        delete openPanelsKeys[response.KEY];
+                        setOpenDialogPanel(false);
+                        break;
                     default:
                         console.log(keyValue)
                 }
@@ -196,16 +200,19 @@ function App() {
 
     async function getAllImgs(socket, menuButtons, menuGuid) {
         const arr = [];
-
+        const newImages = {...images};
+        const guidsImages = Object.keys(newImages)
         if (menuButtons && menuButtons.length > 0) {
             for (let elem of menuButtons) {
-                if (!elem.img) {
+                if (!elem.img && !guidsImages.includes(elem.ImageGuid)) {
                     for (let i = 0; i < 8; i++) {
-                        await helpers.getImg(true, socket, "GET_IMAGE_MENU", elem.GUID)
+                        await helpers.getImg(true, socket, "GET_IMAGE_MENU", elem.ImageGuid)
                             .then(data => {
-                                if (data && elem.GUID === data.PARAM) {
+                                if (data && elem.ImageGuid === data.PARAM) {
                                     i = 8;
                                     elem.img = data.DATA;
+                                    newImages[elem.ImageGuid] = data.DATA;
+                                    setImages(newImages)
                                     arr.push(elem);
                                 } else if (i === 7) {
                                     elem.img = noimage;
@@ -214,8 +221,12 @@ function App() {
                             })
                             .catch(err => console.log(err))
                     }
+                } else if (guidsImages.includes(elem.ImageGuid)){
+                    elem.img = images[elem.ImageGuid];
+                    arr.push(elem)
                 }
             }
+            // console.log(images)
             return arr
         }
     }
@@ -670,6 +681,7 @@ function App() {
 
             {openDialogPanel&&<DialogPanel
                 dialogPanel={dialogPanel}
+                socketTap={socketTap}
             />}
 
             <AppBar

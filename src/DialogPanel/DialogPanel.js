@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import {IconButton} from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles(theme => ({
     menuPanel: {
@@ -31,8 +32,34 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function DialogPanel(props) {
-
+    const [okButton, setOkButton] = useState(false);
+    const [cancelButton, setCancelButton] = useState(false);
+    const {RECORD} = props.dialogPanel;
     const classes = useStyles();
+
+    useEffect(() => {
+        if (RECORD) {
+
+
+            switch (RECORD.Data) {
+                case 'Ok':
+                    setOkButton(true);
+                    setCancelButton(false);
+                    break;
+                case 'OkCancel':
+                    setOkButton(true);
+                    setCancelButton(true);
+                    break;
+                case 'Cancel':
+                    setOkButton(false);
+                    setCancelButton(true);
+                    break;
+                default:
+                    setOkButton(false);
+                    setCancelButton(false);
+            }
+        }
+    }, [props.dialogPanel])
     // const closeEnum = () => {
     //     if (props.socketTap && props.socketTap.readyState === 1) {
     //         // console.log('tarara')
@@ -40,12 +67,12 @@ export default function DialogPanel(props) {
     //     }
     // };
     //
-    // const enumTap = (elem) => {
-    //     if (props.socketTap && props.socketTap.readyState === 1) {
-    //         // console.log('tappppppppp')
-    //         props.socketTap.send(JSON.stringify({COMMAND: 'SET_PARAM', DATA: elem, PARAM: "OK", "KEY": RECORD.GUID}))
-    //     }
-    // }
+    const tapButton = (typeButton) => {
+        if (props.socketTap && props.socketTap.readyState === 1) {
+            // console.log('tappppppppp')
+            props.socketTap.send(JSON.stringify({COMMAND: 'SET_PARAM', DATA: typeButton,PARAM: "OK", "KEY": RECORD.GUID}))
+        }
+    };
     // console.log(RECORD);
     return (
         <Dialog open={true} maxWidth={"sm"} fullWidth={true}>
@@ -53,28 +80,26 @@ export default function DialogPanel(props) {
             <div className={classes.menuHeader}>
                 <div style={{
                     transform: 'translate(0, 50%)', paddingLeft: 15
-                }}><b>TEST</b></div>
+                }}><b>{RECORD && RECORD.Name}</b></div>
             </div>
-            <div style={{display: "flex"}}>
+            <div style={{display: "flex", flexDirection: "column"}}>
 
 
                 <div style={{
-                    height:200,
-                    display: 'flex',
-                    flexWrap: "wrap",
-                    padding: 10
+                    minHeight: 120,
+                    // display: 'flex',
+                    // flexWrap: "wrap",
+                    padding: 10,
+                    textAlign:"center"
                 }}>
 
-
+                    <p >{RECORD&&RECORD.Value}</p>
                 </div>
-                <div style={{position: "absolute", right: 0}}>
-                    <IconButton >
-                        <HighlightOffIcon
-                            style={{fontSize: '2.5em'}}
 
-                        />
-                    </IconButton>
+                <div style={{textAlign:"end", margin:"0 20px 20px 0"}}>
 
+                    {okButton&&<Button onMouseDown={() => tapButton("Ok3.60")} style={{margin:10}} variant="contained" color="primary">OK</Button>}
+                    {cancelButton&& <Button onMouseDown={() => tapButton("CANCEL")} style={{margin:10}} variant="contained" color="secondary">CANCEL</Button>}
                 </div>
             </div>
         </Dialog>

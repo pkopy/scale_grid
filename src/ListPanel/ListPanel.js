@@ -110,7 +110,7 @@ export default function ListPanel(props) {
 
                     {!props.menu.isBig && props.menuButtons && props.menuButtons.map((elem, i) =>
                         <div key={i} style={{
-                            background: elem.isSelected?'#f0f8ff':'#fff',
+                            background: elem.isSelected?'#cce7ff':'#fff',
                             // position: 'relative',
                             display: 'flex',
                             margin: 5,

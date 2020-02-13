@@ -13,8 +13,10 @@ helpers.getImg = (socketOn, socket, command, value, arr) => {
                 // console.log('helpers:',response);
                 if (response.DATA) {
                     // arr.push(response)
+                    // console.log(response)
                     res(response);
                 } else {
+                    // console.log(response)
                     // arr.push(response)
                     res(response);
 
