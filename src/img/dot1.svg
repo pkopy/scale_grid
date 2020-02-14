@@ -9,13 +9,13 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="100"
-   height="250"
-   viewBox="0 0 26.458332 66.145835"
+   width="50"
+   height="125"
+   viewBox="0 0 13.229166 33.072918"
    version="1.1"
    id="svg3784"
    inkscape:version="0.92.4 (f8dce91, 2019-08-02)"
-   sodipodi:docname="zero1.svg">
+   sodipodi:docname="dot1.svg">
   <defs
      id="defs3778" />
   <sodipodi:namedview
@@ -53,7 +53,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-230.85415)">
+     transform="translate(0,-263.92707)">
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:50.79999924px;line-height:1.25;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
@@ -89,15 +89,15 @@
          style="stroke-width:0.26458332" /></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:66.15338898px;line-height:1.25;font-family:Umpush;-inkscape-font-specification:'Umpush Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.34454891"
-       x="0.47744292"
-       y="217.22148"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:54.25563812px;line-height:1.25;font-family:Umpush;-inkscape-font-specification:'Umpush Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.28258145"
+       x="-0.49692217"
+       y="264.2652"
        id="text3800"
-       transform="scale(0.73269096,1.3648319)"><tspan
+       transform="scale(0.89336318,1.1193656)"><tspan
          sodipodi:role="line"
          id="tspan3798"
-         x="0.47744292"
-         y="217.22148"
-         style="stroke-width:0.34454891">0</tspan></text>
+         x="-0.49692217"
+         y="264.2652"
+         style="stroke-width:0.28258145">.</tspan></text>
   </g>
 </svg>

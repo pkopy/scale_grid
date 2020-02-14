@@ -1,34 +1,35 @@
-import React, {useState, useEffect}from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import React, {useState, useEffect} from 'react';
+import {makeStyles} from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
 import stableIcon from '../img/stable_black.svg';
 import zeroIcon from '../img/zero.svg'
 import taraIcon from '../img/tara_black.svg'
-import one from '../img/one.svg'
-import zero2 from '../img/zero2.svg'
-import three from '../img/three.svg'
-import seven from '../img/seven.svg'
-import two from '../img/two.svg'
-import four from '../img/four.svg'
-import five from '../img/five.svg'
-import six from '../img/six.svg'
-import eight from '../img/eight.svg'
-import nine from '../img/nine.svg'
-import minus from '../img/minus.svg'
-import dot from '../img/dot.svg'
+import one from '../img/one1.svg'
+import zero2 from '../img/zero1.svg'
+import three from '../img/three1.svg'
+import seven from '../img/seven1.svg'
+import two from '../img/two1.svg'
+import four from '../img/four1.svg'
+import five from '../img/five1.svg'
+import six from '../img/six1.svg'
+import eight from '../img/eight1.svg'
+import nine from '../img/nine1.svg'
+import minus from '../img/minus1.svg'
+import dot from '../img/dot1.svg'
 import TextContainer from "../TextPanel/TextContainer";
 
 
 const theme = createMuiTheme({
     palette: {
-        primary: { main: "#000" },
+        primary: {main: "#000"},
     },
 });
 
 const useStyles = makeStyles({
     root: {
         width: '98%',
+        height: '100%',
         display: 'flex',
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -37,9 +38,10 @@ const useStyles = makeStyles({
     },
     value: {
         flexGrow: 8,
-        position: 'relative',
-        fontSize: '65%',
-
+        position: 'absolute',
+        // fontSize: '65%',
+        // right:20,
+        // bottom:40,
         color: '#000',
         textAlign: 'right',
     },
@@ -74,7 +76,7 @@ export default function LinearDeterminate(props) {
 
         function sendToSocket() {
             if (props.socketMass.readyState === 1) {
-                props.socketMass.send(JSON.stringify({ COMMAND: 'GET_MOD_INFO' }));
+                props.socketMass.send(JSON.stringify({COMMAND: 'GET_MOD_INFO'}));
                 props.socketMass.onmessage = (e) => {
                     let data = e.data;
                     const response = JSON.parse(data);
@@ -95,7 +97,7 @@ export default function LinearDeterminate(props) {
                         // console.log(TextContainer)
                     }
 
-                    if (Mass.length>0 && Mass[platform].NetAct && Mass[platform].NetCal) {
+                    if (Mass.length > 0 && Mass[platform].NetAct && Mass[platform].NetCal) {
                         props.setLicense(true);
                         setMax(Mass[platform].Max * 1);
                         setValue(Mass[platform].NetAct.Value);
@@ -106,7 +108,7 @@ export default function LinearDeterminate(props) {
                         setIsTare(Mass[platform].isTare);
                         setIsZero(Mass[platform].isZero);
                         setPrecision(Mass[platform].NetAct.Precision);
-                    } else if(response.STS_DETAILS === 'The license for this module has not been activated'){
+                    } else if (response.STS_DETAILS === 'The license for this module has not been activated') {
                         setValue('-----');
                         setUnit('');
                         setIsStab(false);
@@ -121,6 +123,7 @@ export default function LinearDeterminate(props) {
             }
             // props.setTextLabels(labels)
         }
+
         const timer = setInterval(sendToSocket, 250);
         return () => {
             clearInterval(timer);
@@ -242,25 +245,51 @@ export default function LinearDeterminate(props) {
         let unitFontWidth;
         let unitBottom;
         let imgWidth;
+        let rightPos;
+        let bottomPos;
+        let progressHeight;
+        let platformDimension;
+        let platformStyle = {};
         if (props.screen.width > 800) {
             if (props.width === 6) {
-                digitWidth = 70;
+                digitWidth = 90;
                 unitFontWidth = 90;
-                unitBottom = 120;
-                imgWidth = 80;
+                unitBottom = -120;
+                imgWidth = 120;
+                rightPos = 20;
+                bottomPos = 150;
+                progressHeight = 60;
+                platformDimension = 80;
+                platformStyle.top = -7;
+                platformStyle.left = 18;
+                platformStyle.fontSize = '2em'
             } else if (props.width === 4) {
-                digitWidth = 50;
+                digitWidth = 60;
                 unitFontWidth = 50;
-                unitBottom = 70;
-                imgWidth = 50;
+                unitBottom = -100;
+                imgWidth = 80;
+                rightPos = 20;
+                bottomPos = 100;
+                progressHeight = 40;
+                platformDimension = 50;
+                platformStyle.top = -10;
+                platformStyle.left = 9;
+                platformStyle.fontSize = '1.5em'
             } else {
-                digitWidth = 20;
-                unitFontWidth = 20;
-                unitBottom = 30;
-                imgWidth = 35;
+                digitWidth = 40;
+                unitFontWidth = 30;
+                unitBottom = -70;
+                imgWidth = 60;
+                rightPos = 20;
+                bottomPos = 40;
+                progressHeight = 25;
+                platformDimension = 40;
+                platformStyle.top = -3;
+                platformStyle.left = 9;
+                platformStyle.fontSize = '1em'
             }
 
-        }else {
+        } else {
             if (props.width === 6) {
                 digitWidth = 55;
                 unitFontWidth = 75;
@@ -280,34 +309,70 @@ export default function LinearDeterminate(props) {
         }
 
         return (
-            <div style={{width:'100%'}}>
+            <div style={{width: '100%', height: '100%'}}>
+                {props.visible &&<div onClick={choosePlatform} style={{
+                    width: platformDimension,
+                    height: platformDimension,
+                    background: '#19327d',
+                    position: 'absolute',
+                    borderRadius:5,
+                    right: 5,
+                    top: 5,
+                    color: '#fff',
+                    fontSize: '2.5em',
+                    textAlign: 'center'
+                }}>
+                    <div
+                    style={{
+                        position:"absolute",
+                        top: platformStyle.top,
+                        left: platformStyle.left,
+                        fontSize:platformStyle.fontSize
+                    }}
+                    >{platform}</div>
+                </div>}
+                {props.visible && <div style={{display: 'flex', width: '100%'}}>
 
-                {props.visible && <div style={{ display: 'flex', width: '100%' }}>
-
-                    <div style={{ width: 100, display: 'flex', flexDirection: 'column', textAlign: 'left', marginTop: '10px' }}>
-                        <div className={classes.icons}>{isStab && <img src={stableIcon} width={`${imgWidth}%`} alt='stab'/>}</div>
-                        <div className={classes.icons}>{isZero && <img src={zeroIcon} width={`${imgWidth}%`} alt='zero'/>}</div>
-                        <div className={classes.icons}>{isTare && <img src={taraIcon} width={`${imgWidth}%`} alt='tare'/>}</div>
+                    <div style={{width: 50, display: 'flex', flexDirection: 'column', textAlign: 'left'}}>
+                        <div className={classes.icons}>{!isStab &&
+                        <img src={stableIcon} width={`${imgWidth}%`} alt='stab'/>}</div>
+                        <div className={classes.icons}>{!isZero &&
+                        <img src={zeroIcon} width={`${imgWidth}%`} alt='zero'/>}</div>
+                        <div className={classes.icons}>{!isTare &&
+                        <img src={taraIcon} width={`${imgWidth}%`} alt='tare'/>}</div>
                     </div>
-                    
-                    <div className={classes.value} >
-                        <div onClick={choosePlatform} style={{width:30, height:30, background:'#000', position:'absolute', right:0, color:'#fff', fontSize:'2.5em', textAlign: 'center'}}>
-                            {platform}
-                        </div>
-                        <div>
-                            {props.visible && result.map((elem, i) =>
-                                <img src={elem} style={{ width: digitWidth, pointerEvents: 'none' }} key={i} alt='digit'/>
-                            )}
 
-                            {props.visible && Unit !== "NoUnit" && <span style={{ fontSize: unitFontWidth, position: 'relative', bottom: unitBottom, display: 'inline-block', paddingLeft: '15px', transform: 'scaleY(3)' }}>{Unit}</span>}
-                        </div>
-                    </div>
 
                 </div>}
-                <ThemeProvider theme={theme}>
-                    {props.visible && <LinearProgress color="primary" variant="determinate" value={ValueCal > 0 ? (100 / (Max / ValueCal)) : 0} style={{ height: `25px`, width: '100%', marginBottom: '5px' }} />}
-                </ThemeProvider>
-                               
+                {props.visible &&<div className={classes.value} style={{right: rightPos, bottom: bottomPos}}>
+
+
+                    <div style={{display: "flex"}}>
+                        {props.visible && result.map((elem, i) =>
+                            <div key={i}><img src={elem} style={{width: digitWidth, pointerEvents: 'none', margin: 1}}
+                                              alt='digit'/></div>
+                        )}
+
+                        {/*{!props.visible && Unit !== "NoUnit" && <span style={{ fontSize: unitFontWidth, position: 'relative', bottom: unitBottom, display: 'inline-block', paddingLeft: '15px', transform: 'scaleY(3)' }}>{Unit}</span>}*/}
+                        {<div style={{
+                            fontSize: unitFontWidth,
+                            position: 'relative',
+                            bottom: unitBottom,
+                            paddingLeft: '15px'
+                        }}>g</div>}
+                    </div>
+                </div>}
+                {props.visible &&<ThemeProvider theme={theme}>
+                    {props.visible && <LinearProgress color="primary" variant="determinate"
+                                                      value={ValueCal > 0 ? (100 / (Max / ValueCal)) : 0} style={{
+                        height: progressHeight,
+                        width: '98%',
+                        marginBottom: '5px',
+                        position: "absolute",
+                        bottom: 5
+                    }}/>}
+                </ThemeProvider>}
+
             </div>
 
         )
