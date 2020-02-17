@@ -272,9 +272,9 @@ export default function LinearDeterminate(props) {
                 bottomPos = 100;
                 progressHeight = 40;
                 platformDimension = 50;
-                platformStyle.top = -10;
+                platformStyle.top = -8;
                 platformStyle.left = 9;
-                platformStyle.fontSize = '1.5em'
+                platformStyle.fontSize = '1.4em'
             } else {
                 digitWidth = 40;
                 unitFontWidth = 30;
@@ -334,11 +334,11 @@ export default function LinearDeterminate(props) {
                 {props.visible && <div style={{display: 'flex', width: '100%'}}>
 
                     <div style={{width: 50, display: 'flex', flexDirection: 'column', textAlign: 'left'}}>
-                        <div className={classes.icons}>{!isStab &&
+                        <div className={classes.icons}>{isStab &&
                         <img src={stableIcon} width={`${imgWidth}%`} alt='stab'/>}</div>
-                        <div className={classes.icons}>{!isZero &&
+                        <div className={classes.icons}>{isZero &&
                         <img src={zeroIcon} width={`${imgWidth}%`} alt='zero'/>}</div>
-                        <div className={classes.icons}>{!isTare &&
+                        <div className={classes.icons}>{isTare &&
                         <img src={taraIcon} width={`${imgWidth}%`} alt='tare'/>}</div>
                     </div>
 

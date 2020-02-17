@@ -700,8 +700,10 @@ function App() {
                 close={close}
                 socketAct={socketAct}
                 menu={menu}
+                send={send}
                 disabledAddMenuButton={disabledAddMenuButton}
                 setDisabledAddMenuButton={setDisabledAddMenuButton}
+                images={images}
             />
             <ListPanel
                 setHamburger={setHamburger}
@@ -737,7 +739,7 @@ function App() {
                             const isNotButton = elem.elem && !notButton.includes(elem.elem.type);
                             return (
                                 <div className="xx"
-                                     onClick={elem.elem && isNotButton ? () => send(elem) : undefined}
+                                     onMouseDown={elem.elem && isNotButton ? () => send(elem) : undefined}
                                      style={{
                                          border: "1px solid rgb(0, 0, 0, 0.4)",
                                          display: 'flex',

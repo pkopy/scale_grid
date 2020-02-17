@@ -25,6 +25,14 @@ const useStyles = makeStyles(theme => ({
         flexGrow: 1,
         textAlign: 'left'
     },
+    loginText: {
+        position: 'absolute',
+        left: '50%',
+        transform: 'translate(-50%, 0)',
+        '&:hover': {
+            cursor: "pointer"
+        }
+    }
 }));
 
 const close = () => {
@@ -90,6 +98,9 @@ export default function ButtonAppBar(props) {
                     <Typography variant="h6" className={classes.title}>
                         {props.menu.Name ? title.toUpperCase() : 'SMART DISPLAY'}
                     </Typography>
+                    <Typography variant="h6" className={classes.loginText}>
+                        <b onMouseDown={() => props.send({elem:{Value: 'actSelOper'}})}>Zaloguj</b>
+                    </Typography>
 
                     <DateTime
                         date={'2020-02-05'}
@@ -121,6 +132,7 @@ export default function ButtonAppBar(props) {
             {openButtons && <Buttons
                 setOpenButtons={setOpenButtons}
                 // setOpenButtons={false}
+                images={props.images}
                 add={props.add}
                 socketAct={props.socketAct}
             />}
