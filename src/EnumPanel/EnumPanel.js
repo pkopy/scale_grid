@@ -48,7 +48,7 @@ export default function EnumPanel(props) {
     }
     // console.log(RECORD);
     return (
-        <Dialog open={true} fullWidth={true} maxWidth='xl'>
+        <Dialog open={true} fullWidth={true} maxWidth='md'>
 
             <div className={classes.menuHeader}>
                 <div style={{

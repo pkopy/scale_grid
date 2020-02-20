@@ -1,7 +1,7 @@
 import React from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import loader from '../img/six.svg'
+
 
 export default function AddPanel(props) {
 
@@ -29,7 +29,7 @@ export default function AddPanel(props) {
             }}>Menu</MenuItem>
             <MenuItem onClick={() => {
                 handleClose();
-                props.add({Name: 'Demo text', img1: {loader}, type:'text'}, 'text')
+                props.add({Name: 'Demo text', type:'text'}, 'text')
             }}>Text</MenuItem>
         </Menu>
     )

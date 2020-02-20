@@ -14,6 +14,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ClearIcon from '@material-ui/icons/Clear';
 import AddPanel from "../AddPanel/AddPanel";
 import DateTime from "../DateTime/DateTime";
+import Operator from "../DateTime/Operator";
 const useStyles = makeStyles(theme => ({
     root: {
         flexGrow: 1,
@@ -82,7 +83,7 @@ export default function ButtonAppBar(props) {
 
     React.useEffect(() => {
 
-
+        console.log(props)
         setTitle(props.menu.Name || 'SMART DISPLAY')
 
     }, [props.menu]);
@@ -98,12 +99,12 @@ export default function ButtonAppBar(props) {
                     <Typography variant="h6" className={classes.title}>
                         {props.menu.Name ? title.toUpperCase() : 'SMART DISPLAY'}
                     </Typography>
-                    <Typography variant="h6" className={classes.loginText}>
-                        <b onMouseDown={() => props.send({elem:{Value: 'actSelOper'}})}>Zaloguj</b>
+                    <Typography variant="h6" className={classes.loginText} onMouseDown={() => props.send({elem:{Value: 'actSelOper'}})}>
+                        <Operator ></Operator>
                     </Typography>
 
                     <DateTime
-                        date={'2020-02-05'}
+
                     />
                     <IconButton color="inherit" onClick={() => props.getLayout()}>
                         <RefreshIcon/>

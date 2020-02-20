@@ -1,0 +1,21 @@
+.test {
+  background: #e5e5e5;
+}
+.okCancelButton {
+  box-shadow: 0 0 3px -1px rgba(0,0,0,.3);
+  height: 40px;
+  width:60px;
+  border-radius: 5px;
+  box-sizing: border-box;
+  padding: 5px;
+  background: #fff;
+  border-bottom: 1px solid #b5b5b5;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 5px;
+}
+.okCancelButtonActive {
+  background: #efefef;
+}

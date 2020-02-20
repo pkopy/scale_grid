@@ -98,7 +98,7 @@ export default function DialogPanel(props) {
 
                 <div style={{textAlign:"end", margin:"0 20px 20px 0"}}>
 
-                    {okButton&&<Button onMouseDown={() => tapButton("Ok3.60")} style={{margin:10}} variant="contained" color="primary">OK</Button>}
+                    {okButton&&<Button onMouseDown={() => tapButton("Ok")} style={{margin:10}} variant="contained" color="primary">OK</Button>}
                     {cancelButton&& <Button onMouseDown={() => tapButton("CANCEL")} style={{margin:10}} variant="contained" color="secondary">CANCEL</Button>}
                 </div>
             </div>

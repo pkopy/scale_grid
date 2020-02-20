@@ -5,16 +5,16 @@ import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
 import stableIcon from '../img/stable_black.svg';
 import zeroIcon from '../img/zero.svg'
 import taraIcon from '../img/tara_black.svg'
-import one from '../img/one1.svg'
-import zero2 from '../img/zero1.svg'
-import three from '../img/three1.svg'
-import seven from '../img/seven1.svg'
-import two from '../img/two1.svg'
-import four from '../img/four1.svg'
-import five from '../img/five1.svg'
-import six from '../img/six1.svg'
-import eight from '../img/eight1.svg'
-import nine from '../img/nine1.svg'
+import one from '../img/one2.svg'
+import zero2 from '../img/zero2.svg'
+import three from '../img/three2.svg'
+import seven from '../img/seven2.svg'
+import two from '../img/two2.svg'
+import four from '../img/four2.svg'
+import five from '../img/five2.svg'
+import six from '../img/six2.svg'
+import eight from '../img/eight2.svg'
+import nine from '../img/nine2.svg'
 import minus from '../img/minus1.svg'
 import dot from '../img/dot1.svg'
 import TextContainer from "../TextPanel/TextContainer";
@@ -81,19 +81,14 @@ export default function LinearDeterminate(props) {
                     let data = e.data;
                     const response = JSON.parse(data);
                     // console.log(response)
-                    let Mass = []
+                    let Mass = [];
                     // console.log(equalsArray(oldLabels,labels))
                     if (response.RECORD) {
                         Mass = response.RECORD.Mass;
                         setPlatformsArray(Mass);
-                        // if (oldLabels !== labels) console.log('xman')
-                        // setLabels(response.RECORD.var_labels)
-                        // if (!props.textLabels) {
-                        //     props.setTextLabels(props.socketMass.readyState)
-                        //     // props.setTextLabels(response.RECORD.var_labels)
-                        // }
                         TextContainer.setTextLabels(response.RECORD.var_labels);
-                        TextContainer.setDate(response.RECORD.Date)
+                        TextContainer.setDate(response.RECORD.Date);
+                        TextContainer.setOperator(response.RECORD.Operator);
                         // console.log(TextContainer)
                     }
 
@@ -196,7 +191,7 @@ export default function LinearDeterminate(props) {
     const _digits = (value) => {
         value = isNaN(value) ? '-----' : value;
         const digits = (value.toString()).split('');
-        let result = []
+        let result = [];
         for (let digit of digits) {
             switch (digit) {
                 case '0':
