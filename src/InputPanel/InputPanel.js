@@ -14,28 +14,27 @@ export default function InputPanel(props) {
     const inputField = document.querySelector('input')
     const {RECORD} = props.inputPanel;
     const onChange = (input) => {
-
-        if (props.layout === 'number') {
+        // let newImput = parseFloat(input);
+        // let caret = keyboard.current.caretPosition
+        //
+        // console.log(caret)
+        console.log(props.layoutName)
+        if (props.layout === 'double' || props.layout === 'number') {
+            keyboard.current.setInput(input);
+            setText(input);
+            setData(input);
+        }
+        if (props.inputPanel.RECORD.Password) {
+            setText(input);
+            setData(input);
+            keyboard.current.setInput(input);
+        } else {
             setText(input);
             setData(input);
             keyboard.current.setInput(input);
         }
-        if (props.inputPanel.RECORD.Password) {
-            password(input);
-            setData(input);
-        } else {
-            setText(input);
-            setData(input);
-        }
+    };
 
-    };
-    const password = (input) => {
-        let x = '';
-        for (let elem of input) {
-            x += '*';
-        }
-        setText(x);
-    };
 
     const onKeyPress = (button) => {
         if (button === '{OK}') {
@@ -49,32 +48,32 @@ export default function InputPanel(props) {
     const buttonTap = (param) => {
         if (props.socketTap && props.socketTap.readyState === 1) {
             props.socketTap.send(JSON.stringify({COMMAND: 'SET_PARAM', DATA: data, PARAM: param, "KEY": RECORD.GUID}))
-            if (param === 'CANCEL') {
+
                 setText('');
                 keyboard.current.clearInput();
-            }
+
         }
     };
     const onChangeInput = (event) => {
         let input = event.target.value.toString()
-        if (!props.inputPanel.RECORD.Password && props.layout === 'number' && input.length >= 0) {
+        if (!props.inputPanel.RECORD.Password && props.layout === 'double'&& !isNaN(event.target.value) && input.length >= 0) {
             setText(input);
             setData(input);
             keyboard.current.setInput(input);
         }
-        if (props.layout === 'default' && props.inputPanel.RECORD.Password) {
-
-            password(input);
-            setData(input);
-            keyboard.current.setInput(input);
-
-        }
-        if (props.layout === 'default' && !props.inputPanel.RECORD.Password) {
+        // if (props.layout === 'default' && props.inputPanel.RECORD.Password) {
+        //     setText(input);
+        //     setData(input);
+        //     keyboard.current.setInput(input);
+        //
+        // }
+        else if(props.layout !== 'double'){
             setText(input);
             setData(input);
             keyboard.current.setInput(input);
+            // setText(.current.setInput(input);
         }
-        console.log(input)
+        // console.log(input)
 
 
     };
@@ -82,7 +81,7 @@ export default function InputPanel(props) {
 
 
         if (props.inputPanel.RECORD) {
-
+            console.log(props.inputPanel.RECORD.Value)
             const inputInit = props.inputPanel.RECORD.Value.toString();
             setText(inputInit);
             setData(inputInit);
@@ -90,12 +89,14 @@ export default function InputPanel(props) {
 
 
         }
+        console.log(keyboard)
 
     }, [props.inputPanel]);
 
     const test = () => {
-        keyboard.current.setInput(props.inputPanel.RECORD.Value)
-        // inputField.select()
+        keyboard.current.utilities.updateCaretPos(4, keyboard.current)
+        // keyboard.current.setInput(props.inputPanel.RECORD.Value)
+        inputField.focus()
     };
 
     return (
@@ -155,10 +156,11 @@ export default function InputPanel(props) {
                                 border: "none",
                                 fontSize: '2.5em'
                             }}
-
+                            type={props.keyboardType}
                             value={text}
                             checked={true}
                             autoFocus={true}
+                            autoComplete={'off'}
                             onChange={(e) => onChangeInput(e)}
                         />
                     </div>
@@ -219,6 +221,12 @@ export default function InputPanel(props) {
                         physicalKeyboardHighlight={true}
                         debug={true}
                         keyboardRef={r => (keyboard.current = r)}
+                        buttonTheme={[
+                            {
+                                class: props.layout,
+                                buttons: "- . 0 {bksp}"
+                            }
+                        ]}
                         layout={{
                             'default': [
                                 '` 1 2 3 4 5 6 7 8 9 0 - = {bksp}',
@@ -238,7 +246,15 @@ export default function InputPanel(props) {
                                 '1 2 3',
                                 '4 5 6',
                                 '7 8 9',
-                                '0 {bksp}']
+                                '- 0 {bksp}'
+                            ],
+                            'double': [
+                                '1 2 3 ',
+                                '4 5 6',
+                                '7 8 9',
+                                '. - 0',
+                                '{bksp}'
+                            ]
                         }}
 
                     />

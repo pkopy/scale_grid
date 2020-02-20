@@ -122,6 +122,7 @@ export default function ListPanel(props) {
                              onClick={(e) => e.stopPropagation()}
                              onMouseDown={(e) => {
                                  e.stopPropagation();
+                                 console.log(elem)
                                  props.tapParam(elem.GUID, props.menu.GUID);
                              }}>
                             <div style={{textAlign: 'left'}}>
