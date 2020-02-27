@@ -6,6 +6,8 @@ import checkGray from '../img/Check_gray.svg'
 import ForwardIcon from '@material-ui/icons/Forward';
 import {IconButton} from '@material-ui/core';
 import helpers from "../Helpers/helpers";
+import Parser from 'html-react-parser';
+import './ListPanel.scss'
 
 const useStyles = makeStyles(theme => ({
     listPanel: {
@@ -19,6 +21,12 @@ const useStyles = makeStyles(theme => ({
         // left:-1100
         overflowY: 'hidden',
         overflowX: 'hidden'
+    },
+    xxx:{
+
+            position: 'absolute',
+            width: 30,
+
     }
 }));
 //TODO hide and show a scrollBar arrows
@@ -33,6 +41,7 @@ export default function ListPanel(props) {
     //     setLeft(-1100)
     // }
     const refMenu = React.useRef();
+    const butt = React.useRef();
     // const refContainer = React.useRef()
     useEffect(() => {
         props.hamburger ? setLeft(0) : setLeft(-1100);
@@ -48,7 +57,7 @@ export default function ListPanel(props) {
     React.useEffect(() => {
         setScrollTop(0)
         setVisibleScroll(false);
-        if ((props.menuButtons.length > 15 && props.menu.isBig) ||(props.menuButtons.length > 12 && !props.menu.isBig)) setVisibleScroll(true)
+        if ((props.menuButtons.length > 15 && props.menu.isBig) || (props.menuButtons.length > 12 && !props.menu.isBig)) setVisibleScroll(true)
 
     }, [props.menuButtons]);
 
@@ -103,14 +112,14 @@ export default function ListPanel(props) {
                                 </div>
 
                             </div>
-                            <div style={{top:-10, position:"relative"}}>{elem.Name}</div>
+                            <div style={{top: -10, position: "relative"}}>{elem.Name}</div>
 
                         </div>
                     )}
 
                     {!props.menu.isBig && props.menuButtons && props.menuButtons.map((elem, i) =>
                         <div key={i} style={{
-                            background: elem.isSelected?'#cce7ff':'#fff',
+                            background: elem.isSelected ? '#cce7ff' : '#fff',
                             // position: 'relative',
                             display: 'flex',
                             margin: 5,
@@ -157,7 +166,7 @@ export default function ListPanel(props) {
                     {visibleScroll && <IconButton
                         disabled={scrollTop === 0}
                         onClick={(e) => {
-                            helpers.scroll(refMenu.current, 500,true);
+                            helpers.scroll(refMenu.current, 500, true);
                             setTimeout(() => {
                                 setScrollTop(refMenu.current.scrollTop);
                             }, 50);
@@ -166,14 +175,39 @@ export default function ListPanel(props) {
                         }}>
                         <ForwardIcon style={{fontSize: '2.5em', transform: 'rotate(-90deg)'}}/>
                     </IconButton>}
+                    <div style={{position:"relative", left:2}}>
+                        {!props.menu.isBig && props.menu.Buttons && props.menu.Buttons.map((elem, i) => {
+
+                                const indexOfFirst = (elem.ImageSVG).indexOf('<svg')
+                                const indexLast = (elem.ImageSVG).indexOf('svg>');
+
+
+                                const imag = elem.ImageSVG.slice(indexOfFirst + 4, indexLast +4)
+                                const newImag = '<svg class="xxx" ' + imag;
+                                // console.log(imag)
+                                return (
+
+                                    <IconButton style={{width:60, height:60}} key={i}
+                                        onMouseDown={()=>{console.log(elem.PARAM);props.pushButton(elem.PARAM, props.menu.GUID)}}
+                                    >
+
+                                        {Parser(newImag)}
+
+
+                                    </IconButton>
+                            )
+                            }
+                        )}
+
+                    </div>
                     {visibleScroll && <IconButton
                         onClick={() => {
                             helpers.scroll(refMenu.current, 500);
                             setTimeout(() => {
                                 setScrollTop(refMenu.current.scrollTop)
                             }, 50);
-                    }}
-                        disabled={scrollTop + refMenu.current.clientHeight >= refMenu.current.scrollHeight }
+                        }}
+                        disabled={scrollTop + refMenu.current.clientHeight >= refMenu.current.scrollHeight}
 
                     >
                         <ForwardIcon style={{fontSize: '2.5em', transform: 'rotate(90deg)'}}/>

@@ -9,30 +9,16 @@ export default function InputPanel(props) {
     const [text, setText] = React.useState('');
     const [data, setData] = useState('');
     const [width, setWidth] = React.useState(800);
-
+    const [pattern, setPattern] = useState(/./)
     const keyboard = React.useRef();
     const inputField = document.querySelector('input')
     const {RECORD} = props.inputPanel;
     const onChange = (input) => {
-        // let newImput = parseFloat(input);
-        // let caret = keyboard.current.caretPosition
-        //
-        // console.log(caret)
-        console.log(props.layoutName)
-        if (props.layout === 'double' || props.layout === 'number') {
-            keyboard.current.setInput(input);
-            setText(input);
-            setData(input);
-        }
-        if (props.inputPanel.RECORD.Password) {
-            setText(input);
-            setData(input);
-            keyboard.current.setInput(input);
-        } else {
-            setText(input);
-            setData(input);
-            keyboard.current.setInput(input);
-        }
+
+        setText(input);
+        setData(input);
+        keyboard.current.setInput(input);
+
     };
 
 
@@ -49,25 +35,31 @@ export default function InputPanel(props) {
         if (props.socketTap && props.socketTap.readyState === 1) {
             props.socketTap.send(JSON.stringify({COMMAND: 'SET_PARAM', DATA: data, PARAM: param, "KEY": RECORD.GUID}))
 
-                setText('');
-                keyboard.current.clearInput();
+            setText('');
+            keyboard.current.clearInput();
 
         }
     };
     const onChangeInput = (event) => {
         let input = event.target.value.toString()
-        if (!props.inputPanel.RECORD.Password && props.layout === 'double'&& !isNaN(event.target.value) && input.length >= 0) {
+        console.log(/-?\d*[.]?\d*/.test(input))
+        if (!props.inputPanel.RECORD.Password && (props.layout === 'double') && input.length >= 0 && /^-?\d*[.]?\d*$/.test(input)) {
             setText(input);
             setData(input);
             keyboard.current.setInput(input);
         }
-        // if (props.layout === 'default' && props.inputPanel.RECORD.Password) {
-        //     setText(input);
-        //     setData(input);
-        //     keyboard.current.setInput(input);
-        //
+        if (!props.inputPanel.RECORD.Password && (props.layout === 'number') && input.length >= 0 && /^-?\d*$/.test(input)) {
+            setText(input);
+            setData(input);
+            keyboard.current.setInput(input);
+        }
+            // if (props.layout === 'default' && props.inputPanel.RECORD.Password) {
+            //     setText(input);
+            //     setData(input);
+            //     keyboard.current.setInput(input);
+            //
         // }
-        else if(props.layout !== 'double'){
+        if (props.layout === 'default') {
             setText(input);
             setData(input);
             keyboard.current.setInput(input);
@@ -79,19 +71,21 @@ export default function InputPanel(props) {
     };
     useEffect(() => {
 
-
         if (props.inputPanel.RECORD) {
             console.log(props.inputPanel.RECORD.Value)
             const inputInit = props.inputPanel.RECORD.Value.toString();
             setText(inputInit);
             setData(inputInit);
             keyboard.current.setInput(inputInit);
-
-
+            // console.log(props.layout)
         }
-        console.log(keyboard)
+        // console.log(keyboard)
 
     }, [props.inputPanel]);
+    useEffect(() => {
+        props.layout === 'number' ? setPattern(/^-?\d*$/) : setPattern(/^-?\d*$/)
+    }, []);
+
 
     const test = () => {
         keyboard.current.utilities.updateCaretPos(4, keyboard.current)
@@ -212,6 +206,7 @@ export default function InputPanel(props) {
                         // beforeFirstRender={() => keyboard.current.setInput(props.inputPanel.RECORD.Value)}
                         onChange={onChange}
                         // onRender={test}
+                        // disableCaretPositioning={true}
                         syncInstanceInputs={true}
                         onKeyReleased={() => inputField.focus()}
                         theme={"hg-theme-default test"}
@@ -227,13 +222,14 @@ export default function InputPanel(props) {
                                 buttons: "- . 0 {bksp}"
                             }
                         ]}
+
                         layout={{
                             'default': [
                                 '` 1 2 3 4 5 6 7 8 9 0 - = {bksp}',
                                 '{tab} q w e r t y u i o p [ ] \\',
                                 '{lock} a s d f g h j k l ; \' {enter}',
                                 '{shift} z x c v b n m , . / {shift}',
-                                '{num} @ {space} {OK} CANCEL'
+                                '{space} '
                             ],
                             'big': [
                                 '~ ! @ # $ % ^ & * ( ) _ + {bksp}',
@@ -249,13 +245,18 @@ export default function InputPanel(props) {
                                 '- 0 {bksp}'
                             ],
                             'double': [
-                                '1 2 3 ',
+                                '1 2 3',
                                 '4 5 6',
                                 '7 8 9',
                                 '. - 0',
                                 '{bksp}'
                             ]
                         }}
+                        // inputPattern={{
+                        //     'number': /^-?\d*$/,
+                        //     'double': /^-?\d*[.]?\d*$/
+                        // }}
+                        inputPattern={props.layout !== 'default' ? (props.layout === 'number' ? /^-?\d*$/ : /^-?\d*[.]?\d*$/) : /./}
 
                     />
                 </div>

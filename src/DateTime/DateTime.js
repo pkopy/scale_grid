@@ -1,20 +1,27 @@
 import React, {useState, useEffect} from 'react';
-import TextContainer from "../TextPanel/TextContainer";
+
+
 
 export default function DateTime(props) {
     const [date, setDate] = useState('')
+    // useEffect(() => {
+    //     const start = () => {
+    //         setDate(props.mass.RECORD.Date);
+    //         // console.log(textLabels)
+    //     };
+    //
+    //     const timer = setInterval(start, 1000);
+    //     return () => {
+    //         clearInterval(timer)
+    //     }
+    // }, []);
     useEffect(() => {
-        const start = () => {
-            setDate(TextContainer.textLabels);
-            // console.log(textLabels)
-        };
+        if(props.mass && props.mass.RECORD) {
 
-        const timer = setInterval(start, 1000);
-        return () => {
-            clearInterval(timer)
+            setDate(props.mass.RECORD.Date)
         }
-    }, []);
+    }, [props.mass]);
     return(
-        <div style={{fontWeight:"bold", fontSize:"1em", marginRight:10}}>{TextContainer.date}</div>
+        <div style={{fontWeight:"bold", fontSize:"1em", marginRight:10}}>{date}</div>
     )
 }
