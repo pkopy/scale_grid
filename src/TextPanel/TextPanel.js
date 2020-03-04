@@ -8,7 +8,8 @@ const useStyles = makeStyles(theme => ({
         justifyContent: 'center',
         position: 'absolute',
         top: 5,
-        width: '100%'
+        width: '100%',
+        overflow:'hidden'
 
     },
     tabs: {
@@ -30,7 +31,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function TextPanel(props) {
     const classes = useStyles();
-    const [activeIndex, setActiveIndex] = useState(0);
+    const [activeIndex, setActiveIndex] = useState(props.elem.elem.activeTab);
     const [textLabels, setTextLabels] = useState('');
 
     const activeTab = `${classes.tabs} ${classes.activeTab}`;
@@ -51,7 +52,7 @@ export default function TextPanel(props) {
 
     useEffect(() => {
         if(props.mass && props.mass.RECORD) {
-
+            // console.log(props.mass.RECORD.var_labels)
             setTextLabels(props.mass.RECORD.var_labels)
             // console.log('fsddsfsdfds',props.mass.RECORD.var_Labels)
         }
@@ -60,11 +61,12 @@ export default function TextPanel(props) {
     // console.log(props.textLabels.length > 0 ? props.textLabels[1].split('\n') : undefined)
     const changeActiveTab = (index) => {
         setActiveIndex(index);
-        // console.log(index);
+        props.setTabInTextPanel(props.elem, index);
+        // console.log(props.elem);
     };
     return (
 
-        <div style={{width: '100%', height: '100%', backgroundColor: "#ececec"}}>
+        <div style={{width: '100%', height: '100%', backgroundColor: "#ececec", overflow:'hidden'}}>
             {props.children}
             <div className={classes.textPanel}>
                 <div className={classes.tabContainer} onClick={() => changeActiveTab(0)}>
@@ -78,10 +80,10 @@ export default function TextPanel(props) {
                 </div>
 
             </div>
-            <div style={{width: '100%', height: '80%', overflowY: 'auto', marginTop: 40}}>
+            <div style={{width: '100%', height: '80%', overflowY: 'hidden', marginTop: 40}}>
                 <div style={{textAlign: 'left', marginLeft: 15}}>
                     {textLabels&&textLabels.length > 0 && textLabels[activeIndex].split('\n').map((elem, i) =>
-                        <p key={i} style={{margin: 0}}>{elem}</p>
+                        <p key={i} style={{margin: 1}}>{elem}</p>
                     )}
                 </div>
             </div>

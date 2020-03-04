@@ -25,7 +25,8 @@ app.get('/close', (req,res) => {
 
 
 app.get('/layout', (req, res) => {
-    readFile()
+    // console.log(req.headers)
+    readFile(req.headers.modindex)
         .then(data => {
             res.writeHead(200, {
                 'Content-Type': 'application/json'
@@ -47,6 +48,7 @@ app.get('/layout', (req, res) => {
 
 
 app.post('/layout', (req, res) => {
+    console.log(req.headers)
     let chunks = [];
     	req.on('data', (data) => {
 		chunks.push(data)
@@ -54,8 +56,8 @@ app.post('/layout', (req, res) => {
     .on('end', () => {
 		let data = Buffer.concat(chunks);
 		let payloadObj = JSON.parse(data);
-
-		saveFile(payloadObj) 
+        // console.log(payloadObj)
+		saveFile(payloadObj, req.headers.modindex)
                 .then(() => {
                     res.writeHead(200, {
                         'Content-Type': 'application/json'
@@ -72,9 +74,9 @@ app.post('/layout', (req, res) => {
 	
 
 // console.log(__dirname + '/.data')
-const readFile = () => {
+const readFile = (modIndex) => {
     return new Promise((res, rej) => {
-        fs.readFile(__dirname + '/.data/layout.json', 'utf-8', (err, data) => {
+        fs.readFile(__dirname + `/.data/layout${modIndex}.json`, 'utf-8', (err, data) => {
             if (!err && data) {
                 const objJSON = JSON.parse(data)
                 // console.log(objJSON)
@@ -82,7 +84,7 @@ const readFile = () => {
             }else {
                 const data = [{"w":6,"h":2,"x":0,"y":0,"i":"b","minW":6,"maxW":12,"minH":2,"maxH":6,"moved":false,"static":true,"obj":"mass"}];
 
-                saveFile(data)
+                saveFile(data, modIndex)
                     .then(() => {
                         res(data)
                     })
@@ -92,10 +94,10 @@ const readFile = () => {
     })
 };
 
-const saveFile = (data) => {
+const saveFile = (data, modIndex = 0) => {
     return new Promise((res, rej) => {
         const dataToJson = JSON.stringify(data);
-        fs.writeFile(__dirname + '/.data/layout.json', dataToJson, (err) => {
+        fs.writeFile(__dirname + `/.data/layout${modIndex}.json`, dataToJson, (err) => {
             if(err) {
                 console.log(err);
 

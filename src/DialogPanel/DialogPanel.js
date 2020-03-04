@@ -40,7 +40,7 @@ export default function DialogPanel(props) {
     useEffect(() => {
         if (RECORD) {
 
-
+            console.log('value',RECORD.Value.split('\r\n'))
             switch (RECORD.Data) {
                 case 'Ok':
                     setOkButton(true);
@@ -92,8 +92,12 @@ export default function DialogPanel(props) {
                     padding: 10,
                     textAlign:"center"
                 }}>
+                    {RECORD&&RECORD.Value.split('\r\n').map((elem, i) =>
 
-                    <p >{RECORD&&RECORD.Value}</p>
+                        (elem !== ' ') ? <p key={i} style={{margin: 0}}>{elem}</p>: <br key={i} />
+
+                    )}
+
                 </div>
 
                 <div style={{textAlign:"end", margin:"0 20px 20px 0"}}>

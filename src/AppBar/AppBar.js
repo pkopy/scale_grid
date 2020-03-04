@@ -109,8 +109,8 @@ export default function ButtonAppBar(props) {
                         {!props.hamburger && <MenuIcon/>}
                         {props.hamburger && <ClearIcon/>}
                     </IconButton>
-                    <Typography variant="h6" className={classes.title}>
-                        {props.menu.Name ? title.toUpperCase() : 'SMART DISPLAY'}
+                    <Typography variant="h6" className={classes.title} onMouseDown={() => props.send({'elem':{'Value':"actChangeMod"}})}>
+                        {props.nameOfMod ? <b>{props.nameOfMod}</b>: 'SMART DISPLAY'}
                     </Typography>
                     {!props.hamburger&&<Typography variant="h6" className={classes.loginTextActive} onMouseDown={() => props.send({elem:{Value: 'actSelOper'}})}>
                         <Operator
@@ -131,7 +131,7 @@ export default function ButtonAppBar(props) {
                     {/*</div>*/}
 
 
-                    <IconButton color="inherit" onClick={() => props.getLayout()} disabled={props.hamburger}>
+                    <IconButton color="inherit" onClick={() => props.getLayout(props.modIndex)} disabled={props.hamburger}>
                         <RefreshIcon/>
                     </IconButton>
                     {!props.blocked && <IconButton color="inherit" onClick={(e) => {handleOpen(); setAnchorEl(e.currentTarget)}}>
@@ -171,6 +171,8 @@ export default function ButtonAppBar(props) {
                 add={props.add}
                 disabledAddMenuButton={props.disabledAddMenuButton}
                 setAnchorEl={setAnchorEl}
+                setActiveTab={props.setActiveTab}
+                activeTab={props.activeTab}
             />}
 
         </div>

@@ -383,7 +383,7 @@ export default function LinearDeterminate(props) {
                             position: 'relative',
                             bottom: unitBottom,
                             paddingLeft: '15px'
-                        }}>g</div>}
+                        }}>{Unit}</div>}
                     </div>
                 </div>}
                 {props.visible &&<ThemeProvider theme={theme}>
