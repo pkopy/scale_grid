@@ -1,96 +1,123 @@
-import CanvasJSReact from './canvasjs.react';
+import {Doughnut, Line} from 'react-chartjs-2';
 import React from "react";
-var CanvasJS = CanvasJSReact.CanvasJS;
-var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
-export default function Chart(props) {
-    const options = {
-        title: {
-            text: "Basic Column Chart in React"
-        },
-        data: [{
-            type: "rangeArea",
-            xValueFormatString: "Range",
-            yValueFormatString: "#0.##",
-            toolTipContent: " <span style=\"color:#6D78AD\">{x}</span><br><b>Min:</b> {y[0]}<br><b>Max:</b> {y[1]}",
-            dataPoints: [
-                { x: 1, y:[37, 55] },
-                { x: 2, y:[37, 57] },
-                { x: 3, y:[43, 63] },
-                { x: 4, y:[46, 68] },
-                { x: 5, y:[55, 75] },
-                { x: 6, y:[63, 84] },
-                { x: 7, y:[66, 90] },
-                { x: 8, y:[64, 86] },
-                { x: 9, y:[61, 81] },
-                { x: 10, y:[54, 73] },
-                { x: 11, y:[46, 64] },
-                { x: 12, y:[39, 59] }
-            ]
-        },{
-            type: "line",
-            toolTipContent: "Measure {x}: {y}",
-            dataPoints: [
-                { x: 1, y: 64 },
-                { x: 2, y: 61 },
-                { x: 3, y: 64 },
-                { x: 4, y: 62 },
-                { x: 5, y: 64 },
-                { x: 6, y: 60 },
-                { x: 7, y: 58 },
-                { x: 8, y: 59 },
-                { x: 9, y: 53 },
-                { x: 10, y: 54 },
-                { x: 11, y: 61 },
-                { x: 12, y: 60 },
-                { x: 13, y: 55 },
-                { x: 14, y: 60 },
-                { x: 15, y: 56 },
-                { x: 16, y: 60 },
-                { x: 17, y: 59.5 },
-                { x: 18, y: 63 },
-                { x: 19, y: 58 },
-                { x: 20, y: 54 },
-                { x: 21, y: 59 },
-                { x: 22, y: 64 },
-                { x: 23, y: 59 }
-            ]
-        },{
-            type: "line",
-            color:'blue',
-            toolTipContent: "Measure {x}: {y}",
-            dataPoints: [
-                { x: 1, y: 34 },
-                { x: 2, y: 41 },
-                { x: 3, y: 64 },
-                { x: 4, y: 62 },
-                { x: 5, y: 64 },
-                { x: 6, y: 60 },
-                { x: 7, y: 58 },
-                { x: 8, y: 59 },
-                { x: 9, y: 53 },
-                { x: 10, y: 34 },
-                { x: 11, y: 61 },
-                { x: 12, y: 60 },
-                { x: 13, y: 45 },
-                { x: 14, y: 60 },
-                { x: 15, y: 56 },
-                { x: 16, y: 60 },
-                { x: 17, y: 59.5 },
-                { x: 18, y: 63 },
-                { x: 19, y: 58 },
-                { x: 20, y: 54 },
-                { x: 21, y: 59 },
-                { x: 22, y: 64 },
-                { x: 23, y: 59 }
-            ]
-        }]
-    }
-    return(
-        <div style={{width:'50%', height:300}}>
-            <CanvasJSChart options = {options}
-                /* onRef = {ref => this.chart = ref} */
+
+export default function Mychart(props) {
+    const [dataValues, setDataValues] = React.useState([]);
+    const [maxValues, setMaxValues] = React.useState([]);
+    const [minValues, setMinValues] = React.useState([]);
+    const [avgValues, setAvgValues] = React.useState([])
+    const [labels, setLabels] = React.useState([])
+    const data = {
+        labels: labels,
+
+        datasets: [
+            {
+                label: 'max',
+                data: maxValues,
+                // this dataset is drawn below
+                borderColor: 'rgba(255,0,0,1)',
+                order: 3,
+                type: 'line',
+                fill: false,
+                borderWidth: 1,
+                pointBorderWidth: 0,
+                pointRadius: 1,
+                lineTension: 0.1,
+            },
+            {
+                label: 'average',
+                data: avgValues,
+                // this dataset is drawn below
+                borderColor: 'rgba(0,0,255,1)',
+                order: 4,
+                type: 'line',
+                fill: false,
+                borderWidth: 1,
+                pointBorderWidth: 0,
+                pointRadius: 1,
+                lineTension: 0.1,
+            },
+            {
+                label: 'min',
+                data: minValues,
+                // this dataset is drawn below
+                borderColor: 'rgba(255,255,0,1)',
+                order: 1,
+                type: 'line',
+                fill: false,
+                borderWidth: 1,
+                pointBorderWidth: 0,
+                pointRadius: 1,
+                lineTension: 0.1,
+            },
+            {
+                label: 'measurement',
+                fill: false,
+                lineTension: 0.1,
+                backgroundColor: 'rgba(75,192,192,0.4)',
+                borderColor: 'rgba(75,192,192,1)',
+                borderCapStyle: 'butt',
+                borderDash: [],
+                borderDashOffset: 0.0,
+                borderJoinStyle: 'miter',
+                pointBorderColor: 'rgba(75,192,192,1)',
+                pointBackgroundColor: '#fff',
+                pointBorderWidth: 1,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+                pointHoverBorderColor: 'rgba(220,220,220,1)',
+                pointHoverBorderWidth: 2,
+                pointRadius: 1,
+                pointHitRadius: 5,
+                data: dataValues,
+                order: 2
+            }
+        ]
+    };
+    React.useEffect(() => {
+        console.log(props.graph)
+        let arrLength = 0;
+        let labels = [];
+        if (props.graph && props.graph.RECORD) {
+            for (let graph of props.graph.RECORD.Items) {
+                arrLength = graph.NumericValues.length > arrLength ? graph.NumericValues.length : arrLength;
+                console.log(arrLength)
+                switch (graph["Type"]) {
+                    case 'Measurement':
+                        setDataValues(graph.NumericValues);
+                        break;
+                    case 'Min':
+                        setMinValues(graph.NumericValues);
+                        break;
+                    case 'Max':
+                        setMaxValues(graph.NumericValues);
+                        break;
+                    case 'Average':
+                        setAvgValues(graph.NumericValues)
+                        break;
+                    default:
+                        console.log('xxxx')
+                }
+            }
+            for (let i = 0; i < arrLength; i++) {
+                labels[i] = i.toString()
+            }
+            console.log(labels);
+            setLabels(labels)
+        }
+    }, [props.graph])
+
+    return (
+        <div>
+            <Line
+                data={data}
+                width={500}
+                height={250}
+                options={{legend: {display: false}, animation: {duration: 0}}}
             />
         </div>
     )
+
 }
+
