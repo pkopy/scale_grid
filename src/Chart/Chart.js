@@ -101,7 +101,7 @@ export default function Mychart(props) {
                 }
             }
             for (let i = 0; i < arrLength; i++) {
-                labels[i] = i.toString()
+                labels[i] = (i +1).toString()
             }
             console.log(labels);
             setLabels(labels)
