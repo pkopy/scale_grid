@@ -11,7 +11,8 @@ export default function InputPanel(props) {
     const [width, setWidth] = React.useState(800);
     const [pattern, setPattern] = useState(/./)
     const keyboard = React.useRef();
-    const inputField = document.querySelector('input')
+    const inputField = React.useRef()
+    const [layout, setLayout] = React.useState(props.layout)
     const {RECORD} = props.inputPanel;
     const onChange = (input) => {
 
@@ -27,6 +28,9 @@ export default function InputPanel(props) {
             setText('');
             keyboard.current.destroy();
             props.setOPenKeyboard(false);
+        }
+        if (button === '{shift}') {
+            layout==='default'?setLayout('big'):setLayout('default')
         }
 
     };
@@ -76,10 +80,13 @@ export default function InputPanel(props) {
             const inputInit = props.inputPanel.RECORD.Value.toString();
             setText(inputInit);
             setData(inputInit);
+            setLayout(props.layout)
             keyboard.current.setInput(inputInit);
+            // inputField.current.select()
             // console.log(props.layout)
         }
         // console.log(keyboard)
+
 
     }, [props.inputPanel]);
     useEffect(() => {
@@ -88,9 +95,10 @@ export default function InputPanel(props) {
 
 
     const test = () => {
-        keyboard.current.utilities.updateCaretPos(4, keyboard.current)
+        // keyboard.current.utilities.updateCaretPos(4, keyboard.current)
         // keyboard.current.setInput(props.inputPanel.RECORD.Value)
-        inputField.focus()
+        // inputField.current.select()
+        // inputField.current.focus()
     };
 
     return (
@@ -108,7 +116,7 @@ export default function InputPanel(props) {
 
 
                 <div style={{
-                    width: width, position: "relative", top: 130, marginLeft: "auto",
+                    width: width, position: "relative", top: 100, marginLeft: "auto",
                     marginRight: "auto", textAlign: "left", background: '#00000012',
                     boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2), 0px 24px 38px 3px rgba(0,0,0,0.14), 0px 9px 46px 8px rgba(0,0,0,0.12)'
 
@@ -130,7 +138,7 @@ export default function InputPanel(props) {
                         }}><b>{RECORD && RECORD.Name}</b></div>
                     </div>
                     <div style={{
-                        height: 60,
+                        // height: 60,
                         border: '7px solid #e5e5e5',
                         position: "relative",
                         top: 3,
@@ -139,8 +147,24 @@ export default function InputPanel(props) {
                         paddingLeft: 10
 
                     }}>
-                        <input
-                            // ref={inputField}
+                        {props.keyboardType==='textML'&&<textarea
+                            ref={inputField}
+                            style={{
+                                width: '100%',
+                                marginRight: "auto",
+                                marginLeft: "auto",
+                                height: 150,
+                                outline: "none",
+                                border: "none",
+                                fontSize: '2.5em'
+                            }}
+                            value={text}
+                            onChange={(e) => onChangeInput(e)}
+                        >
+
+                        </textarea>}
+                        {props.keyboardType !=='textML'&&<input
+                            ref={inputField}
                             style={{
                                 width: '95%',
                                 marginRight: "auto",
@@ -156,7 +180,7 @@ export default function InputPanel(props) {
                             autoFocus={true}
                             autoComplete={'off'}
                             onChange={(e) => onChangeInput(e)}
-                        />
+                        />}
                     </div>
                     <div style={{
                         height: 25,
@@ -193,6 +217,7 @@ export default function InputPanel(props) {
                             <div className={'okCancelButton'}
                                  onMouseDown={(e) => {
                                      e.target.classList.add('okCancelButtonActive');
+                                     keyboard.current.destroy()
                                      buttonTap('CANCEL')
                                  }}
                                  onMouseUp={(e) => e.target.classList.remove('okCancelButtonActive')}
@@ -205,14 +230,16 @@ export default function InputPanel(props) {
 
                         // beforeFirstRender={() => keyboard.current.setInput(props.inputPanel.RECORD.Value)}
                         onChange={onChange}
-                        // onRender={test}
+                        // onRender={() => inputField.current.select()}
+                        onRender={test}
                         // disableCaretPositioning={true}
+                        newLineOnEnter={true}
                         syncInstanceInputs={true}
-                        onKeyReleased={() => inputField.focus()}
+                        onKeyReleased={() => inputField.current.focus()}
                         theme={"hg-theme-default test"}
                         onKeyPress={onKeyPress}
                         inputPanel={props.inputPanel}
-                        layoutName={props.layout}
+                        layoutName={layout}
                         physicalKeyboardHighlight={true}
                         debug={true}
                         keyboardRef={r => (keyboard.current = r)}
@@ -229,14 +256,14 @@ export default function InputPanel(props) {
                                 '{tab} q w e r t y u i o p [ ] \\',
                                 '{lock} a s d f g h j k l ; \' {enter}',
                                 '{shift} z x c v b n m , . / {shift}',
-                                '{space} '
+                                '{space}'
                             ],
                             'big': [
                                 '~ ! @ # $ % ^ & * ( ) _ + {bksp}',
                                 '{tab} Q W E R T Y U I O P { } |',
                                 '{lock} A S D F G H J K L : " {enter}',
                                 '{shift} Z X C V B N M < > ? {shift}',
-                                '.com @ {space}'
+                                '{space}'
                             ],
                             'number': [
                                 '1 2 3',
