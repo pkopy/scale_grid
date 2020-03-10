@@ -22,6 +22,6 @@ export default function DateTime(props) {
         }
     }, [props.mass]);
     return(
-        <div style={{fontWeight:"bold", fontSize:"1em", marginRight:10}}>{date}</div>
+        <div style={{fontWeight:"bold", fontSize:"1em", marginRight:10, top:15, position:'relative'}}>{date}</div>
     )
 }

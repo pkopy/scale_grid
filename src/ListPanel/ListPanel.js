@@ -43,9 +43,20 @@ export default function ListPanel(props) {
     const refMenu = React.useRef();
     const butt = React.useRef();
     // const refContainer = React.useRef()
+    // useEffect(() => {
+    //     (window.innerWidth < 1040) ? setLeft(0):setLeft(-1100)
+    // }, [])
     useEffect(() => {
-        props.hamburger ? setLeft(0) : setLeft(-1100);
-        if (refMenu) refMenu.current.scrollTop = 0
+        // if (window.innerWidth < 1040) {
+        //     // setLeft(0);
+        //     setTransition('0')
+        //     props.hamburger ? props.setOpenListPanel(true):props.setOpenListPanel(false)
+        // } else {
+
+            props.hamburger ? setLeft(0) : setLeft(-1100);
+            if (refMenu) refMenu.current.scrollTop = 0
+        // }
+
 
     }, [props.hamburger]);
 

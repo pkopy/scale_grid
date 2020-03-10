@@ -24,6 +24,8 @@ import {
     MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 import Chart from "./Chart/Chart";
+import {useHotkeys} from "react-hotkeys-hook";
+// import {useHotkeys} from "react-hotkeys-hook";
 
 function App() {
     const [layout, setLayout] = useState([]);
@@ -72,7 +74,13 @@ function App() {
     const [mass, setMass] = useState({});
     const [modIndex, setModeIndex] = useState(0);
     const [nameOfMod, setNameOfMod] = useState('');
-    const [graph, setGraph] = useState({})
+    const [graph, setGraph] = useState({});
+
+    const [openListPanel, setOpenListPanel] = useState(true);
+
+    const [listener, setListener] = useState(false)
+
+    const [guid, setGuid] = React.useState('')
     // blocking the ability to drag and drop items
     const block = () => {
         const helpArr = [];
@@ -122,8 +130,8 @@ function App() {
                     const response = JSON.parse(data);
                     // console.log('mass', response)
                     setMass(response)
-                    setModeIndex(response.RECORD.Mod_Index)
-                    setNameOfMod(response.RECORD.Mod_Name)
+                    if (response.RECORD) setModeIndex(response.RECORD.Mod_Index)
+                    if (response.RECORD) setNameOfMod(response.RECORD.Mod_Name)
                 }
             }
 
@@ -139,28 +147,123 @@ function App() {
         socketAct.onopen = () => {
             setStart(true);
             setSocketAct(socketAct);
+
+            // document.addEventListener("keydown", (event) => {
+            //     if (event.defaultPrevented) {
+            //         return; // Do nothing if event already handled
+            //     }
+            //     console.log('menu',hardGuid)
+            //
+            //     if (event.code === 'F12') {
+            //
+            //         // e.preventD   efault()
+            //         sendButton(socketAct, menu)
+            //         // if (socketAct.readyState === 1) {
+            //         //     // sendButton(socketAct)
+            //         //     socketAct.send(JSON.stringify({"COMMAND": "KEYBOARD_CLICK", "PARAM": "F12","KEY":menu.GUID}))
+            //         // }
+            //         event.preventDefault();
+            //     }
+            // })
+            const sendButton = (event) => {
+                if (event.defaultPrevented) {
+                    return; // Do nothing if event already handled
+                }
+                console.log(listener)
+                // console.log('menu',menu)
+
+                if (event.code === 'F12') {
+                    console.log('menu', menu)
+                    if (socketAct.readyState === 1) {
+                        // document.removeEventListener("keydown", sendButton)
+                        while (menu.GUID !== '0') {
+
+                            socketAct.send(JSON.stringify({
+                                "COMMAND": "KEYBOARD_CLICK",
+                                "PARAM": "F12",
+                                "KEY": menu.GUID
+                            }))
+                        }
+                        //
+                        setListener(!listener)
+                        event.preventDefault();
+                    }
+                }
+            }
+            // document.addEventListener("keydown", sendButton)
         };
 
     };
+
+
+
+    // const sendButton = (event) => {
+    //     if (event.defaultPrevented) {
+    //         return; // Do nothing if event already handled
+    //     }
+    //     console.log(socketAct)
+    //
+    //
+    //     if (event.code === 'F12') {
+    //         console.log('menuX', menu)
+    //         if (socketAct.readyState === 1 && menu.GUID) {
+    //
+    //             socketAct.send(JSON.stringify({"COMMAND": "KEYBOARD_CLICK", "PARAM": "F12", "KEY": menu.GUID}))
+    //             // setMenu({})
+    //         } else if (socketAct.readyState === 1){
+    //             socketAct.send(JSON.stringify({"COMMAND": "KEYBOARD_CLICK", "PARAM": "F12"}))
+    //
+    //         }
+    //
+    //         event.preventDefault();
+    //         document.removeEventListener("keydown", sendButton)
+    //         setListener(!listener)
+    //     }
+    //     //
+    // }
+
+    socketAct.onmessage = (e) => {
+        let data = e.data;
+        const response = JSON.parse(data);
+        console.log('ACT', response);
+        console.log(menu)
+        if (response.COMMAND === 'KEYBOARD_CLICK') {
+            setTimeout(() => {
+                console.log('timre', menu)
+                setGuid(menu)
+            }, 1000)
+        }
+    }
 
     socketTap.onmessage = (e) => {
         let data = e.data;
         const response = JSON.parse(data);
         console.log('tab', response);
+        // console.log('open', openPanels)
+        if (response.COMMAND === 'KEYBOARD_CLICK') {
 
+            setListener(!listener)
+        }
+        // document.removeEventListener('keydown', sendButton,{capture:true});
+        // document.addEventListener("keydown", sendButton,{capture:true});
         if (response.COMMAND === 'REGISTER_LISTENER' && response.PARAM === 'MENU') {
             clearInterval(timer)
         }
 
         if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'SHOW' && response.RECORD.Type === 'Catalog') {
             setHamburger(true);
+            // setOpenListPanel(true)
             setMenu(response.RECORD);
+
+
             // const newOpenPanels = {...openPanels};
             // newOpenPanels[response.KEY] = 'menu';
             // setOpenPanels(newOpenPanels);
             if (response.RECORD.Items.length > 0) {
                 setMenuButtons(response.RECORD.Items);
                 setMenu(response.RECORD);
+
+
 
                 getAllImgs(socketAct, response.RECORD.Items)
                     .then(data => {
@@ -224,7 +327,7 @@ function App() {
             newOpenPanels[response.KEY] = 'inputPanelML';
             setOpenPanels(newOpenPanels);
             setInputPanel(response);
-            response.RECORD.Password ? setKeyboardType('password') : setKeyboardType('text')
+            response.RECORD.Password ? setKeyboardType('password') : setKeyboardType('textML')
         }
 
         if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'SHOW_Int') {
@@ -268,12 +371,12 @@ function App() {
         }
         if (response.COMMAND === 'UPDATE_STATUS_DATA' && response.PARAM === 'GRAPH') {
             setGraph(response)
-            console.log('date',response)
+            console.log('date', response)
         }
 
         if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'CLOSE') {
             const openPanelsKeys = Object.keys(openPanels);
-            // console.log(openPanelsKeys)
+            console.log(openPanelsKeys)
             if (response.KEY && openPanelsKeys.includes(response.KEY)) {
                 const keyValue = openPanels[response.KEY];
                 //for further options
@@ -295,10 +398,12 @@ function App() {
                         setOpenKeyboard(false);
                         break;
                     case 'datePanel':
+
                         delete openPanels[response.KEY];
                         setOpenDatePicker(false);
                         break;
                     case 'menu':
+                        console.log(openPanels)
                         delete openPanels[response.KEY];
                         setHamburger(false);
                         break;
@@ -307,7 +412,7 @@ function App() {
                 }
 
             } else {
-
+                // console.log('brak ')
                 setHamburger(false);
                 setMenu({Name: 'SMART DISPLAY', isBig: true});
             }
@@ -526,7 +631,7 @@ function App() {
                 objectType.minW = 6;
                 // objectType.maxWidth =
                 // objectType.isResizable = false
-                
+
                 break;
             default:
                 objectType.w = 1;
@@ -544,6 +649,7 @@ function App() {
 
     const send = (elem) => {
         console.log('send', elem);
+        console.log(socketAct)
         if (start && socketAct.readyState === 1 && elem.elem && blocked) {
             socketAct.send(JSON.stringify({COMMAND: 'EXECUTE_ACTION', PARAM: elem.elem.Value}));
         }
@@ -555,16 +661,20 @@ function App() {
         // block()
         if (start && socketTap.readyState === 1) {
             socketTap.send(JSON.stringify({COMMAND: 'EXECUTE_MENU_ACTION', PARAM: "BACK"}));
+
         } else {
             setHamburger(false);
+            //
             setMenu({Name: 'SMART DISPLAY', isBig: true})
         }
+        // setOpenListPanel(false)
     };
 
     const showMenu = () => {
         setMenuButtons([]);
         if (start && socketTap.readyState === 1) {
             socketTap.send(JSON.stringify({COMMAND: 'EXECUTE_ACTION', PARAM: "actSetup"}))
+            // setOpenListPanel(true)
             // setHamburger(true)
         }
     };
@@ -815,6 +925,13 @@ function App() {
         getLayout(modIndex)
     }, [modIndex])
 
+    // React.useEffect(() => {
+    //     document.addEventListener("keydown", sendButton)
+    // }, [])
+    // React.useEffect(() => {
+    //     document.addEventListener("keydown", sendButton)
+    // }, [listener])
+
     useEffect(() => {
         // console.log('labels;',textLabels)
         if (!localStorage.images) {
@@ -837,7 +954,18 @@ function App() {
         }
     };
 
+    const startX = (a,b) => {
+        console.log(a)
+        if (socketAct.readyState === 1 && !menu.GUID) {
 
+            socketAct.send(JSON.stringify({"COMMAND": "KEYBOARD_CLICK", "PARAM": a.key}));
+        } else {
+            socketAct.send(JSON.stringify({"COMMAND": "KEYBOARD_CLICK", "PARAM": a.key, "KEY": menu.GUID}))
+        }
+        a.preventDefault()
+        console.log(menu)
+    }
+    useHotkeys('F8, F9, F10, F12, Escape, Enter', startX, [socketAct, menu])
     return (
         <div className="App">
             {loader &&
@@ -905,6 +1033,11 @@ function App() {
                 start={start}
                 modIndex={modIndex}
                 nameOfMod={nameOfMod}
+                guid={guid}
+                setGuid={setGuid}
+                setMenu={setMenu}
+                listener={listener}
+
 
             />
             <ListPanel
@@ -915,6 +1048,8 @@ function App() {
                 menu={menu}
                 tapParam={tapParam}
                 pushButton={pushButton}
+                setOpenListPanel={setOpenListPanel}
+                openListPanel={openListPanel}
             />
             <InputPanel
                 openKeyboard={openKeyboard}
