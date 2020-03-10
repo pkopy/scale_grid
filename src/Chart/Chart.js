@@ -103,7 +103,7 @@ export default function Mychart(props) {
             for (let i = 0; i < arrLength; i++) {
                 labels[i] = (i +1).toString()
             }
-            console.log(labels);
+            // console.log(labels);
             setLabels(labels)
         }
     }, [props.graph])

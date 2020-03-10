@@ -25,6 +25,8 @@ import {
 } from '@material-ui/pickers';
 import Chart from "./Chart/Chart";
 import {useHotkeys} from "react-hotkeys-hook";
+import ServicePanel from "./ServicePanel/ServicePanel";
+import ChartPanel from "./Chart/ChartPanel";
 // import {useHotkeys} from "react-hotkeys-hook";
 
 function App() {
@@ -81,6 +83,9 @@ function App() {
     const [listener, setListener] = useState(false)
 
     const [guid, setGuid] = React.useState('')
+    const [openServicePanel, setOpenServicePanel] = useState(false);
+    const [servicePanel, setServicePanel] = useState({});
+    const [outTab,setOutTab] = useState([])
     // blocking the ability to drag and drop items
     const block = () => {
         const helpArr = [];
@@ -320,6 +325,15 @@ function App() {
             setInputPanel(response);
             response.RECORD.Password ? setKeyboardType('password') : setKeyboardType('text')
         }
+
+        if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'SHOW_SERVICE') {
+            setOpenServicePanel(true)
+            setServicePanel(response)
+            const newOpenPanels = {...openPanels};
+            newOpenPanels[response.KEY] = 'servicePanel';
+            setOpenPanels(newOpenPanels);
+        }
+
         if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'SHOW_TEXT_MULTILINE') {
             setOpenKeyboard(true);
             const newOpenPanels = {...openPanels};
@@ -406,6 +420,10 @@ function App() {
                         console.log(openPanels)
                         delete openPanels[response.KEY];
                         setHamburger(false);
+                        break;
+                    case 'servicePanel':
+                        delete openPanels[response.KEY];
+                        setOpenServicePanel(false)
                         break;
                     default:
                         console.log(keyValue)
@@ -1059,6 +1077,14 @@ function App() {
                 layout={layoutName}
                 keyboardType={keyboardType}
             />
+            <ServicePanel
+                socketTap={socketAct}
+                servicePanel={servicePanel}
+                setOpenServicePanel={setOpenServicePanel}
+                openServicePanel={openServicePanel}
+                outTab={outTab}
+            />
+            {/*<ChartPanel/>*/}
             {openDatePicker && <MuiPickersUtilsProvider utils={DateFnsUtils}>
 
                 <DatePanel

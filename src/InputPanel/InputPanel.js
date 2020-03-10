@@ -80,7 +80,7 @@ export default function InputPanel(props) {
             const inputInit = props.inputPanel.RECORD.Value.toString();
             setText(inputInit);
             setData(inputInit);
-            setLayout(props.layout)
+            setLayout(props.layout);
             keyboard.current.setInput(inputInit);
             // inputField.current.select()
             // console.log(props.layout)
