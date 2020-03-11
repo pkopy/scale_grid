@@ -1,14 +1,21 @@
-import React, {useState, useEffect} from 'react';
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
+import React from 'react';
 import Button from "@material-ui/core/Button";
 import CheckIcon from "@material-ui/icons/Check";
+import { makeStyles } from '@material-ui/core/styles';
+import Chart from "./Chart";
 
+const useStyles = makeStyles(theme => ({
+    button: {
+        margin: theme.spacing(1),
+    },
+}));
 export default function ServicePanel(props) {
+    const classes = useStyles();
+    const {RECORD,} = props.chartPanel;
     return (
         <>
 
-            {<div style={{
+            {props.openChartPanel&&<div style={{
                 width: 1026, height: 612,
                 transition: 'opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
                 background: "#00000021",
@@ -32,7 +39,7 @@ export default function ServicePanel(props) {
                     }}>
                         <div style={{
                             transform: 'translate(0, 50%)', paddingLeft: 15
-                        }}><b>CHART</b></div>
+                        }}><b>{RECORD&&RECORD.Name}</b></div>
                     </div>
                     <div
                         style={{
@@ -43,7 +50,21 @@ export default function ServicePanel(props) {
                             borderRadius: '0 0 7px 7px'
                         }}
                     >
+                        <div style={{textAlign:"center", position:"relative",top:40}}>
 
+                            <Chart
+                                graph={props.chartPanel}
+                                width={840}
+                                height={330}
+                            />
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                className={classes.button}
+                                endIcon={<CheckIcon>send</CheckIcon>}
+                                onMouseDown={() => props.socketTap.send(JSON.stringify({COMMAND: 'SET_PARAM', PARAM: 'CANCEL',  KEY: RECORD.GUID}))}
+                            >OK</Button>
+                        </div>
                     </div>
                 </div>
             </div>}

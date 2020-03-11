@@ -4,17 +4,6 @@ import React, {useState, useEffect} from 'react';
 
 export default function DateTime(props) {
     const [date, setDate] = useState('')
-    // useEffect(() => {
-    //     const start = () => {
-    //         setDate(props.mass.RECORD.Date);
-    //         // console.log(textLabels)
-    //     };
-    //
-    //     const timer = setInterval(start, 1000);
-    //     return () => {
-    //         clearInterval(timer)
-    //     }
-    // }, []);
     useEffect(() => {
         if(props.mass && props.mass.RECORD) {
 

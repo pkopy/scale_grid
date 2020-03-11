@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -12,18 +12,9 @@ import Buttons from '../Buttons/Buttons'
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import MenuIcon from '@material-ui/icons/Menu';
 import ClearIcon from '@material-ui/icons/Clear';
-import DateFnsUtils from '@date-io/date-fns';
-import {
-    DatePicker,
-    TimePicker,
-    DateTimePicker,
-    MuiPickersUtilsProvider
-} from '@material-ui/pickers';
 import AddPanel from "../AddPanel/AddPanel";
 import DateTime from "../DateTime/DateTime";
 import Operator from "../DateTime/Operator";
-import {grey} from "@material-ui/core/colors";
-import {useHotkeys} from "react-hotkeys-hook";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -35,7 +26,6 @@ const useStyles = makeStyles(theme => ({
     title: {
         flexGrow: 1,
         textAlign: 'left',
-        // width: 100
     },
     loginTextActive: {
         position: 'absolute',
@@ -67,32 +57,13 @@ export default function ButtonAppBar(props) {
     const [title, setTitle] = React.useState('SMART DISPLAY');
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [openMenu, setOpenMenu] = React.useState(false);
-    const [guid, setGuid] = React.useState('')
-    const [hardwareButtons, setHardwareButtons]  = React.useState(true)
-
-    const [count, setCount] = React.useState(0);
-    // useHotkeys('F8', () => setCount(prevCount => prevCount + 1));
-
-    // useHotkeys('F8', () => props.send({elem: {Value: 'actSelOper'}})
-        // if (props.socketTab.readyState !== 1) {
-
-
-
-
 
     const clickHamburger = () => {
         if (!props.hamburger) {
             if (!props.blocked) props.block();
             props.showMenu();
-            // if(props.menu)
-            // setTitle(props.menu.Name);
-            // props.setHamburger(true);
-            // console.log(props.menu)
         } else {
-            // props.block()
             props.close();
-
-            // setTitle('SMART DISPLAY');
         }
     };
 
@@ -111,16 +82,13 @@ export default function ButtonAppBar(props) {
     };
 
     React.useEffect(() => {
-
         setTitle(props.menu.Name || 'SMART DISPLAY')
-        console.log(props.menu)
     }, [props.menu]);
 
 
 
     return (
         <div className={classes.root}>
-
             <AppBar position="static">
                 <Toolbar>
                     <IconButton color="inherit" onClick={clickHamburger}>
@@ -128,7 +96,6 @@ export default function ButtonAppBar(props) {
                         {props.hamburger && <ClearIcon/>}
                     </IconButton>
                     <div>
-
                         {!props.menu.Type&&props.nameOfMod&&<Typography variant="h6" className={classes.title}
                                     onMouseDown={() => props.send({'elem': {'Value': "actChangeMod"}})}>
                             {props.nameOfMod ? <b>{props.nameOfMod}</b> : 'SMART DISPLAY'}
@@ -138,7 +105,6 @@ export default function ButtonAppBar(props) {
                         </Typography>}
                     </div>
                     <div>
-
                     </div>
                     {!props.hamburger && <Typography variant="h6" className={classes.loginTextActive}
                                                      onMouseDown={() => props.send({elem: {Value: 'actSelOper'}})}>
@@ -152,18 +118,12 @@ export default function ButtonAppBar(props) {
                         />
                     </Typography>}
 
-                    {/*<div onMouseDown={() => props.setOpenDatePicker(true)}>*/}
                     <div style={{display: 'flex', marginLeft: "auto"}}>
                         <DateTime
                             mass={props.mass}
-
                         />
-                        {/*</div>*/}
 
                         <div>
-                            {/*<p>*/}
-                            {/*    Pressed {count} times.*/}
-                            {/*</p>*/}
 
                             <IconButton color="inherit" onClick={() => props.getLayout(props.modIndex)}
                                         disabled={props.hamburger}>

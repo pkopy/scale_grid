@@ -18,16 +18,12 @@ import InputPanel from "./InputPanel/InputPanel";
 import DatePanel from "./DateTime/DatePanel";
 import DateFnsUtils from '@date-io/date-fns';
 import {
-    DatePicker,
-    TimePicker,
-    DateTimePicker,
     MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 import Chart from "./Chart/Chart";
 import {useHotkeys} from "react-hotkeys-hook";
 import ServicePanel from "./ServicePanel/ServicePanel";
 import ChartPanel from "./Chart/ChartPanel";
-// import {useHotkeys} from "react-hotkeys-hook";
 
 function App() {
     const [layout, setLayout] = useState([]);
@@ -80,16 +76,16 @@ function App() {
 
     const [openListPanel, setOpenListPanel] = useState(true);
 
-    const [listener, setListener] = useState(false)
+    // const [listener, setListener] = useState(false)
 
     const [guid, setGuid] = React.useState('')
     const [openServicePanel, setOpenServicePanel] = useState(false);
     const [servicePanel, setServicePanel] = useState({});
-    const [outTab,setOutTab] = useState([])
-    // blocking the ability to drag and drop items
+    const [openChartPanel, setOpenChartPanel] = useState(false);
+    const [chartPanel, setChartPanel] =useState({});
+
     const block = () => {
         const helpArr = [];
-
         for (let elem of layout) {
             if (elem.elem && elem.elem.Name === 'MENU') setDisabledAddMenuButton(true);
             elem.static = !blocked;
@@ -133,10 +129,9 @@ function App() {
                 socketMass.onmessage = (e) => {
                     let data = e.data;
                     const response = JSON.parse(data);
-                    // console.log('mass', response)
-                    setMass(response)
-                    if (response.RECORD) setModeIndex(response.RECORD.Mod_Index)
-                    if (response.RECORD) setNameOfMod(response.RECORD.Mod_Name)
+                    setMass(response);
+                    if (response.RECORD) setModeIndex(response.RECORD.Mod_Index);
+                    if (response.RECORD) setNameOfMod(response.RECORD.Mod_Name);
                 }
             }
 
@@ -152,118 +147,31 @@ function App() {
         socketAct.onopen = () => {
             setStart(true);
             setSocketAct(socketAct);
-
-            // document.addEventListener("keydown", (event) => {
-            //     if (event.defaultPrevented) {
-            //         return; // Do nothing if event already handled
-            //     }
-            //     console.log('menu',hardGuid)
-            //
-            //     if (event.code === 'F12') {
-            //
-            //         // e.preventD   efault()
-            //         sendButton(socketAct, menu)
-            //         // if (socketAct.readyState === 1) {
-            //         //     // sendButton(socketAct)
-            //         //     socketAct.send(JSON.stringify({"COMMAND": "KEYBOARD_CLICK", "PARAM": "F12","KEY":menu.GUID}))
-            //         // }
-            //         event.preventDefault();
-            //     }
-            // })
-            const sendButton = (event) => {
-                if (event.defaultPrevented) {
-                    return; // Do nothing if event already handled
-                }
-                console.log(listener)
-                // console.log('menu',menu)
-
-                if (event.code === 'F12') {
-                    console.log('menu', menu)
-                    if (socketAct.readyState === 1) {
-                        // document.removeEventListener("keydown", sendButton)
-                        while (menu.GUID !== '0') {
-
-                            socketAct.send(JSON.stringify({
-                                "COMMAND": "KEYBOARD_CLICK",
-                                "PARAM": "F12",
-                                "KEY": menu.GUID
-                            }))
-                        }
-                        //
-                        setListener(!listener)
-                        event.preventDefault();
-                    }
-                }
-            }
-            // document.addEventListener("keydown", sendButton)
         };
 
     };
 
 
-
-    // const sendButton = (event) => {
-    //     if (event.defaultPrevented) {
-    //         return; // Do nothing if event already handled
+    // socketAct.onmessage = (e) => {
+    //     let data = e.data;
+    //     const response = JSON.parse(data);
+    //     console.log(response);
+    //     if (response.COMMAND === 'REGISTER_LISTENER' && response.PARAM === 'MENU') {
+    //
     //     }
-    //     console.log(socketAct)
-    //
-    //
-    //     if (event.code === 'F12') {
-    //         console.log('menuX', menu)
-    //         if (socketAct.readyState === 1 && menu.GUID) {
-    //
-    //             socketAct.send(JSON.stringify({"COMMAND": "KEYBOARD_CLICK", "PARAM": "F12", "KEY": menu.GUID}))
-    //             // setMenu({})
-    //         } else if (socketAct.readyState === 1){
-    //             socketAct.send(JSON.stringify({"COMMAND": "KEYBOARD_CLICK", "PARAM": "F12"}))
-    //
-    //         }
-    //
-    //         event.preventDefault();
-    //         document.removeEventListener("keydown", sendButton)
-    //         setListener(!listener)
-    //     }
-    //     //
-    // }
-
-    socketAct.onmessage = (e) => {
-        let data = e.data;
-        const response = JSON.parse(data);
-        console.log('ACT', response);
-        console.log(menu)
-        if (response.COMMAND === 'KEYBOARD_CLICK') {
-            setTimeout(() => {
-                console.log('timre', menu)
-                setGuid(menu)
-            }, 1000)
-        }
-    }
+    // };
 
     socketTap.onmessage = (e) => {
         let data = e.data;
         const response = JSON.parse(data);
-        console.log('tab', response);
-        // console.log('open', openPanels)
-        if (response.COMMAND === 'KEYBOARD_CLICK') {
 
-            setListener(!listener)
-        }
-        // document.removeEventListener('keydown', sendButton,{capture:true});
-        // document.addEventListener("keydown", sendButton,{capture:true});
         if (response.COMMAND === 'REGISTER_LISTENER' && response.PARAM === 'MENU') {
-            clearInterval(timer)
+            clearInterval(timer);
         }
 
         if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'SHOW' && response.RECORD.Type === 'Catalog') {
             setHamburger(true);
-            // setOpenListPanel(true)
             setMenu(response.RECORD);
-
-
-            // const newOpenPanels = {...openPanels};
-            // newOpenPanels[response.KEY] = 'menu';
-            // setOpenPanels(newOpenPanels);
             if (response.RECORD.Items.length > 0) {
                 setMenuButtons(response.RECORD.Items);
                 setMenu(response.RECORD);
@@ -293,7 +201,7 @@ function App() {
                         setMenuButtonsCatalogLocal(data);
                         setMenuCatalogLocal(response.RECORD);
                     })
-                    .catch((err) => console.log(err))
+                    .catch((err) => console.log(err));
             } else {
                 setMenuCatalogLocal(response.RECORD);
                 setMenuButtonsCatalogLocal([]);
@@ -309,13 +217,21 @@ function App() {
         }
 
         if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'SHOW_MESSAGEBOX') {
-            // console.log(response);
             setOpenDialogPanel(true);
             const newOpenPanels = {...openPanels};
             newOpenPanels[response.KEY] = 'messageBox';
             setOpenPanels(newOpenPanels);
             setDialogPanel(response)
         }
+
+        if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'SHOW_CHART') {
+            setOpenChartPanel(true);
+            const newOpenPanels = {...openPanels};
+            newOpenPanels[response.KEY] = 'chartPanel';
+            setOpenPanels(newOpenPanels);
+            setChartPanel(response);
+        }
+
         if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'SHOW_Text') {
             setOpenKeyboard(true);
             const newOpenPanels = {...openPanels};
@@ -371,7 +287,6 @@ function App() {
             newOpenPanels[response.KEY] = 'datePanel';
             setOpenPanels(newOpenPanels);
             setDatePanel(response);
-            // console.log('date',response)
         }
 
         if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'SHOW_TIME') {
@@ -381,16 +296,13 @@ function App() {
             newOpenPanels[response.KEY] = 'datePanel';
             setOpenPanels(newOpenPanels);
             setDatePanel(response);
-            // console.log('date',response)
         }
         if (response.COMMAND === 'UPDATE_STATUS_DATA' && response.PARAM === 'GRAPH') {
             setGraph(response)
-            console.log('date', response)
         }
 
         if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'CLOSE') {
             const openPanelsKeys = Object.keys(openPanels);
-            console.log(openPanelsKeys)
             if (response.KEY && openPanelsKeys.includes(response.KEY)) {
                 const keyValue = openPanels[response.KEY];
                 //for further options
@@ -417,7 +329,6 @@ function App() {
                         setOpenDatePicker(false);
                         break;
                     case 'menu':
-                        console.log(openPanels)
                         delete openPanels[response.KEY];
                         setHamburger(false);
                         break;
@@ -425,16 +336,18 @@ function App() {
                         delete openPanels[response.KEY];
                         setOpenServicePanel(false)
                         break;
+                    case 'chartPanel':
+                        delete openPanels[response.KEY];
+                        setOpenChartPanel(false)
+                        break;
                     default:
                         console.log(keyValue)
                 }
 
             } else {
-                // console.log('brak ')
                 setHamburger(false);
                 setMenu({Name: 'SMART DISPLAY', isBig: true});
             }
-            // console.log(openPanels)
         }
     };
 
@@ -450,6 +363,7 @@ function App() {
         const guidsImages = Object.keys(newImages)
         if (menuButtons && menuButtons.length > 0) {
             for (let elem of menuButtons) {
+
                 if (!elem.img && !guidsImages.includes(elem.ImageGuid)) {
                     for (let i = 0; i < 8; i++) {
                         await helpers.getImg(true, socket, "GET_IMAGE_MENU", elem.ImageGuid)
@@ -475,7 +389,6 @@ function App() {
                     arr.push(elem)
                 }
             }
-            // console.log(images)
             return arr
         }
     }
@@ -483,7 +396,6 @@ function App() {
 
     //Click on the menu item
     const tapParam = (param, menuGuid) => {
-        console.log(param)
         if (nextClick) {
             setMenuButtons([])
             if (start && socketTap.readyState === 1) {
@@ -666,8 +578,6 @@ function App() {
 
 
     const send = (elem) => {
-        console.log('send', elem);
-        console.log(socketAct)
         if (start && socketAct.readyState === 1 && elem.elem && blocked) {
             socketAct.send(JSON.stringify({COMMAND: 'EXECUTE_ACTION', PARAM: elem.elem.Value}));
         }
@@ -798,7 +708,6 @@ function App() {
         })
             .then(data => data.json())
             .then(data => {
-                console.log(data);
                 setLayout(data);
                 if (isBadLayout) setBlocked(true);
                 setLoader(false);
@@ -834,7 +743,6 @@ function App() {
     };
 
     const setTabInTextPanel = (elem, index) => {
-        console.log(layout)
         if (!blocked) {
 
             for (let item of layout) {
@@ -867,7 +775,6 @@ function App() {
     };
 
     const _textComponent = (elem) => {
-        // console.log('dddd', elem)
         return (
             <TextPanel
                 setTabInTextPanel={setTabInTextPanel}
@@ -895,6 +802,8 @@ function App() {
         return (
             <Chart
                 graph={graph}
+                width={500}
+                height={250}
             />
         )
     }
@@ -940,18 +849,11 @@ function App() {
 
 
     useEffect(() => {
-        getLayout(modIndex)
-    }, [modIndex])
-
-    // React.useEffect(() => {
-    //     document.addEventListener("keydown", sendButton)
-    // }, [])
-    // React.useEffect(() => {
-    //     document.addEventListener("keydown", sendButton)
-    // }, [listener])
+        getLayout(modIndex);
+    }, [modIndex]);
 
     useEffect(() => {
-        // console.log('labels;',textLabels)
+
         if (!localStorage.images) {
             localStorage.images = JSON.stringify({})
         }
@@ -973,15 +875,15 @@ function App() {
     };
 
     const startX = (a,b) => {
-        console.log(a)
+
         if (socketAct.readyState === 1 && !menu.GUID) {
 
             socketAct.send(JSON.stringify({"COMMAND": "KEYBOARD_CLICK", "PARAM": a.key}));
         } else {
             socketAct.send(JSON.stringify({"COMMAND": "KEYBOARD_CLICK", "PARAM": a.key, "KEY": menu.GUID}))
         }
-        a.preventDefault()
-        console.log(menu)
+        a.preventDefault();
+
     }
     useHotkeys('F8, F9, F10, F12, Escape, Enter', startX, [socketAct, menu])
     return (
@@ -1054,7 +956,7 @@ function App() {
                 guid={guid}
                 setGuid={setGuid}
                 setMenu={setMenu}
-                listener={listener}
+                // listener={listener}
 
 
             />
@@ -1078,13 +980,18 @@ function App() {
                 keyboardType={keyboardType}
             />
             <ServicePanel
-                socketTap={socketAct}
+                socketTap={socketTap}
                 servicePanel={servicePanel}
                 setOpenServicePanel={setOpenServicePanel}
                 openServicePanel={openServicePanel}
-                outTab={outTab}
+                // outTab={outTab}
             />
-            {/*<ChartPanel/>*/}
+            <ChartPanel
+                socketTap={socketTap}
+                chartPanel={chartPanel}
+                setOpenChartPanel={setOpenChartPanel}
+                openChartPanel={openChartPanel}
+            />
             {openDatePicker && <MuiPickersUtilsProvider utils={DateFnsUtils}>
 
                 <DatePanel
@@ -1105,9 +1012,6 @@ function App() {
                     onResizeStart={() => setVisible(false)}
                     onResizeStop={() => setVisible(true)}
                     containerPadding={[10, 10]}
-                    // onDragStart={() => setOldLayout(layout)}
-                    // onDrag={(e, x, y, z, mouse) => console.log(mouse)}
-                    // onBreakpointChange={(a, b) => console.log(a)}
                     layout={layout}
                     cols={12} width={screen.width} rowHeight={screen.rowHeight}
                     preventCollision={true}

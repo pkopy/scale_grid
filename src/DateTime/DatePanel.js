@@ -2,10 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 
 import {
-    DatePicker, Calendar,
-    TimePicker,
-    DateTimePicker,
-    MuiPickersUtilsProvider, useStaticState
+    Calendar, useStaticState
 } from '@material-ui/pickers';
 
 
@@ -14,7 +11,6 @@ import cancelIcon from "../img/cancel-button.png";
 import IconButton from '@material-ui/core/IconButton';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
-import InputPanel from "../InputPanel/InputPanel";
 
 const useStyles = makeStyles(theme => ({
     time:{
@@ -22,8 +18,6 @@ const useStyles = makeStyles(theme => ({
         height:50,
         border:'1px solid rgb(0,0,0,0.2)',
         borderRadius:'5px',
-        // marginLeft:'auto',
-        // marginRight:'auto'
         margin:10,
         display: 'flex',
         justifyContent: 'center',
@@ -59,14 +53,10 @@ export default function DatePanel(props) {
     // const [minutes, setMinutes] = useState('')
     const classes = useStyles();
     const buttonTap = (param) => {
-        // console.log(time)
         if (props.socketTap && props.socketTap.readyState === 1) {
             const data = Date.parse(`${time.year} ${time.month} ${time.day} ${time.hours}:${time.minutes}:${time.seconds}`)
             const newDate = data/1000;
             props.socketTap.send(JSON.stringify({COMMAND: 'SET_PARAM', DATA: newDate, PARAM: param, "KEY": props.datePanel.RECORD.GUID}))
-
-
-
         }
     };
     useEffect(() => {
@@ -92,7 +82,6 @@ export default function DatePanel(props) {
         handleDateChange(e);
         const date = e;
         setDate(date.getFullYear() + '-' + addZero(date.getMonth() + 1) + '-' + addZero(date.getDate()))
-        // console.log(e)
     };
     const addZero = (number) => {
 
@@ -106,7 +95,6 @@ export default function DatePanel(props) {
             newValue++;
             const x = newValue > maxNumber ? addZero(0) : addZero(newValue);
             setTime({...time, [element]:x});
-            // console.log(time)
         } else {
             newValue--;
             const x = newValue < 0 ? addZero(maxNumber) : addZero(newValue);
@@ -255,7 +243,6 @@ export default function DatePanel(props) {
 
                         <div className={'okCancelButton'}
                              onMouseDown={(e) => {
-                                // console.log(e)
                                  e.target.classList.add('okCancelButtonActive');
                                  e.target.parentNode.classList.add('okCancelButtonActive');
                                  // buttonTap('CANCEL')

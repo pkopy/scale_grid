@@ -69,12 +69,10 @@ export default function Buttons(props) {
         }
     }, []);
     React.useEffect(() => {
-        // console.log('+++++', index);
         getAllImgs(index)
     }, [index]);
 
     React.useEffect(() => {
-        // console.log(props);
         sendCom()
             .then(data => setImgs(false));
     }, [start]);
@@ -92,12 +90,10 @@ export default function Buttons(props) {
                 props.socketAct.send(JSON.stringify({COMMAND: 'GET_ACTIONS'}));
                 props.socketAct.onmessage = (e) => {
                     let data = e.data;
-                    // console.log(data);
                     const response = JSON.parse(data);
                     let arr = [];
                     let arr1 = [];
                     if (response.RECORD && response.COMMAND === 'GET_ACTIONS') {
-                        // console.log(response.RECORD.length);
                         for (let i = 0; i < response.RECORD.length; i++) {
 
                             if (arr1.length > 16) {
@@ -113,10 +109,7 @@ export default function Buttons(props) {
                         arr.push(arr1);
                         arr1 = [];
                     }
-
                     setButtons(arr);
-                    // console.log(buttons);
-
                     res('ok');
                 }
 
@@ -132,13 +125,10 @@ export default function Buttons(props) {
             setIndex(0);
             return
         } else if (index > buttons.length - 1) {
-            // console.log(index, buttons.length)
             setIndex(buttons.length - 1);
             return
         }
-        // console.log(buttons);
         const helpArr = buttons[index] ? buttons[index].slice() : [];
-        // console.log(helpArr)
         const arr = [];
         for (let elem of helpArr) {
             // await getImg(elem.Value).then(data => {
@@ -148,7 +138,6 @@ export default function Buttons(props) {
             for (let i = 0; i < 8; i++) {
                 await helpers.getImg(start, props.socketAct, "GET_IMAGE_ACTION", elem.Value)
                     .then(data => {
-                        // console.log(data)
                         if (data !== undefined) {
                             i = 8;
                             elem.img = data.DATA;

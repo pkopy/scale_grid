@@ -17,7 +17,6 @@ export default function ServicePanel(props) {
     const [inTab, setInTab] = useState([]);
     const [outTab, setOutTab] = useState([]);
     useEffect(() => {
-        console.log('change');
         if (RECORD) {
 
             setOutTab(RECORD.outTab);
@@ -30,7 +29,6 @@ export default function ServicePanel(props) {
         newValue[index] = event.target.checked
         setOutTab(newValue);
         if (props.socketTap && props.socketTap.readyState === 1) {
-            console.log('tarara', newValue)
             props.socketTap.send(JSON.stringify({COMMAND: 'SET_PARAM', PARAM: 'OK', DATA: JSON.stringify(newValue), KEY: RECORD.GUID}))
         }
     };
@@ -39,10 +37,8 @@ export default function ServicePanel(props) {
 
             {props.openServicePanel && <div style={{
                 width: 1026, height: 612,
-                // opacity: opacity,
                 transition: 'opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
                 background: "#00000021",
-                // background:"rebeccapurple",
                 position: "absolute", top: 0, zIndex: 100
             }}>
                 <div style={{
@@ -52,7 +48,6 @@ export default function ServicePanel(props) {
 
                 }}>
                     <div style={{
-                        // top: 0,
                         height: 40,
                         width: '100%',
                         position: "relative",

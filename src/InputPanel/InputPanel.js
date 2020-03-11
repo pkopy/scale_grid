@@ -9,7 +9,7 @@ export default function InputPanel(props) {
     const [text, setText] = React.useState('');
     const [data, setData] = useState('');
     const [width, setWidth] = React.useState(800);
-    const [pattern, setPattern] = useState(/./)
+    const [pattern, setPattern] = useState(/./);
     const keyboard = React.useRef();
     const inputField = React.useRef()
     const [layout, setLayout] = React.useState(props.layout)
@@ -45,8 +45,7 @@ export default function InputPanel(props) {
         }
     };
     const onChangeInput = (event) => {
-        let input = event.target.value.toString()
-        console.log(/-?\d*[.]?\d*/.test(input))
+        let input = event.target.value.toString();
         if (!props.inputPanel.RECORD.Password && (props.layout === 'double') && input.length >= 0 && /^-?\d*[.]?\d*$/.test(input)) {
             setText(input);
             setData(input);
@@ -57,49 +56,30 @@ export default function InputPanel(props) {
             setData(input);
             keyboard.current.setInput(input);
         }
-            // if (props.layout === 'default' && props.inputPanel.RECORD.Password) {
-            //     setText(input);
-            //     setData(input);
-            //     keyboard.current.setInput(input);
-            //
-        // }
+
         if (props.layout === 'default') {
             setText(input);
             setData(input);
             keyboard.current.setInput(input);
-            // setText(.current.setInput(input);
         }
-        // console.log(input)
+
 
 
     };
     useEffect(() => {
 
         if (props.inputPanel.RECORD) {
-            console.log(props.inputPanel.RECORD.Value)
             const inputInit = props.inputPanel.RECORD.Value.toString();
             setText(inputInit);
             setData(inputInit);
             setLayout(props.layout);
             keyboard.current.setInput(inputInit);
-            // inputField.current.select()
-            // console.log(props.layout)
         }
-        // console.log(keyboard)
-
-
     }, [props.inputPanel]);
     useEffect(() => {
         props.layout === 'number' ? setPattern(/^-?\d*$/) : setPattern(/^-?\d*$/)
     }, []);
 
-
-    const test = () => {
-        // keyboard.current.utilities.updateCaretPos(4, keyboard.current)
-        // keyboard.current.setInput(props.inputPanel.RECORD.Value)
-        // inputField.current.select()
-        // inputField.current.focus()
-    };
 
     return (
         <>
@@ -133,7 +113,7 @@ export default function InputPanel(props) {
                         color: '#fff',
                         top: 4
                     }}>
-                        <div onClick={test} style={{
+                        <div style={{
                             transform: 'translate(0, 50%)', paddingLeft: 15
                         }}><b>{RECORD && RECORD.Name}</b></div>
                     </div>
@@ -231,7 +211,7 @@ export default function InputPanel(props) {
                         // beforeFirstRender={() => keyboard.current.setInput(props.inputPanel.RECORD.Value)}
                         onChange={onChange}
                         // onRender={() => inputField.current.select()}
-                        onRender={test}
+                        // onRender={test}
                         // disableCaretPositioning={true}
                         newLineOnEnter={true}
                         syncInstanceInputs={true}

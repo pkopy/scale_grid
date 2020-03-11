@@ -35,18 +35,16 @@ export default function EnumPanel(props) {
     const classes = useStyles();
     const closeEnum = () => {
         if (props.socketTap && props.socketTap.readyState === 1) {
-            // console.log('tarara')
             props.socketTap.send(JSON.stringify({COMMAND: 'SET_PARAM', PARAM: "CANCEL", KEY: RECORD.GUID}))
         }
     };
 
     const enumTap = (elem) => {
         if (props.socketTap && props.socketTap.readyState === 1) {
-            // console.log('tappppppppp')
             props.socketTap.send(JSON.stringify({COMMAND: 'SET_PARAM', DATA: elem, PARAM: "OK", "KEY": RECORD.GUID}))
         }
-    }
-    // console.log(RECORD);
+    };
+
     return (
         <Dialog open={true} fullWidth={true} maxWidth='md'>
 

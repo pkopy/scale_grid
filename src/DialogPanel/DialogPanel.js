@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import {IconButton} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles(theme => ({
@@ -15,7 +13,6 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
         height: '100%',
         color: '#fff',
-        // overflowY: 'auto'
     },
     menuHeader: {
         top: 0,
@@ -39,8 +36,6 @@ export default function DialogPanel(props) {
 
     useEffect(() => {
         if (RECORD) {
-
-            console.log('value',RECORD.Value.split('\r\n'))
             switch (RECORD.Data) {
                 case 'Ok':
                     setOkButton(true);
@@ -60,20 +55,12 @@ export default function DialogPanel(props) {
             }
         }
     }, [props.dialogPanel])
-    // const closeEnum = () => {
-    //     if (props.socketTap && props.socketTap.readyState === 1) {
-    //         // console.log('tarara')
-    //         props.socketTap.send(JSON.stringify({COMMAND: 'SET_PARAM', PARAM: "CANCEL", KEY: RECORD.GUID}))
-    //     }
-    // };
-    //
+
     const tapButton = (typeButton) => {
         if (props.socketTap && props.socketTap.readyState === 1) {
-            // console.log('tappppppppp')
             props.socketTap.send(JSON.stringify({COMMAND: 'SET_PARAM', DATA: typeButton,PARAM: "OK", "KEY": RECORD.GUID}))
         }
     };
-    // console.log(RECORD);
     return (
         <Dialog open={true} maxWidth={"sm"} fullWidth={true}>
 

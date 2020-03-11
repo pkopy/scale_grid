@@ -72,7 +72,6 @@ export default function MenuPanel(props) {
                             // width: '80%'
                         }}>
                         {props.menuButtonsCatalogLocal && props.menuButtonsCatalogLocal.map((elem, i) => {
-                                // console.log(elem)
                                 return (
                                     <div
                                         key={i}

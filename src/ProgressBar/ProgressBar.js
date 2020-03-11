@@ -72,67 +72,11 @@ export default function LinearDeterminate(props) {
     const [platform, setPlatform] = useState(0);
     const [platfomsArray, setPlatformsArray] = useState([]);
 
-    // useEffect(() => {
-
-    //     function sendToSocket() {
-    //         if (props.socketMass.readyState === 1) {
-    //             props.socketMass.send(JSON.stringify({COMMAND: 'GET_MOD_INFO'}));
-    //             props.socketMass.onmessage = (e) => {
-    //                 let data = e.data;
-    //                 const response = JSON.parse(data);
-    //                 // console.log(response)
-    //                 let Mass = [];
-    //                 // console.log(equalsArray(oldLabels,labels))
-    //                 if (response.RECORD) {
-    //                     Mass = response.RECORD.Mass;
-    //                     setPlatformsArray(Mass);
-    //                     TextContainer.setTextLabels(response.RECORD.var_labels);
-    //                     TextContainer.setDate(response.RECORD.Date);
-    //                     TextContainer.setOperator(response.RECORD.Operator);
-    //                     // console.log(TextContainer)
-    //                 }
-    //
-    //                 if (Mass.length > 0 && Mass[platform].NetAct && Mass[platform].NetCal) {
-    //                     props.setLicense(true);
-    //                     setMax(Mass[platform].Max * 1);
-    //                     setValue(Mass[platform].NetAct.Value);
-    //                     // setValue('-8,88888');
-    //                     setUnit(Mass[platform].NetAct.Unit);
-    //                     setValueCal(Mass[platform].NetCal.Value);
-    //                     setIsStab(Mass[platform].isStab);
-    //                     setIsTare(Mass[platform].isTare);
-    //                     setIsZero(Mass[platform].isZero);
-    //                     setPrecision(Mass[platform].NetAct.Precision);
-    //                 } else if (response.STS_DETAILS === 'The license for this module has not been activated') {
-    //                     setValue('-----');
-    //                     setUnit('');
-    //                     setIsStab(false);
-    //                     setIsTare(false);
-    //                     setIsZero(false);
-    //                     props.setLicense(false);
-    //                 }
-    //             }
-    //
-    //         } else {
-    //             setValue('-----');
-    //         }
-    //         // props.setTextLabels(labels)
-    //     }
-    //
-    //     const timer = setInterval(sendToSocket, 250);
-    //     return () => {
-    //         clearInterval(timer);
-    //     };
-    //
-    // }, [platform]);
-
     useEffect(() => {
         let Mass = [];
         if(props.mass && props.mass.RECORD) {
             Mass = props.mass.RECORD.Mass;
             setPlatformsArray(Mass);
-            // setDate(props.mass.RECORD.Date)
-            // console.log(Mass)
         }
         if (Mass.length > 0 && Mass[platform].NetAct && Mass[platform].NetCal) {
             props.setLicense(true);
@@ -154,38 +98,6 @@ export default function LinearDeterminate(props) {
             props.setLicense(false);
         }
     }, [props.mass]);
-
-    // const equalsArray = (arr1, arr2) => {
-    //     // console.log(arr1, arr2)
-    //     if (arr1.length !== arr2.length) return false
-    //     for (let i = 0; i < arr1.length; i++) {
-    //         if (arr1[i] !== arr2[i]) return false
-    //     }
-    //     return true
-    // }
-    // useEffect(() => {
-    //
-    //     setInterval(() =>{
-    //         props.setTextLabels(labels)
-    //     }, 1000)
-    // },[labels])
-    // useEffect(() => {
-    //     if (props.socketMass.readyState === 1) {
-    //         props.socketMass.send(JSON.stringify({COMMAND: 'GET_MOD_INFO'}));
-    //         props.socketMass.onmessage = (e) => {
-    //             let data = e.data;
-    //             const response = JSON.parse(data);
-    //             console.log(response)
-    //
-    //
-    //             if (response.RECORD) {
-    //
-    //
-    //
-    //             }
-    //         }
-    //     }
-    // },[])
 
     const choosePlatform = () => {
         let length = platfomsArray.length;
@@ -344,10 +256,13 @@ export default function LinearDeterminate(props) {
                     top: 5,
                     color: '#fff',
                     fontSize: '2.5em',
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    zIndex:10
                 }}>
                     <div
+
                     style={{
+
                         position:"absolute",
                         top: platformStyle.top,
                         left: platformStyle.left,

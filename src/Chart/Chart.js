@@ -1,4 +1,4 @@
-import {Doughnut, Line} from 'react-chartjs-2';
+import {Line} from 'react-chartjs-2';
 import React from "react";
 
 
@@ -76,13 +76,11 @@ export default function Mychart(props) {
         ]
     };
     React.useEffect(() => {
-        console.log(props.graph)
         let arrLength = 0;
         let labels = [];
         if (props.graph && props.graph.RECORD) {
             for (let graph of props.graph.RECORD.Items) {
                 arrLength = graph.NumericValues.length > arrLength ? graph.NumericValues.length : arrLength;
-                console.log(arrLength)
                 switch (graph["Type"]) {
                     case 'Measurement':
                         setDataValues(graph.NumericValues);
@@ -97,13 +95,13 @@ export default function Mychart(props) {
                         setAvgValues(graph.NumericValues)
                         break;
                     default:
-                        console.log('xxxx')
+                        setDataValues(graph.NumericValues);
+                        // console.log('xxxx')
                 }
             }
             for (let i = 0; i < arrLength; i++) {
                 labels[i] = (i +1).toString()
             }
-            // console.log(labels);
             setLabels(labels)
         }
     }, [props.graph])
@@ -112,8 +110,8 @@ export default function Mychart(props) {
         <div>
             <Line
                 data={data}
-                width={500}
-                height={250}
+                width={props.width}
+                height={props.height}
                 options={{legend: {display: false}, animation: {duration: 0}}}
             />
         </div>

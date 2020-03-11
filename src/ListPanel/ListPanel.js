@@ -16,48 +16,27 @@ const useStyles = makeStyles(theme => ({
         border: '1px solid rgb(0,0,0,0.2)',
         position: 'relative',
         zIndex: 100,
-        backgroundColor: '#f0f8ff', //bf
+        backgroundColor: '#f0f8ff',
         transition: '0.5s',
-        // left:-1100
         overflowY: 'hidden',
         overflowX: 'hidden'
     },
-    xxx:{
+    xxx: {
 
-            position: 'absolute',
-            width: 30,
+        position: 'absolute',
+        width: 30,
 
     }
 }));
-//TODO hide and show a scrollBar arrows
 export default function ListPanel(props) {
     const [left, setLeft] = useState(-1100);
     const [visibleScroll, setVisibleScroll] = useState(false);
     const [scrollTop, setScrollTop] = useState(0)
-    // console.log(props)
-    // if (props.hamburger) {
-    //     setLeft(0)
-    // } else {
-    //     setLeft(-1100)
-    // }
     const refMenu = React.useRef();
-    const butt = React.useRef();
-    // const refContainer = React.useRef()
-    // useEffect(() => {
-    //     (window.innerWidth < 1040) ? setLeft(0):setLeft(-1100)
-    // }, [])
+
     useEffect(() => {
-        // if (window.innerWidth < 1040) {
-        //     // setLeft(0);
-        //     setTransition('0')
-        //     props.hamburger ? props.setOpenListPanel(true):props.setOpenListPanel(false)
-        // } else {
-
-            props.hamburger ? setLeft(0) : setLeft(-1100);
-            if (refMenu) refMenu.current.scrollTop = 0
-        // }
-
-
+        props.hamburger ? setLeft(0) : setLeft(-1100);
+        if (refMenu) refMenu.current.scrollTop = 0
     }, [props.hamburger]);
 
     useEffect(() => {
@@ -86,8 +65,6 @@ export default function ListPanel(props) {
                          display: 'grid',
                          gridTemplateColumns: props.menu.isBig ? 'auto auto auto auto auto' : '50% 50%',
                          gridAutoRows: 'min-content',
-                         // flexWrap: 'wrap',
-                         // justifyContent: 'center',
                          marginLeft: 75,
                          overflowY: 'hidden',
                          overflowX: 'hidden'
@@ -131,27 +108,21 @@ export default function ListPanel(props) {
                     {!props.menu.isBig && props.menuButtons && props.menuButtons.map((elem, i) =>
                         <div key={i} style={{
                             background: elem.isSelected ? '#cce7ff' : '#fff',
-                            // position: 'relative',
                             display: 'flex',
                             margin: 5,
                             padding: 5,
-                            // width: '46%',
                             height: 66,
                             border: '1px solid rgb(0,0,0,0.2)'
                         }}
                              onClick={(e) => e.stopPropagation()}
                              onMouseDown={(e) => {
                                  e.stopPropagation();
-                                 console.log(elem)
                                  props.tapParam(elem.GUID, props.menu.GUID);
                              }}>
                             <div style={{textAlign: 'left'}}>
                                 {!elem.img && <img width={30} src={loader} alt={'loader'}/>}
                                 {elem.img && <img width={window.innerWidth < 800 ? 25 : 57} style={{
                                     pointerEvents: 'none',
-                                    // position: 'absolute',
-                                    // left: 0,
-                                    // paddingLeft: 15
                                 }} src={`data:image/png;base64, ${elem.img}`} alt={'img'}/>}
                             </div>
                             <div style={{width: '100%', display: 'flex'}}>
@@ -186,27 +157,25 @@ export default function ListPanel(props) {
                         }}>
                         <ForwardIcon style={{fontSize: '2.5em', transform: 'rotate(-90deg)'}}/>
                     </IconButton>}
-                    <div style={{position:"relative", left:2}}>
+                    <div style={{position: "relative", left: 2}}>
                         {!props.menu.isBig && props.menu.Buttons && props.menu.Buttons.map((elem, i) => {
 
                                 const indexOfFirst = (elem.ImageSVG).indexOf('<svg')
                                 const indexLast = (elem.ImageSVG).indexOf('svg>');
 
 
-                                const imag = elem.ImageSVG.slice(indexOfFirst + 4, indexLast +4)
+                                const imag = elem.ImageSVG.slice(indexOfFirst + 4, indexLast + 4)
                                 const newImag = '<svg class="xxx" ' + imag;
-                                // console.log(imag)
                                 return (
 
-                                    <IconButton style={{width:60, height:60}} key={i}
-                                        onMouseDown={()=>{console.log(elem.PARAM);props.pushButton(elem.PARAM, props.menu.GUID)}}
+                                    <IconButton style={{width: 60, height: 60}} key={i}
+                                        onMouseDown={() => {
+                                            props.pushButton(elem.PARAM, props.menu.GUID)
+                                        }}
                                     >
-
                                         {Parser(newImag)}
-
-
                                     </IconButton>
-                            )
+                                )
                             }
                         )}
 
