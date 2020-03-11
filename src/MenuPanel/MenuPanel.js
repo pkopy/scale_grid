@@ -44,7 +44,23 @@ export default function MenuPanel(props) {
             setVisibleArrows(true);
         }
     });
+    const changeBorder = (elem) => {
+        const arr = []
+        // console.log(elem)
+        for (let el of props.menuButtonsCatalogLocal) {
+            // console.log(el)
+            if (elem.GUID === el.GUID) {
+                el.borderColor = 2;
+                arr.push(el)
+                // break
+            } else {
+                el.borderColor = 0;
+                arr.push(el)
+            }
+        }
 
+        props.setMenuButtonsCatalogLocal(arr)
+    }
 
     return (
 
@@ -72,13 +88,14 @@ export default function MenuPanel(props) {
                             // width: '80%'
                         }}>
                         {props.menuButtonsCatalogLocal && props.menuButtonsCatalogLocal.map((elem, i) => {
-                                return (
+                            if (!elem.borderColor) elem.borderColor = 0;
+                            return (
                                     <div
                                         key={i}
                                         style={{
                                             background: elem.isSelected?'#f0f8ff':'#fff',
                                             // position: 'relative',
-
+                                            boxShadow: `inset 0 0 0 ${elem.borderColor}px #000`,
                                             display: 'flex',
                                             margin: 5,
                                             padding: 5,
@@ -89,6 +106,7 @@ export default function MenuPanel(props) {
                                         onMouseDown={(e) => {
                                             e.stopPropagation();
                                             props.tapParam(elem.GUID, props.menuCatalogLocal.GUID);
+                                            changeBorder(elem)
                                         }}
                                     >
                                         <div>

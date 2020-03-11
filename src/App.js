@@ -83,7 +83,7 @@ function App() {
     const [servicePanel, setServicePanel] = useState({});
     const [openChartPanel, setOpenChartPanel] = useState(false);
     const [chartPanel, setChartPanel] =useState({});
-
+    const [border, setBorder] = useState(0);
     const block = () => {
         const helpArr = [];
         for (let elem of layout) {
@@ -578,6 +578,22 @@ function App() {
 
 
     const send = (elem) => {
+        const arr = []
+        for (let el of layout) {
+            console.log(el)
+            if (elem.i === el.i) {
+                el.borderColor = 1
+                arr.push(el)
+                // break
+            } else {
+                el.borderColor = 0
+                arr.push(el)
+            }
+        }
+
+        setLayout(arr)
+
+        // elem.borderColor = 255
         if (start && socketAct.readyState === 1 && elem.elem && blocked) {
             socketAct.send(JSON.stringify({COMMAND: 'EXECUTE_ACTION', PARAM: elem.elem.Value}));
         }
@@ -699,7 +715,7 @@ function App() {
     const getLayout = (modIndex = 0, isBadLayout = true) => {
         setLoader(true);
         fetch(`http://localhost:8400/layout`, {
-            //     fetch(`http://${host}:8400/layout`, {
+                // fetch(`http://${host}:8400/layout`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -719,7 +735,7 @@ function App() {
 
         fetch(`http://localhost:8400/layout`, {
             // fetch(`http://${host}:8400/layout`, {
-            method: 'POST',
+            // method: 'POST',
             body: JSON.stringify(layout),
             headers: {
                 'modIndex': modIndex
@@ -751,10 +767,10 @@ function App() {
                 }
             }
 
-            setLayout(layout)
-            saveLayout(layout)
+            setLayout(layout);
+            saveLayout(layout);
         }
-    }
+    };
 
     /*======== COMPONENTS =========*/
     const _mass = (elem) => {
@@ -791,6 +807,7 @@ function App() {
         return (
             <MenuPanel
                 menuButtonsCatalogLocal={menuButtonsCatalogLocal}
+                setMenuButtonsCatalogLocal={setMenuButtonsCatalogLocal}
                 menuCatalogLocal={menuCatalogLocal}
                 socketAct={socketAct}
                 tapParam={tapParam}
@@ -970,6 +987,9 @@ function App() {
                 pushButton={pushButton}
                 setOpenListPanel={setOpenListPanel}
                 openListPanel={openListPanel}
+                layout={layout}
+                setLayout={setLayout}
+                setMenuButtons={setMenuButtons}
             />
             <InputPanel
                 openKeyboard={openKeyboard}
@@ -1020,12 +1040,14 @@ function App() {
                 >
                     {layout.map(elem => {
                             const notButton = ['text', 'menu', 'graph'];
+                            if (!elem.borderColor) elem.borderColor = 0;
                             const isNotButton = elem.elem && !notButton.includes(elem.elem.type);
                             return (
                                 <div className="xx"
                                      onMouseDown={elem.elem && isNotButton ? () => send(elem) : undefined}
                                      style={{
-                                         border: "1px solid rgb(0, 0, 0, 0.4)",
+                                         border: `1px solid rgb(0, 0, 0, 0.4)`,
+                                         boxShadow: `inset 0 0 0 ${elem.borderColor}px`,
                                          display: 'flex',
                                          alignItems: 'center',
                                      }}
