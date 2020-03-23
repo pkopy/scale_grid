@@ -35,6 +35,10 @@ export default function AddPanel(props) {
                 handleClose();
                 props.add({Name: 'GRAPH', type:'graph', activeTab: 0}, 'graph')
             }}>Graph</MenuItem>
+            <MenuItem onClick={() => {
+                handleClose();
+                props.add({Name: 'KTP', type:'ktp', activeTab: 0}, 'ktp')
+            }}>Ktp</MenuItem>
 
         </Menu>
     )
