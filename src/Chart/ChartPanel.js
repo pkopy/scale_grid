@@ -16,13 +16,13 @@ export default function ServicePanel(props) {
         <>
 
             {props.openChartPanel&&<div style={{
-                width: 1026, height: 612,
+                width: window.innerWidth < 800? 640:1026, height: window.innerWidth < 800? 470:612,
                 transition: 'opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
                 background: "#00000021",
                 position: "absolute", top: 0, zIndex: 100
             }}>
                 <div style={{
-                    width: 900, position: "relative", top: 80, marginLeft: "auto",
+                    width: window.innerWidth < 800? 520:900, position: "relative", top: 80, marginLeft: "auto",
                     marginRight: "auto", textAlign: "left", background: '#00000012',
                     boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2), 0px 24px 38px 3px rgba(0,0,0,0.14), 0px 9px 46px 8px rgba(0,0,0,0.12)'
 
@@ -43,7 +43,7 @@ export default function ServicePanel(props) {
                     </div>
                     <div
                         style={{
-                            height: 450,
+                            height: window.innerWidth < 800? 320:450,
                             background: '#fff',
                             position: "relative",
                             // top:15,
@@ -54,8 +54,8 @@ export default function ServicePanel(props) {
 
                             <Chart
                                 graph={props.chartPanel}
-                                width={840}
-                                height={330}
+                                width={window.innerWidth < 800? 500:840}
+                                height={window.innerWidth < 800? 230:330}
                             />
                             <Button
                                 variant="contained"

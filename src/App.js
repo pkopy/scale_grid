@@ -847,7 +847,7 @@ function App() {
     const _graph = () => {
         let width = 500;
         let height = 250;
-        if (screen.width  === 640) {
+        if (screen.width  < 800) {
             width = 300;
             height = 150
         }

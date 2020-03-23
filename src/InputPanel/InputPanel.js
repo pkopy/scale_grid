@@ -88,7 +88,7 @@ export default function InputPanel(props) {
 
             {props.openKeyboard &&
             <div style={{
-                width: window.innerWidth, height: 612,
+                width: window.innerWidth < 800? 640:1026, height: 612,
 
                 // opacity: opacity,
                 transition: 'opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
