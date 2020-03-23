@@ -36,6 +36,7 @@ export default function TextPanel(props) {
 
     const activeTab = `${classes.tabs} ${classes.activeTab}`;
     const tab = classes.tabs;
+    // console.log(props)
 
     // console.log(TextContainer.textLabels)
     // useEffect(() => {
@@ -66,7 +67,7 @@ export default function TextPanel(props) {
     };
     return (
 
-        <div style={{width: '100%', height: '100%', backgroundColor: "#ececec", overflow:'hidden'}}>
+        <div style={{fontFamily:"Courier",width: '100%', height: '100%', backgroundColor: "#ececec", overflow:'hidden'}}>
             {props.children}
             <div className={classes.textPanel}>
                 <div className={classes.tabContainer} onClick={() => changeActiveTab(0)}>
@@ -80,7 +81,7 @@ export default function TextPanel(props) {
                 </div>
 
             </div>
-            <div style={{width: '100%', height: '80%', overflowY: 'hidden', marginTop: 40}}>
+            <div style={{width: '100%', height: '80%', overflowY: 'hidden', marginTop: 20}}>
                 <div style={{textAlign: 'left', marginLeft: 15}}>
                     {textLabels&&textLabels.length > 0 && textLabels[activeIndex].split('\n').map((elem, i) =>
                         <p key={i} style={{margin: 1}}>{elem}</p>

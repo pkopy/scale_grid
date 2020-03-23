@@ -24,6 +24,7 @@ import Chart from "./Chart/Chart";
 import {useHotkeys} from "react-hotkeys-hook";
 import ServicePanel from "./ServicePanel/ServicePanel";
 import ChartPanel from "./Chart/ChartPanel";
+import KtpPanel from "./KtpPanel/KtpPanel";
 
 function App() {
     const [layout, setLayout] = useState([]);
@@ -83,7 +84,9 @@ function App() {
     const [servicePanel, setServicePanel] = useState({});
     const [openChartPanel, setOpenChartPanel] = useState(false);
     const [chartPanel, setChartPanel] =useState({});
-    const [border, setBorder] = useState(0);
+
+    const [ktp, setKtp] = useState({});
+
     const block = () => {
         const helpArr = [];
         for (let elem of layout) {
@@ -164,7 +167,7 @@ function App() {
     socketTap.onmessage = (e) => {
         let data = e.data;
         const response = JSON.parse(data);
-
+        // console.log(response)
         if (response.COMMAND === 'REGISTER_LISTENER' && response.PARAM === 'MENU') {
             clearInterval(timer);
         }
@@ -299,6 +302,10 @@ function App() {
         }
         if (response.COMMAND === 'UPDATE_STATUS_DATA' && response.PARAM === 'GRAPH') {
             setGraph(response)
+        }
+        if (response.COMMAND === 'PGC_PANEL_DATA') {
+            // console.log('ktp',response);
+            setKtp(response)
         }
 
         if (response.COMMAND === 'EDIT_MESSAGE' && response.PARAM === 'CLOSE') {
@@ -447,9 +454,9 @@ function App() {
                             h: type.h,
                             x: (i - 60),
                             y: 5,
-                            maxH: 6,
+                            maxH: type.maxH,
                             minH: type.minH,
-                            maxW: 6,
+                            maxW: type.maxW,
                             minW: type.minW,
                             elem
                         });
@@ -460,9 +467,9 @@ function App() {
                             h: type.h,
                             x: (i - 48),
                             y: 4,
-                            maxH: 6,
+                            maxH: type.maxH,
                             minH: type.minH,
-                            maxW: 6,
+                            maxW: type.maxW,
                             minW: type.minW,
                             elem
                         });
@@ -474,9 +481,9 @@ function App() {
                             h: type.h,
                             x: (i - 36),
                             y: 3,
-                            maxH: 6,
+                            maxH: type.maxH,
                             minH: type.minH,
-                            maxW: 6,
+                            maxW: type.maxW,
                             minW: type.minW,
                             elem
                         });
@@ -488,9 +495,9 @@ function App() {
                             h: type.h,
                             x: (i - 24),
                             y: 2,
-                            maxH: 6,
+                            maxH: type.maxH,
                             minH: type.minH,
-                            maxW: 6,
+                            maxW: type.maxW,
                             minW: type.minW,
                             elem
                         });
@@ -501,9 +508,9 @@ function App() {
                             h: type.h,
                             x: (i - 12),
                             y: 1,
-                            maxH: 6,
+                            maxH: type.maxH,
                             minH: type.minH,
-                            maxW: 6,
+                            maxW: type.maxW,
                             minW: type.minW,
                             elem
                         });
@@ -514,9 +521,9 @@ function App() {
                             h: type.h,
                             x: i,
                             y: 0,
-                            maxH: 6,
+                            maxH: type.maxH,
                             minH: type.minH,
-                            maxW: 6,
+                            maxW: type.maxW,
                             minW: type.minW,
                             elem
                         });
@@ -546,6 +553,8 @@ function App() {
                 objectType.h = 3;
                 objectType.minH = 3;
                 objectType.minW = 4;
+                objectType.maxH = 6;
+                objectType.maxW = 12
                 setDisabledAddMenuButton(true);
                 break;
             case 'text':
@@ -553,12 +562,27 @@ function App() {
                 objectType.h = 2;
                 objectType.minH = 1;
                 objectType.minW = 4;
+                objectType.maxH = 6;
+                objectType.maxW = 12;
                 break;
             case 'graph':
                 objectType.w = 6;
                 objectType.h = 3;
                 objectType.minH = 3;
                 objectType.minW = 6;
+                objectType.maxH = 3;
+                objectType.maxW = 6;
+                // objectType.maxWidth =
+                // objectType.isResizable = false
+
+                break;
+            case 'ktp':
+                objectType.w = 12;
+                objectType.h = 3;
+                objectType.minH = 1;
+                objectType.minW = 1;
+                objectType.maxH = 6;
+                objectType.maxW = 12;
                 // objectType.maxWidth =
                 // objectType.isResizable = false
 
@@ -578,9 +602,10 @@ function App() {
 
 
     const send = (elem) => {
+        console.log(elem)
         const arr = []
         for (let el of layout) {
-            console.log(el)
+            // console.log(el)
             if (elem.i === el.i) {
                 el.borderColor = 1
                 arr.push(el)
@@ -735,7 +760,7 @@ function App() {
 
         fetch(`http://localhost:8400/layout`, {
             // fetch(`http://${host}:8400/layout`, {
-            // method: 'POST',
+            method: 'POST',
             body: JSON.stringify(layout),
             headers: {
                 'modIndex': modIndex
@@ -816,34 +841,38 @@ function App() {
     };
 
     const _graph = () => {
+        let width = 500;
+        let height = 250;
+        if (screen.width  === 640) {
+            width = 300;
+            height = 150
+        }
         return (
             <Chart
                 graph={graph}
-                width={500}
-                height={250}
+                width={width}
+                height={height}
+            />
+        )
+    };
+
+    const _ktp = () => {
+        return (
+            <KtpPanel
+                // mass={mass}
+                ktp={ktp}
             />
         )
     }
 
     useEffect(() => {
-
-
-        // getLayout();
         runSocket();
-        // if (window.innerWidth > 1025) {
-        //     setGridBorder(true);
-        //     setScreen({
-        //         width: 1024,
-        //         rowHeight: 77,
-        //
-        //     })
-        // }
-
         if (window.innerWidth > 1000) {
             //1024x600
 
             setScreen({
                 width: 1024,
+                height: 600,
                 rowHeight: 77,
 
             })
@@ -852,6 +881,7 @@ function App() {
 
             setScreen({
                 width: 640,
+                height: 400,
                 rowHeight: 50,
                 imgWidth: 30
             })
@@ -869,6 +899,7 @@ function App() {
         getLayout(modIndex);
     }, [modIndex]);
 
+    //init LocalStorage images
     useEffect(() => {
 
         if (!localStorage.images) {
@@ -891,7 +922,7 @@ function App() {
         }
     };
 
-    const startX = (a,b) => {
+    const startListenKeys= (a,b) => {
 
         if (socketAct.readyState === 1 && !menu.GUID) {
 
@@ -901,8 +932,9 @@ function App() {
         }
         a.preventDefault();
 
-    }
-    useHotkeys('F8, F9, F10, F12, Escape, Enter', startX, [socketAct, menu])
+    };
+
+    useHotkeys('F8, F9, F10, F11, F12, Escape, Enter', startListenKeys, [socketAct, menu])
     return (
         <div className="App">
             {loader &&
@@ -1026,6 +1058,10 @@ function App() {
 
                 <GridLayout
                     className="layout"
+                    style={{
+                        width: screen.width,
+                        height: screen.height
+                    }}
                     isResizable={true}
                     compactType={null}
                     onLayoutChange={e => editAfterDrag(e)}
@@ -1039,7 +1075,7 @@ function App() {
 
                 >
                     {layout.map(elem => {
-                            const notButton = ['text', 'menu', 'graph'];
+                            const notButton = ['text', 'menu', 'graph', 'ktp'];
                             if (!elem.borderColor) elem.borderColor = 0;
                             const isNotButton = elem.elem && !notButton.includes(elem.elem.type);
                             return (
@@ -1085,8 +1121,10 @@ function App() {
                                         }
                                     </div>
                                     {elem.elem && elem.elem.type === 'text' && _textComponent(elem)}
+                                    {elem.elem && elem.elem.type === 'ktp' && _ktp()}
                                     {elem.elem && elem.elem.type === 'menu' && _menuComponent()}
                                     {elem.elem && elem.elem.type === 'graph' && _graph()}
+
                                     {elem.obj === 'mass' && _mass(elem)}
                                 </div>
                             )

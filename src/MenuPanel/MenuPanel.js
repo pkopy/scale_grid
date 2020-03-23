@@ -34,16 +34,44 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function MenuPanel(props) {
+    // console.log('props',props)
     const classes = useStyles();
     const ref = useRef();
     const [visibleArrows, setVisibleArrows] = useState(false);
-    const [scrollTop, setScrollTop] = useState(0)
+    const [scrollTop, setScrollTop] = useState(0);
+    const [grid, setGrid] = useState('auto');
+    const [height, setHeight] = useState(30);
+    const [width, setWidth] = useState(0)
 
     useEffect(() => {
         if (ref.current.scrollHeight > ref.current.clientHeight) {
             setVisibleArrows(true);
         }
     });
+    useEffect(() => {
+        switch (props.menuCatalogLocal.ItemSize) {
+            case 'Small':
+                setGrid('auto');
+                setHeight(30);
+                setWidth(0)
+                break;
+            case 'Medium':
+                setGrid('auto auto auto');
+                setHeight(60);
+                setWidth(0)
+                break;
+            case 'Grand':
+                setGrid('auto');
+                setHeight(215);
+                setWidth('100%')
+                break;
+            default:
+                setGrid('auto');
+                setHeight(30)
+                setWidth(0)
+                console.log('ccc')
+        }
+    }, [])
     const changeBorder = (elem) => {
         const arr = []
         // console.log(elem)
@@ -81,26 +109,27 @@ export default function MenuPanel(props) {
                         ref={ref}
                         style={{
                             display: "grid",
-                            gridTemplateColumns: "auto",
+                            gridTemplateColumns: grid,
                             gridAutoRows: "min-content",
                             overflowY: "hidden",
                             height: '100%',
                             // width: '80%'
                         }}>
                         {props.menuButtonsCatalogLocal && props.menuButtonsCatalogLocal.map((elem, i) => {
-                            if (!elem.borderColor) elem.borderColor = 0;
-                            return (
+                                if (!elem.borderColor) elem.borderColor = 0;
+                                // console.log(props.menuCatalogLocal)
+                                return (
                                     <div
                                         key={i}
                                         style={{
-                                            background: elem.isSelected?'#f0f8ff':'#fff',
+                                            background: elem.isSelected ? '#f0f8ff' : '#fff',
                                             // position: 'relative',
                                             boxShadow: `inset 0 0 0 ${elem.borderColor}px #000`,
                                             display: 'flex',
                                             margin: 5,
                                             padding: 5,
                                             // width: '46%',
-                                            height: 30,
+                                            height: height,
                                             border: '1px solid rgb(0,0,0,0.2)'
                                         }}
                                         onMouseDown={(e) => {
@@ -109,27 +138,28 @@ export default function MenuPanel(props) {
                                             changeBorder(elem)
                                         }}
                                     >
-                                        <div>
-                                            {!elem.img && <img width={30} src={load} alt={'loader'}/>}
-                                            {elem.img && <img width='30px' style={{
+                                        <div style={{width:width, textAlign:"center"}}>
+                                            {!elem.img && <img width={height} src={load} alt={'loader'}/>}
+                                            {elem.img && <img width={height} style={{
                                                 pointerEvents: 'none',
                                                 // position: 'absolute',
                                                 // left: 0,
                                                 // paddingLeft: 15
                                             }} src={`data:image/png;base64, ${elem.img}`} alt={'img'}/>}
                                         </div>
-                                        <div style={{
+                                        {props.menuCatalogLocal.ItemSize === 'Small'&& <div style={{
                                             display: 'flex',
                                             width: '100%',
                                             alignItems: "stretch",
-                                            textAlign: 'left'
+                                            textAlign: 'left',
+                                            // flexDirection:"column"
                                         }}>
                                             <div
                                                 style={{
                                                     color: '#000',
                                                     position: "relative",
                                                     top: 5,
-                                                    marginLeft: 10,
+                                                    marginLeft: 40,
                                                     fontSize: 12,
                                                     flexGrow: 1
                                                 }}>
@@ -150,13 +180,39 @@ export default function MenuPanel(props) {
                                                     position: "relative"
                                                 }}>{elem.Value}</div>}
                                             </div>
-                                        </div>
+                                        </div>}
+                                        {props.menuCatalogLocal.ItemSize === 'Medium'&& <div style={{
+                                            display: 'flex',
+                                            width: '100%',
+                                            alignItems: "stretch",
+                                            textAlign: 'left',
+                                            flexDirection:"column"
+                                        }}>
+                                            <div
+                                                style={{
+                                                    color: '#000',
+                                                    position: "relative",
+                                                    fontFamily:'Courier',
+                                                    textAlign:"center",
+                                                    fontSize: '1.2em',
+                                                    marginBottom:10
+                                                }}>
+                                                <b> {elem.Name}</b>
+                                            </div>
+                                            <div style={{
+                                                color: '#000',
+                                                fontSize: '1.2em',
+                                                fontFamily:'Courier',
+                                                textAlign:"center",
+                                                position: "relative"
+                                            }}>{elem.Value}</div>
+                                        </div>}
                                     </div>)
                             }
                         )}
                     </div>
                 </div>
-                {visibleArrows && <div style={{width: '20%'}}>
+                {visibleArrows && <div style={{width: 78}}>
                     <IconButton className={classes.arrows}
                                 disabled={!scrollTop}
                                 onClick={(e) => {

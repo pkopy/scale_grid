@@ -17,6 +17,7 @@ import eight from '../img/eight2.svg'
 import nine from '../img/nine2.svg'
 import minus from '../img/minus1.svg'
 import dot from '../img/dot1.svg'
+import Bargraph from "./Bargraph";
 
 
 
@@ -71,17 +72,30 @@ export default function LinearDeterminate(props) {
     const [precision, setPrecision] = useState();
     const [platform, setPlatform] = useState(0);
     const [platfomsArray, setPlatformsArray] = useState([]);
+    const [bargraphColor, setBargraphColor] = useState('#fff');
+    const [maxBar, setMaxBar] = useState(0);
+    const [minBar, setMinBar] = useState(0);
+    const [tMin, setTMin] = useState(0);
+    const [tMax, setTMax] = useState(0);
+    const [target, setTarget] = useState(0)
 
     useEffect(() => {
         let Mass = [];
         if(props.mass && props.mass.RECORD) {
+            // console.log('masa',props.mass.RECORD.BargraphData[platform])
             Mass = props.mass.RECORD.Mass;
             setPlatformsArray(Mass);
         }
         if (Mass.length > 0 && Mass[platform].NetAct && Mass[platform].NetCal) {
             props.setLicense(true);
-            setMax(Mass[platform].Max * 1);
-            setValue(Mass[platform].NetAct.Value);
+            setMax(props.mass.RECORD.BargraphData[platform].range );
+            setValue(props.mass.RECORD.BargraphData[platform].value);
+            setBargraphColor(props.mass.RECORD.BargraphData[platform].Color);
+            setMaxBar(props.mass.RECORD.BargraphData[platform].max);
+            setMinBar(props.mass.RECORD.BargraphData[platform].min);
+            setTMin(props.mass.RECORD.BargraphData[platform].T2Minus);
+            setTMax(props.mass.RECORD.BargraphData[platform].T2Plus);
+            setTarget(props.mass.RECORD.BargraphData[platform].target)
             // setValue('-8,88888');
             setUnit(Mass[platform].NetAct.Unit);
             setValueCal(Mass[platform].NetCal.Value);
@@ -97,6 +111,13 @@ export default function LinearDeterminate(props) {
             setIsZero(false);
             props.setLicense(false);
         }
+
+        // if (props.mass.RECORD && props.mass.RECORD.BargraphData[platform].value > props.mass.RECORD.BargraphData[platform].max) {
+        //     setBargraphColor('#FF0000')
+        // } else {
+        //     setBargraphColor('#00FF00')
+        // }
+
     }, [props.mass]);
 
     const choosePlatform = () => {
@@ -108,6 +129,8 @@ export default function LinearDeterminate(props) {
         } else {
             setPlatform(0)
         }
+        props.socketMass.send(JSON.stringify({COMMAND: 'EXECUTE_ACTION', PARAM: "actChangePlatform"}));
+
 
     };
 
@@ -132,6 +155,8 @@ export default function LinearDeterminate(props) {
     const _digits = (value) => {
         value = isNaN(value) ? '-----' : value;
         const digits = (value.toString()).split('');
+
+
         let result = [];
         for (let digit of digits) {
             switch (digit) {
@@ -227,24 +252,31 @@ export default function LinearDeterminate(props) {
 
         } else {
             if (props.width === 6) {
-                digitWidth = 55;
+                digitWidth = 80;
                 unitFontWidth = 75;
-                unitBottom = 65;
-                imgWidth = 65;
+                unitBottom = -110;
+                imgWidth = 80;
+                rightPos = 20;
+                bottomPos = 40;
             } else if (props.width === 4) {
-                digitWidth = 35;
+                digitWidth = 50;
                 unitFontWidth = 35;
-                unitBottom = 115;
-                imgWidth = 40;
+                unitBottom = -80;
+                imgWidth = 80;
+                rightPos = 20;
+                bottomPos = 40;
             } else {
-                digitWidth = 13;
-                unitFontWidth = 13;
-                unitBottom = 45;
-                imgWidth = 30;
+                digitWidth = 20;
+                unitFontWidth = 20;
+                unitBottom = -25;
+                imgWidth = 50;
+                rightPos = 20;
+                bottomPos = 40;
             }
         }
 
         return (
+
             <div style={{width: '100%', height: '100%'}}>
                 {props.visible && platfomsArray.length > 1&&<div onClick={choosePlatform} style={{
                     width: platformDimension,
@@ -301,16 +333,38 @@ export default function LinearDeterminate(props) {
                         }}>{Unit}</div>}
                     </div>
                 </div>}
-                {props.visible &&<ThemeProvider theme={theme}>
-                    {props.visible && <LinearProgress color="primary" variant="determinate"
-                                                      value={ValueCal > 0 ? (100 / (Max / ValueCal)) : 0} style={{
-                        height: progressHeight,
+                {/*{props.visible &&<ThemeProvider theme={theme}>*/}
+                {/*    {props.visible && <LinearProgress color="primary" variant="determinate"*/}
+                {/*                                      value={ValueCal > 0 ? (100 / (Max / ValueCal)) : 0} style={{*/}
+                {/*        height: progressHeight,*/}
+                {/*        width: '98%',*/}
+                {/*        marginBottom: '5px',*/}
+                {/*        position: "absolute",*/}
+                {/*        bottom: 5*/}
+                {/*    }}/>*/}
+
+                {/*    }*/}
+                {/*    */}
+                {/*</ThemeProvider>}*/}
+                <div
+                    style={{
                         width: '98%',
                         marginBottom: '5px',
                         position: "absolute",
                         bottom: 5
-                    }}/>}
-                </ThemeProvider>}
+                    }}>
+
+                    <Bargraph
+                        max={(maxBar/Max)*100}
+                        min={(minBar/Max)*100}
+                        tMax={(tMax/Max) *100}
+                        tMin={(tMin/Max) * 100}
+                        value={Value > 0 ? (Value/Max)*100: 0}
+                        color={bargraphColor}
+                        height={20}
+                        target={(target/Max)*100}
+                    />
+                </div>
 
             </div>
 

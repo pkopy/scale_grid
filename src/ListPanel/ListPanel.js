@@ -47,22 +47,22 @@ export default function ListPanel(props) {
     React.useEffect(() => {
         setScrollTop(0)
         setVisibleScroll(false);
-        if ((props.menuButtons.length > 15 && props.menu.isBig) || (props.menuButtons.length > 12 && !props.menu.isBig)) setVisibleScroll(true)
+        if ((props.menuButtons.length > 15 && props.menu.ItemSize === 'Big') || (props.menuButtons.length > 12 && props.menu.ItemSize === 'Small')) setVisibleScroll(true)
 
     }, [props.menuButtons]);
 
     const classes = useStyles();
     const changeBorder = (elem) => {
-        const arr = []
+        const arr = [];
         // console.log(elem)
         for (let el of props.menuButtons) {
             // console.log(el)
             if (elem.GUID === el.GUID) {
-                el.borderColor = 2
+                el.borderColor = 2;
                 arr.push(el)
                 // break
             } else {
-                el.borderColor = 0
+                el.borderColor = 0;
                 arr.push(el)
             }
         }
@@ -79,7 +79,7 @@ export default function ListPanel(props) {
                      style={{
                          width: '92%',
                          display: 'grid',
-                         gridTemplateColumns: props.menu.isBig ? 'auto auto auto auto auto' : '50% 50%',
+                         gridTemplateColumns: props.menu.ItemSize === 'Big' ? 'auto auto auto auto auto' : '50% 50%',
                          gridAutoRows: 'min-content',
                          marginLeft: 75,
                          overflowY: 'hidden',
@@ -87,7 +87,7 @@ export default function ListPanel(props) {
                      }}>
 
 
-                    {props.menu.isBig && props.menuButtons && props.menuButtons.map((elem, i) => {
+                    {props.menu.ItemSize === 'Big' && props.menuButtons && props.menuButtons.map((elem, i) => {
                             if (!elem.borderColor) elem.borderColor = 0;
                             return (
                                 <div key={i} style={{
@@ -127,7 +127,7 @@ export default function ListPanel(props) {
                         }
                     )}
 
-                    {!props.menu.isBig && props.menuButtons && props.menuButtons.map((elem, i) => {
+                    {props.menu.ItemSize === 'Small' && props.menuButtons && props.menuButtons.map((elem, i) => {
                             if (!elem.borderColor) elem.borderColor = 0;
                             return (
                                 <div key={i} style={{
@@ -172,7 +172,7 @@ export default function ListPanel(props) {
                     )}
 
                 </div>
-                <div style={{width: 80}}>
+                <div style={{width: 78}}>
                     {visibleScroll && <IconButton
                         disabled={scrollTop === 0}
                         onClick={(e) => {
@@ -186,13 +186,13 @@ export default function ListPanel(props) {
                         <ForwardIcon style={{fontSize: '2.5em', transform: 'rotate(-90deg)'}}/>
                     </IconButton>}
                     <div style={{position: "relative", left: 2}}>
-                        {!props.menu.isBig && props.menu.Buttons && props.menu.Buttons.map((elem, i) => {
+                        {props.menu.ItemSize === 'Small' && props.menu.Buttons && props.menu.Buttons.map((elem, i) => {
 
-                                const indexOfFirst = (elem.ImageSVG).indexOf('<svg')
+                                const indexOfFirst = (elem.ImageSVG).indexOf('<svg');
                                 const indexLast = (elem.ImageSVG).indexOf('svg>');
 
 
-                                const imag = elem.ImageSVG.slice(indexOfFirst + 4, indexLast + 4)
+                                const imag = elem.ImageSVG.slice(indexOfFirst + 4, indexLast + 4);
                                 const newImag = '<svg class="xxx" ' + imag;
                                 return (
 
