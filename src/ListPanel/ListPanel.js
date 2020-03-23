@@ -10,9 +10,20 @@ import Parser from 'html-react-parser';
 import './ListPanel.scss'
 
 const useStyles = makeStyles(theme => ({
-    listPanel: {
+    listPanel1: {
         width: 1024,
         height: 530,
+        border: '1px solid rgb(0,0,0,0.2)',
+        position: 'relative',
+        zIndex: 100,
+        backgroundColor: '#f0f8ff',
+        // transition: '0.5s',
+        overflowY: 'hidden',
+        overflowX: 'hidden'
+    },
+    listPanel: {
+        width: window.innerWidth < 800 ? 650 : 1024,
+        height: window.innerWidth < 800 ? 400 : 530,
         border: '1px solid rgb(0,0,0,0.2)',
         position: 'relative',
         zIndex: 100,
@@ -45,7 +56,7 @@ export default function ListPanel(props) {
         }
     });
     React.useEffect(() => {
-        setScrollTop(0)
+        setScrollTop(0);
         setVisibleScroll(false);
         if ((props.menuButtons.length > 15 && props.menu.ItemSize === 'Big') || (props.menuButtons.length > 12 && props.menu.ItemSize === 'Small')) setVisibleScroll(true)
 
@@ -68,7 +79,7 @@ export default function ListPanel(props) {
         }
 
         props.setMenuButtons(arr)
-    }
+    };
 
     return (
         <div>
@@ -94,8 +105,8 @@ export default function ListPanel(props) {
                                     background: '#fff',
                                     margin: 5,
                                     padding: 5,
-                                    width: 153,
-                                    height: 153,
+                                    width: window.innerWidth < 800 ? 80 : 153,
+                                    height: window.innerWidth < 800 ? 80 : 153,
                                     border: `1px solid rgb(0,0,0,0.2)`,
                                     boxShadow: `inset 0 0 0 ${elem.borderColor}px`
                                 }} onClick={(e) => e.stopPropagation()}
@@ -107,20 +118,20 @@ export default function ListPanel(props) {
                                         display: "flex",
                                         flexDirection: "column",
                                         justifyContent: "center",
-                                        height: 120
+                                        height: window.innerWidth < 800 ? 50 : 120
                                     }}>
 
                                         <div>
                                             {!elem.img &&
                                             <img className={classes.imgs} width={30} src={loader} alt={'loader'}/>}
                                             {elem.img &&
-                                            <img className={classes.imgs} width={window.innerWidth < 800 ? 25 : 100}
+                                            <img className={classes.imgs} width={window.innerWidth < 800 ? 50 : 100}
                                                  style={{pointerEvents: 'none'}} src={`data:image/png;base64, ${elem.img}`}
                                                  alt={'img'}/>}
                                         </div>
 
                                     </div>
-                                    <div style={{top: -10, position: "relative"}}>{elem.Name}</div>
+                                    <div style={{top: window.innerWidth < 800 ? 0 : -10, position: "relative", fontSize:window.innerWidth < 800 ? '10px' : undefined}}>{elem.Name}</div>
 
                                 </div>
                             )
@@ -135,7 +146,8 @@ export default function ListPanel(props) {
                                     display: 'flex',
                                     margin: 5,
                                     padding: 5,
-                                    height: 66,
+                                    height: window.innerWidth < 800 ? 45 : 66,
+                                    fontSize: window.innerWidth < 800 ? '10px' : undefined,
                                     border: `1px solid rgb(0,0,0,0.2)`,
                                     boxShadow: `inset 0 0 0 ${elem.borderColor}px`
                                 }}
@@ -147,7 +159,7 @@ export default function ListPanel(props) {
                                      }}>
                                     <div style={{textAlign: 'left'}}>
                                         {!elem.img && <img width={30} src={loader} alt={'loader'}/>}
-                                        {elem.img && <img width={window.innerWidth < 800 ? 25 : 57} style={{
+                                        {elem.img && <img width={window.innerWidth < 800 ? 30 : 57} style={{
                                             pointerEvents: 'none',
                                         }} src={`data:image/png;base64, ${elem.img}`} alt={'img'}/>}
                                     </div>

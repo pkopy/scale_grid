@@ -8,16 +8,18 @@ helpers.getImg = (socketOn, socket, command, value, arr) => {
             socket.onmessage = (e) => {
                 let data = e.data;
                 const response = JSON.parse(data);
-                // console.log(response)
+                console.log(response)
                 if (response.DATA) {
+                    // socket.close()
                     res(response);
                 } else {
+                    // socket.close()
                     res(response);
                 }
             };
-            socket.onerror = (err) => {
-                rej('noImg');
-            }
+            // socket.onerror = (err) => {
+            //     rej('noImg');
+            // }
         }
     })
 };

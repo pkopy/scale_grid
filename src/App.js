@@ -362,6 +362,9 @@ function App() {
     socketAct.onerror = (err) => {
         console.log(err);
     };
+    socketAct.onclose = (e) => {
+        console.log(e)
+    }
 
 
     async function getAllImgs(socket, menuButtons, menuGuid) {
@@ -372,19 +375,20 @@ function App() {
             for (let elem of menuButtons) {
 
                 if (!elem.img && !guidsImages.includes(elem.ImageGuid)) {
-                    for (let i = 0; i < 8; i++) {
+                    for (let i = 0; i < 3; i++) {
                         await helpers.getImg(true, socket, "GET_IMAGE_MENU", elem.ImageGuid)
                             .then(data => {
                                 if (data && elem.ImageGuid === data.PARAM) {
-                                    i = 8;
+                                    i = 3;
                                     elem.img = data.DATA;
                                     newImages[elem.ImageGuid] = data.DATA;
                                     setImages(newImages);
+                                    console.log(elem)
 
                                     localStorage.images = JSON.stringify(newImages);
 
                                     arr.push(elem);
-                                } else if (i === 7) {
+                                } else if (i === 2) {
                                     elem.img = noimage;
                                     arr.push(elem);
                                 }

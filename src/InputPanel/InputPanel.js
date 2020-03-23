@@ -77,6 +77,8 @@ export default function InputPanel(props) {
         }
     }, [props.inputPanel]);
     useEffect(() => {
+        console.log(window.innerWidth)
+        window.innerWidth < 1000 ? setWidth(500):setWidth(800)
         props.layout === 'number' ? setPattern(/^-?\d*$/) : setPattern(/^-?\d*$/)
     }, []);
 
@@ -86,7 +88,8 @@ export default function InputPanel(props) {
 
             {props.openKeyboard &&
             <div style={{
-                width: 1026, height: 612,
+                width: window.innerWidth, height: 612,
+
                 // opacity: opacity,
                 transition: 'opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
                 background: "#00000021",
