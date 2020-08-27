@@ -112,7 +112,10 @@ export default function ListPanel(props) {
                                 }} onClick={(e) => e.stopPropagation()}
                                      onMouseDown={(e) => {
                                          props.tapParam(elem.GUID, props.menu.GUID)
-                                         changeBorder(elem)
+                                         if (props.nextClick) {
+
+                                             changeBorder(elem)
+                                         }
                                      }}>
                                     <div style={{
                                         display: "flex",
@@ -155,7 +158,10 @@ export default function ListPanel(props) {
                                      onMouseDown={(e) => {
                                          e.stopPropagation();
                                          props.tapParam(elem.GUID, props.menu.GUID);
-                                         changeBorder(elem)
+                                         if (props.nextClick) {
+
+                                             changeBorder(elem)
+                                         }
                                      }}>
                                     <div style={{textAlign: 'left'}}>
                                         {!elem.img && <img width={30} src={loader} alt={'loader'}/>}

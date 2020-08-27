@@ -135,7 +135,10 @@ export default function MenuPanel(props) {
                                         onMouseDown={(e) => {
                                             e.stopPropagation();
                                             props.tapParam(elem.GUID, props.menuCatalogLocal.GUID);
-                                            changeBorder(elem)
+                                            if (props.nextClick) {
+
+                                                changeBorder(elem)
+                                            }
                                         }}
                                     >
                                         <div style={{width:width, textAlign:"center"}}>

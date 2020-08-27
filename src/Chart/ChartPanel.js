@@ -43,7 +43,7 @@ export default function ServicePanel(props) {
                     </div>
                     <div
                         style={{
-                            height: window.innerWidth < 800? 320:450,
+                            height: window.innerWidth < 800? 340:450,
                             background: '#fff',
                             position: "relative",
                             // top:15,
